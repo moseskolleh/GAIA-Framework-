@@ -8,27 +8,73 @@
     <meta name="author" content="GAIA Framework">
     <title>GAIA Framework - Green AI Impact Assessment Tool</title>
     <style>
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --border-color: #e5e7eb;
+            --hover-bg: #f9fafb;
+            --label-bg: #f3f4f6;
+            --section-header-bg: #ede9fe;
+            --section-header-text: #7c3aed;
+            --success-color: #10b981;
+            --chart-bg: white;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --glass-bg: rgba(30, 30, 46, 0.95);
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-color: #374151;
+            --hover-bg: #374151;
+            --label-bg: #1f2937;
+            --section-header-bg: #312e81;
+            --section-header-text: #c4b5fd;
+            --success-color: #34d399;
+            --chart-bg: #1f2937;
+            --shadow-color: rgba(0, 0, 0, 0.6);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.3s ease;
         }
 
         .container { max-width: 1400px; margin: 0 auto; }
 
         .glass {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--glass-bg);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px var(--shadow-color);
             margin-bottom: 20px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
         }
 
-        h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-content { flex: 1; min-width: 300px; }
+
+        h1 { font-size: 2.5em; margin-bottom: 10px; color: var(--text-primary); }
 
         .logo {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -37,7 +83,24 @@
             background-clip: text;
         }
 
-        .subtitle { color: #666; font-size: 1.1em; margin-bottom: 15px; }
+        .subtitle { color: var(--text-secondary); font-size: 1.1em; margin-bottom: 15px; }
+
+        .theme-toggle {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            background: var(--glass-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
 
         .stat-badge {
             display: inline-block;
@@ -49,20 +112,52 @@
             margin: 10px 10px 0 0;
         }
 
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: var(--label-bg);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover { background: var(--hover-bg); }
+
+        .tab.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .view-content { display: none; }
+        .view-content.active { display: block; }
+
         select {
             width: 100%;
             padding: 15px 20px;
             font-size: 1.1em;
-            border: none;
+            border: 2px solid var(--border-color);
             border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--glass-bg);
+            color: var(--text-primary);
             cursor: pointer;
             font-weight: 600;
             margin-top: 10px;
+            transition: all 0.3s ease;
         }
 
-        select option { background: white; color: #333; }
+        select:focus {
+            outline: none;
+            border-color: var(--success-color);
+        }
 
         .controls {
             display: flex;
@@ -77,12 +172,15 @@
             min-width: 250px;
             padding: 12px 20px;
             font-size: 1em;
-            border: 2px solid #667eea;
+            border: 2px solid var(--border-color);
             border-radius: 10px;
             outline: none;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
         }
 
-        .search-box:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+        .search-box:focus { border-color: var(--success-color); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
 
         .btn {
             padding: 12px 24px;
@@ -105,11 +203,11 @@
         }
 
         .btn-secondary {
-            background: #f3f4f6;
-            color: #333;
+            background: var(--label-bg);
+            color: var(--text-primary);
         }
 
-        .btn-secondary:hover { background: #e5e7eb; }
+        .btn-secondary:hover { background: var(--hover-bg); }
 
         .sheet-header {
             display: flex;
@@ -120,9 +218,9 @@
             gap: 10px;
         }
 
-        .sheet-header h2 { font-size: 2em; color: #333; }
+        .sheet-header h2 { font-size: 2em; color: var(--text-primary); }
 
-        .row-count { color: #10b981; font-weight: 600; }
+        .row-count { color: var(--success-color); font-weight: 600; }
 
         .table-container {
             overflow-x: auto;
@@ -132,26 +230,20 @@
         }
 
         .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
+        .table-container::-webkit-scrollbar-track { background: var(--label-bg); border-radius: 10px; }
+        .table-container::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; }
 
-        .table-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .table-container::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-        }
-
-        table { width: 100%; border-collapse: collapse; background: white; }
+        table { width: 100%; border-collapse: collapse; background: var(--chart-bg); }
 
         td {
             padding: 12px 16px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border-color);
             font-size: 0.95em;
+            color: var(--text-primary);
+            transition: background 0.2s ease;
         }
 
-        tr:hover td { background: #f9fafb; transition: background 0.2s ease; }
+        tr:hover td { background: var(--hover-bg); }
 
         .main-header {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -161,21 +253,46 @@
             font-size: 1.1em;
         }
 
-        .label-cell { background: #f3f4f6; font-weight: 600; }
+        .label-cell { background: var(--label-bg); font-weight: 600; }
 
         .section-header {
-            background: #ede9fe;
-            color: #7c3aed;
+            background: var(--section-header-bg);
+            color: var(--section-header-text);
             font-weight: 700;
         }
 
         .no-results {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 1.1em;
             display: none;
         }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card {
+            background: var(--chart-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px var(--shadow-color); }
+
+        .chart-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        canvas { max-width: 100%; height: auto !important; }
 
         .footer {
             text-align: center;
@@ -208,41 +325,85 @@
             .glass { padding: 20px; }
             .controls { flex-direction: column; }
             .search-box { width: 100%; }
+            .charts-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="glass">
-            <h1><span class="logo">GAIA</span> <span style="color: #333;">Framework</span></h1>
-            <p class="subtitle">Green AI Impact Assessment & Optimization Framework</p>
-            <span class="stat-badge" id="sheet-count">📊 8 Sheets</span>
-            <span class="stat-badge" id="total-rows">📋 0 Total Rows</span>
+            <div class="header-controls">
+                <div class="header-content">
+                    <h1><span class="logo">GAIA</span> <span>Framework</span></h1>
+                    <p class="subtitle">Green AI Impact Assessment & Optimization Framework</p>
+                    <span class="stat-badge" id="sheet-count">📊 8 Sheets</span>
+                    <span class="stat-badge" id="total-rows">📋 0 Total Rows</span>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Dark Mode</button>
+            </div>
         </div>
 
         <div class="glass">
-            <label for="sheet-select" style="font-weight: 600; font-size: 1.1em; color: #333;">📋 Select Sheet:</label>
-            <select id="sheet-select" onchange="changeSheet()"></select>
-        </div>
-
-        <div class="glass">
-            <div class="controls">
-                <input type="text" class="search-box" id="search-box" placeholder="🔍 Search current sheet..." onkeyup="performSearch()">
-                <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
-                <button class="btn btn-primary" onclick="exportToCSV()">📥 Download CSV</button>
+            <div class="tabs">
+                <button class="tab active" onclick="switchView('data')">📊 Data View</button>
+                <button class="tab" onclick="switchView('charts')">📈 Charts & Analytics</button>
             </div>
 
-            <div class="sheet-header">
-                <h2 id="current-sheet-name">Dashboard</h2>
-                <span class="row-count"><span id="row-count">0</span> rows</span>
+            <div id="data-view" class="view-content active">
+                <label for="sheet-select" style="font-weight: 600; font-size: 1.1em; color: var(--text-primary);">📋 Select Sheet:</label>
+                <select id="sheet-select" onchange="changeSheet()"></select>
+
+                <div style="margin-top: 20px;">
+                    <div class="controls">
+                        <input type="text" class="search-box" id="search-box" placeholder="🔍 Search current sheet..." onkeyup="performSearch()">
+                        <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+                        <button class="btn btn-primary" onclick="exportToCSV()">📥 Download CSV</button>
+                    </div>
+
+                    <div class="sheet-header">
+                        <h2 id="current-sheet-name">Dashboard</h2>
+                        <span class="row-count"><span id="row-count">0</span> rows</span>
+                    </div>
+
+                    <div class="no-results" id="no-results">
+                        <p>🔍 No results found</p>
+                        <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 10px;">Try different search terms</p>
+                    </div>
+
+                    <div class="table-container" id="table-container"></div>
+                </div>
             </div>
 
-            <div class="no-results" id="no-results">
-                <p>🔍 No results found</p>
-                <p style="font-size: 0.9em; color: #999; margin-top: 10px;">Try different search terms</p>
-            </div>
+            <div id="charts-view" class="view-content">
+                <h2 style="color: var(--text-primary); margin-bottom: 20px;">📈 Environmental Impact Analytics</h2>
 
-            <div class="table-container" id="table-container"></div>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>⚡ Top AI Models by Energy Consumption</h3>
+                        <canvas id="energyChart" width="400" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>💧 Top AI Models by Water Usage</h3>
+                        <canvas id="waterChart" width="400" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>🌍 Top AI Models by Carbon Emissions</h3>
+                        <canvas id="carbonChart" width="400" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>📊 Weekly Usage Trends</h3>
+                        <canvas id="weeklyChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card" style="margin-top: 20px;">
+                    <h3>📈 Model Comparison - Environmental Impact</h3>
+                    <canvas id="comparisonChart" width="800" height="400"></canvas>
+                </div>
+            </div>
         </div>
 
         <div class="footer">
@@ -259,7 +420,57 @@
         let currentData = [];
         let searchTimeout = null;
 
+        // Theme management
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('theme-btn');
+
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                btn.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                btn.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+
+            // Redraw charts with new colors
+            if (document.getElementById('charts-view').classList.contains('active')) {
+                drawAllCharts();
+            }
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-btn').textContent = '☀️ Light Mode';
+            }
+        }
+
+        // View switching
+        function switchView(view) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
+
+            if (view === 'data') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('data-view').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('charts-view').classList.add('active');
+                drawAllCharts();
+            }
+        }
+
+        // Initialize
         function init() {
+            loadTheme();
+
             const select = document.getElementById('sheet-select');
             let totalRows = 0;
 
@@ -417,6 +628,245 @@
             msg.textContent = text;
             msg.style.display = 'block';
             setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+
+        // Chart drawing functions
+        function drawAllCharts() {
+            drawEnergyChart();
+            drawWaterChart();
+            drawCarbonChart();
+            drawWeeklyChart();
+            drawComparisonChart();
+        }
+
+        function getChartColors() {
+            const isDark = document.body.classList.contains('dark-mode');
+            return {
+                text: isDark ? '#e5e7eb' : '#333',
+                grid: isDark ? '#374151' : '#e5e7eb',
+                bars: ['#10b981', '#059669', '#34d399', '#6ee7b7', '#a7f3d0']
+            };
+        }
+
+        function drawBarChart(canvasId, data, title, unit) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const colors = getChartColors();
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 60;
+            const barWidth = (width - padding * 2) / data.length - 10;
+            const maxValue = Math.max(...data.map(d => d.value));
+
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = colors.text;
+            ctx.font = '12px sans-serif';
+
+            // Draw bars
+            data.forEach((item, i) => {
+                const barHeight = ((item.value / maxValue) * (height - padding * 2));
+                const x = padding + (i * (barWidth + 10));
+                const y = height - padding - barHeight;
+
+                // Gradient bar
+                const gradient = ctx.createLinearGradient(x, y, x, height - padding);
+                gradient.addColorStop(0, colors.bars[i % colors.bars.length]);
+                gradient.addColorStop(1, colors.bars[(i + 1) % colors.bars.length]);
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, barWidth, barHeight);
+
+                // Value label
+                ctx.fillStyle = colors.text;
+                ctx.textAlign = 'center';
+                ctx.fillText(item.value.toFixed(2), x + barWidth / 2, y - 5);
+
+                // Name label
+                ctx.save();
+                ctx.translate(x + barWidth / 2, height - padding + 15);
+                ctx.rotate(-Math.PI / 4);
+                ctx.textAlign = 'right';
+                ctx.fillText(item.name, 0, 0);
+                ctx.restore();
+            });
+
+            // Y-axis
+            ctx.strokeStyle = colors.grid;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+        }
+
+        function drawEnergyChart() {
+            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
+            if (!refData) return;
+
+            const models = refData.data.slice(2, 10).map(row => ({
+                name: row[0],
+                value: parseFloat(row[1]) || 0
+            })).filter(m => m.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
+
+            drawBarChart('energyChart', models, 'Energy (Wh)', 'Wh');
+        }
+
+        function drawWaterChart() {
+            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
+            if (!refData) return;
+
+            const models = refData.data.slice(2, 10).map(row => ({
+                name: row[0],
+                value: parseFloat(row[2]) || 0
+            })).filter(m => m.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
+
+            drawBarChart('waterChart', models, 'Water (L)', 'L');
+        }
+
+        function drawCarbonChart() {
+            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
+            if (!refData) return;
+
+            const models = refData.data.slice(2, 10).map(row => ({
+                name: row[0],
+                value: parseFloat(row[3]) || 0
+            })).filter(m => m.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
+
+            drawBarChart('carbonChart', models, 'Carbon (gCO2e)', 'gCO2e');
+        }
+
+        function drawWeeklyChart() {
+            const weeklyData = workbookData.sheets.find(s => s.name === 'Weekly Monitor');
+            if (!weeklyData) return;
+
+            const canvas = document.getElementById('weeklyChart');
+            const ctx = canvas.getContext('2d');
+            const colors = getChartColors();
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 60;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const days = weeklyData.data.slice(6, 13);
+            const queries = days.map(d => parseFloat(d[1]) || 0);
+            const maxQueries = Math.max(...queries);
+
+            const stepX = (width - padding * 2) / (queries.length - 1);
+            const stepY = (height - padding * 2) / maxQueries;
+
+            // Draw line
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            queries.forEach((q, i) => {
+                const x = padding + (i * stepX);
+                const y = height - padding - (q * stepY);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Draw points
+            ctx.fillStyle = '#059669';
+            queries.forEach((q, i) => {
+                const x = padding + (i * stepX);
+                const y = height - padding - (q * stepY);
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Labels
+                ctx.fillStyle = colors.text;
+                ctx.textAlign = 'center';
+                ctx.font = '11px sans-serif';
+                ctx.fillText(days[i][0], x, height - padding + 20);
+                ctx.fillText(q, x, y - 10);
+            });
+
+            // Axes
+            ctx.strokeStyle = colors.grid;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+        }
+
+        function drawComparisonChart() {
+            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
+            if (!refData) return;
+
+            const canvas = document.getElementById('comparisonChart');
+            const ctx = canvas.getContext('2d');
+            const colors = getChartColors();
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 100;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const models = refData.data.slice(2, 8).map(row => ({
+                name: row[0],
+                energy: parseFloat(row[1]) || 0,
+                water: (parseFloat(row[2]) || 0) * 100, // Scale up for visibility
+                carbon: parseFloat(row[3]) || 0
+            }));
+
+            const categories = ['Energy (Wh)', 'Water (L×100)', 'Carbon (gCO2e)'];
+            const barGroupWidth = (width - padding * 2) / models.length;
+            const barWidth = barGroupWidth / 4;
+
+            models.forEach((model, i) => {
+                const x = padding + (i * barGroupWidth);
+                const maxHeight = height - padding * 2;
+
+                // Normalize values
+                const energyH = (model.energy / 30) * maxHeight;
+                const waterH = (model.water / 10) * maxHeight;
+                const carbonH = (model.carbon / 20) * maxHeight;
+
+                // Draw bars
+                [energyH, waterH, carbonH].forEach((h, j) => {
+                    const barX = x + (j * barWidth);
+                    const barY = height - padding - h;
+
+                    ctx.fillStyle = colors.bars[j];
+                    ctx.fillRect(barX, barY, barWidth - 2, h);
+                });
+
+                // Model name
+                ctx.fillStyle = colors.text;
+                ctx.save();
+                ctx.translate(x + barGroupWidth / 2, height - padding + 30);
+                ctx.rotate(-Math.PI / 6);
+                ctx.textAlign = 'right';
+                ctx.font = '10px sans-serif';
+                ctx.fillText(model.name, 0, 0);
+                ctx.restore();
+            });
+
+            // Legend
+            ctx.font = '12px sans-serif';
+            categories.forEach((cat, i) => {
+                const x = width - padding - 150;
+                const y = padding + (i * 25);
+                ctx.fillStyle = colors.bars[i];
+                ctx.fillRect(x, y - 10, 15, 15);
+                ctx.fillStyle = colors.text;
+                ctx.fillText(cat, x + 20, y + 2);
+            });
+
+            // Axes
+            ctx.strokeStyle = colors.grid;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
         }
 
         init();
