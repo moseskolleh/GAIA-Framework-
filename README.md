@@ -18,9 +18,15 @@ A comprehensive tool for measuring, assessing, and optimizing the environmental 
 
 ---
 
-## 🚀 Live Demo
+## 🚀 Deployment Status
 
-**[View Live Application →](https://moseskolleh.github.io/GAIA-Framework-/)**
+> **⚠️ Not Yet Deployed** - The live site will be available after:
+> 1. Merging the pull request to `main` branch
+> 2. Enabling GitHub Pages in repository settings
+>
+> **Future URL:** `https://moseskolleh.github.io/GAIA-Framework-/`
+>
+> 📖 See [DEPLOYMENT.md](./DEPLOYMENT.md) for step-by-step deployment instructions.
 
 ---
 
