@@ -32,3 +32,4 @@ Thumbs.db
 # Node (if ever needed)
 node_modules/
 package-lock.json
+*.backup
