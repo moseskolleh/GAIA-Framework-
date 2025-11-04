@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAIA Impact Assessment Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .logo {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .stat-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        select option {
+            background: white;
+            color: #333;
+        }
+        
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .sheet-header h2 {
+            font-size: 2em;
+            color: #333;
+        }
+        
+        .row-count {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+            border-radius: 12px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        td {
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            font-size: 0.95em;
+        }
+        
+        tr:hover td {
+            background: #f9fafb;
+        }
+        
+        .main-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .label-cell {
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+        
+        .section-header {
+            background: #ede9fe;
+            color: #7c3aed;
+            font-weight: 700;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.9;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .glass {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="glass">
+            <h1><span class="logo">GAIA</span> <span style="color: #333;">Impact Assessment Tool</span></h1>
+            <p class="subtitle">Green AI Impact Assessment & Optimization Framework</p>
+            <span class="stat-badge">📊 <span id="sheet-count">8</span> Sheets</span>
+        </div>
+        
+        <!-- Sheet Selector -->
+        <div class="glass">
+            <label for="sheet-select" style="font-weight: 600; font-size: 1.1em; color: #333;">📋 Select Sheet:</label>
+            <select id="sheet-select" onchange="changeSheet()">
+            </select>
+        </div>
+        
+        <!-- Content -->
+        <div class="glass">
+            <div class="sheet-header">
+                <h2 id="current-sheet-name">Dashboard</h2>
+                <span class="row-count"><span id="row-count">0</span> rows</span>
+            </div>
+            <div class="loading" id="loading">Loading...</div>
+            <div class="table-container" id="table-container"></div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            🌱 Powered by GAIA Framework | Last Updated: October 28, 2025
+        </div>
+    </div>
+    
+    <script>
+        // Workbook data embedded
+        const workbookData = {"Dashboard": [["GREEN AI IMPACT ASSESSMENT DASHBOARD", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["Current Assessment Summary", "", "", "", "", "", "Model Efficiency Comparison"], ["", "", "", "", "", "", ""], ["Active Model:", "o3", "", "Efficiency Grade:", "F", "", ""], ["Monthly Queries:", "10000", "", "Monthly Carbon (kg):", "75.55", "", ""], ["Environmental Score:", "100", "", "Monthly Water (L):", "760", "", ""], ["Benefit Score:", "71", "", "Monthly Energy (kWh):", "214.14", "", ""], ["", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["Quick Actions & Alerts", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["Alert Level:", "\u26a0\ufe0f HIGH", "", "", "", "", ""], ["Recommended Action:", "Switch to efficient model immediately", "", "", "", "", ""], ["Potential Savings:", "30-50% reduction achievable", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["Monthly Usage Trends", "", "", "", "", "", ""]], "AI Impact Assessment": [["GREEN AI IMPACT ASSESSMENT", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["STEP 1: MODEL SELECTION", "", "", "", "STEP 3: BENEFIT ASSESSMENT", "", ""], ["", "", "", "", "", "", ""], ["Select AI Model:", "o3", "", "", "Time Saved (hrs/month):", "", "200"], ["Custom Model Name:", "", "", "", "Quality Improvement (%):", "", "30"], ["", "", "", "", "Strategic Value (1-10):", "", "8"], ["STEP 2: TASK DEFINITION", "", "", "", "Error Reduction (%):", "", "25"], ["", "", "", "", "User Satisfaction (1-10):", "", "7"], ["Task Type:", "Document Analysis", "", "", "", "", ""], ["Query Complexity:", "Medium", "", "", "", "", ""], ["Expected Monthly Queries:", "10000", "", "", "", "", ""], ["Task Criticality:", "High", "", "", "", "", ""], ["Average Prompt Length:", "1000", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["ASSESSMENT RESULTS", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["Environmental Impact", "", "", "", "Benefit Assessment", "", ""], ["Energy per Query (Wh):", "", "21.414", "", "Efficiency Score:", "", "80"], ["Water per Query (L):", "", "0.076", "", "Quality Score:", "", "55"], ["Carbon per Query (gCO2e):", "", "7.555", "", "Strategic Score:", "", "75"], ["", "", "", "", "", "", ""], ["Monthly Total Impact", "", "", "", "", "", ""], ["Total Energy (kWh):", "", "214.14", "\u2248 1285 hours of LED lighting", "", "", ""], ["Total Water (kL):", "", "0.76", "\u2248 3040 cups of drinking water", "", "", ""], ["Total Carbon (kgCO2e):", "", "75.55", "\u2248 Driving 302 km in a car", "", "", ""], ["", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["FINAL ASSESSMENT", "", "", "", "", "", ""], ["", "", "", "", "", "", ""], ["Environmental Impact Score:", "", "100.0", "", "ECO-EFFICIENCY GRADE:", "", "F"], ["Benefit Score:", "", "71.0", "", "Recommendation:", "", "Prohibited"]], "Calculation Engine": [["CALCULATION ENGINE", "", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", "", ""], ["Input Parameters", "", "", "Per-Query Calculations", "", "", "", "Benefit Calculations", ""], ["", "", "", "", "", "", "", "", ""], ["Selected Model:", "o3", "", "21.414", "Wh", "", "", "80", "Efficiency"], ["Monthly Queries:", "10000", "", "0.076", "L", "", "", "55", "Quality"], ["Query Complexity:", "Medium", "", "7.555", "gCO2e", "", "", "75", "Strategic"], ["Prompt Length:", "1000", "", "", "", "", "", "", ""], ["", "", "", "Monthly Totals", "", "", "", "", ""], ["", "", "", "214.14", "\u2248 1285 hours of LED lighting", "", "", "", ""], ["", "", "", "0.76", "\u2248 3040 cups of drinking water", "", "", "", ""], ["", "", "", "75.55", "\u2248 Driving 302 km in a car", "", "", "", ""], ["", "", "", "", "", "", "", "", ""], ["", "", "", "Final Scores", "", "", "", "Total Benefit", ""], ["", "", "", "100", "Environmental Impact Score", "", "", "71", "Benefit Score"]], "Decision Matrix": [["DECISION MATRIX", "", "", "", "", ""], ["", "", "", "", "", ""], ["Grading Criteria", "", "", "", "", ""], ["Grade", "Env Impact", "Benefit Score", "Color", "Recommendation", "Action Required"], ["A+", "<20", ">80", "Dark Green", "Strongly Recommended", "Implement immediately"], ["A", "20-35", "70-80", "Green", "Recommended", "Proceed with standard monitoring"], ["B", "35-50", "70-80", "Light Green", "Recommended with monitoring", "Weekly impact review"], ["C", "35-50", "50-70", "Yellow", "Conditional approval", "Mitigation plan required"], ["D", "50-70", "50-70", "Orange", "Requires mitigation", "Immediate mitigation needed"], ["Current Assessment:", "100", "71", "Red", "F", "Prohibited"], ["F", ">70", "Any", "Dark Red", "Prohibited", "Use not permitted"]], "Reference Data": [["MODEL REFERENCE DATA", "", "", "", "", "", "", "", "ENVIRONMENTAL MULTIPLIERS", "", "", ""], ["Model", "Energy_Wh", "Water_L", "Carbon_gCO2e", "Provider", "Hardware", "Model_Size", "", "", "", "", ""], ["GPT-4.1 nano", "0.271", "0.002", "0.096", "OpenAI", "H200", "Small", "", "Provider", "PUE", "WUE", "CIF"], ["GPT-4o mini", "1.418", "0.005", "0.5", "OpenAI", "A100", "Medium", "", "OpenAI/Azure", "1.12", "0.3", "0.353"], ["GPT-4o", "1.214", "0.004", "0.428", "OpenAI", "H100", "Large", "", "Anthropic/AWS", "1.14", "0.18", "0.385"], ["GPT-4 Turbo", "6.758", "0.024", "2.382", "OpenAI", "A100", "Large", "", "Meta/AWS", "1.14", "0.18", "0.385"], ["o1-mini", "1.598", "0.006", "0.564", "OpenAI", "H100", "Medium", "", "DeepSeek", "1.27", "1.2", "0.6"], ["o1", "12.1", "0.043", "4.269", "OpenAI", "H100", "Large", "", "", "", "", ""], ["o3-mini", "2.447", "0.009", "0.863", "OpenAI", "H100", "Medium", "", "", "", "", ""], ["o3", "21.414", "0.076", "7.555", "OpenAI", "H100", "Large", "", "", "", "", ""], ["Claude-3.5 Haiku", "0.5", "0.001", "0.193", "Anthropic", "H100", "Small", "", "", "", "", ""], ["Claude-3.5 Sonnet", "2", "0.004", "0.77", "Anthropic", "H100", "Medium", "", "", "", "", ""], ["Claude-3.7 Sonnet", "2.781", "0.006", "1.072", "Anthropic", "H200", "Large", "", "", "", "", ""], ["LLaMA-3.1-8B", "0.329", "0.001", "0.127", "Meta", "H100", "Small", "", "", "", "", ""], ["LLaMA-3.1-70B", "3.558", "0.007", "1.37", "Meta", "H100", "Medium", "", "", "", "", ""], ["LLaMA-3.1-405B", "6.911", "0.014", "2.661", "Meta", "H100", "Large", "", "", "", "", ""], ["DeepSeek-V3", "9.129", "0.155", "5.477", "DeepSeek", "H800", "Large", "", "", "", "", ""], ["DeepSeek-R1", "29", "0.493", "17.4", "DeepSeek", "H800", "Large", "", "", "", "", ""], ["Custom", "2", "0.005", "0.7", "Custom", "Unknown", "Unknown", "", "", "", "", ""]], "Weekly Monitor": [["WEEKLY MONITORING DASHBOARD", "", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", "", ""], ["Week of:", "2025-10-28", "", "Department:", "IT Services", "", "", "", ""], ["", "", "", "", "", "", "", "", ""], ["Weekly Metrics", "", "", "", "", "", "", "Performance Indicators", ""], ["Day", "Queries", "Energy (kWh)", "Water (L)", "Carbon (kg)", "Cost ($)", "", "", ""], ["Monday", "1500", "1.821", "6", "0.642", "0.21852", "", "Weekly Target:", "10000"], ["Tuesday", "1800", "2.1852", "7.2", "0.7704", "0.262224", "", "Actual Usage:", "9000"], ["Wednesday", "2000", "2.428", "8", "0.856", "0.29136", "", "Variance:", "-0.1"], ["Thursday", "1700", "2.0638", "6.8", "0.7276", "0.247656", "", "", ""], ["Friday", "1200", "1.4568", "4.8", "0.5136", "0.174816", "", "Status:", "\ud83d\udc4d On Track"], ["Saturday", "500", "0.607", "2", "0.214", "0.07284", "", "", ""], ["Sunday", "300", "0.3642", "1.2", "0.1284", "0.043704", "", "", ""], ["TOTAL", "9000", "10.926", "36", "3.852", "1.31112", "", "", ""], ["", "", "", "", "", "", "", "", ""], ["Weekly Alerts & Actions", "", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", "", ""], ["Alert Level:", "MEDIUM", "", "", "", "", "", "", ""], ["Recommended Actions:", "Continue monitoring", "", "", "", "", "", "", ""]], "Mitigation Strategies": [["MITIGATION STRATEGIES", "", "", "", "", "", ""], ["Level", "Strategy", "Impact Reduction", "Effort", "Cost", "Timeline", "Priority"], ["Organization", "Switch to efficient models", "40-60%", "Medium", "Low", "1 month", "High"], ["Organization", "Choose renewable cloud regions", "30-50%", "Low", "", "Immediate", "High"], ["Organization", "Implement query limits", "20-30%", "Low", "", "1 week", "Medium"], ["Organization", "Schedule batch processing", "15-25%", "Medium", "", "2 weeks", "Medium"], ["Team", "Batch similar requests", "15-25%", "Low", "", "Immediate", "High"], ["Team", "Use caching for common queries", "10-20%", "Medium", "Low", "2 weeks", "Medium"], ["Team", "Optimize prompts", "10-15%", "Low", "", "1 week", "High"], ["Team", "Implement review workflow", "5-10%", "Medium", "Low", "2 weeks", "Low"], ["Individual", "Personal carbon budget", "5-10%", "Low", "", "Immediate", "Medium"], ["Individual", "Query during off-peak hours", "5-10%", "Low", "", "Immediate", "Low"], ["Individual", "Use simpler models for routine", "20-30%", "Low", "", "Immediate", "High"], ["Individual", "Prompt engineering training", "10-20%", "Medium", "Medium", "1 month", "Medium"]], "Documentation": [["GAIA FRAMEWORK DOCUMENTATION", "", "", ""], ["", "", "", ""], ["Quick Reference Guide", "", "", ""], ["", "", "", ""], ["How to Use This Tool:", "", "", "Formulas & Calculations:"], ["1. Go to 'AI Impact Assessment' sheet", "", "", "Environmental Score = (Energy/10 + Water*50 + Carbon*2)"], ["2. Select your AI model from dropdown or enter custom model", "", "", "Benefit Score = Efficiency*0.4 + Quality*0.3 + Strategic*0.3"], ["3. Define task parameters (type, complexity, volume)", "", "", "Query Impact = Base Impact \u00d7 Complexity Factor \u00d7 Length Factor"], ["4. Enter benefit estimates (time saved, quality improvement)", "", "", ""], ["5. Review results in Dashboard and Decision Matrix", "", "", "Decision Rules:"], ["6. Check Weekly Monitor for ongoing tracking", "", "", "If Environmental < 20 AND Benefit > 80 \u2192 A+"], ["7. Implement strategies from Mitigation sheet", "", "", "If Environmental < 35 AND Benefit > 70 \u2192 A"], ["", "", "", "If Environmental < 50 AND Benefit > 50 \u2192 B or C"], ["Key Metrics Explained:", "", "", "If Environmental > 70 \u2192 F (Prohibited)"], ["\u2022 Wh (Watt-hour): Energy unit, 1 Wh \u2248 LED bulb for 6 minutes", "", "", ""], ["\u2022 L (Liter): Water consumption, 1 L \u2248 4 cups of water", "", "", "Support & Resources:"], ["\u2022 gCO2e: Carbon emissions, 1 kg CO2 \u2248 driving 4 km", "", "", "Framework Version: 0.1"], ["\u2022 PUE: Power Usage Effectiveness (data center efficiency)", "", "", "Last Updated: October 2025"], ["\u2022 WUE: Water Usage Effectiveness (cooling efficiency)", "", "", "Support Email: gaia-support@gov.example"], ["\u2022 CIF: Carbon Intensity Factor (grid emissions)", "", "", "Documentation: /sustainability/gaia"], ["", "", "", "Training: learn.gov/gaia"], ["Efficiency Grades:", "", "", ""], ["\u2022 A+: Excellent - Strongly recommended", "", "", ""], ["\u2022 A: Very Good - Recommended", "", "", ""], ["\u2022 B: Good - Recommended with monitoring", "", "", ""], ["\u2022 C: Fair - Conditional approval required", "", "", ""], ["\u2022 D: Poor - Mitigation required", "", "", ""], ["\u2022 E: Very Poor - Not recommended", "", "", ""], ["\u2022 F: Unacceptable - Prohibited", "", "", ""]]};
+        
+        let currentSheet = 'Dashboard';
+        
+        // Initialize
+        function init() {
+            const select = document.getElementById('sheet-select');
+            const sheetNames = Object.keys(workbookData);
+            
+            // Populate dropdown
+            sheetNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+            
+            // Load first sheet
+            renderSheet(currentSheet);
+        }
+        
+        function changeSheet() {
+            const select = document.getElementById('sheet-select');
+            currentSheet = select.value;
+            renderSheet(currentSheet);
+        }
+        
+        function renderSheet(sheetName) {
+            const data = workbookData[sheetName];
+            const container = document.getElementById('table-container');
+            const loading = document.getElementById('loading');
+            const rowCount = document.getElementById('row-count');
+            const sheetNameEl = document.getElementById('current-sheet-name');
+            
+            // Update header
+            sheetNameEl.textContent = sheetName;
+            rowCount.textContent = data.length;
+            
+            // Show loading
+            loading.style.display = 'block';
+            container.innerHTML = '';
+            
+            setTimeout(() => {
+                // Create table
+                const table = document.createElement('table');
+                const tbody = document.createElement('tbody');
+                
+                data.forEach((row, rowIndex) => {
+                    const tr = document.createElement('tr');
+                    const isEmptyRow = row.every(cell => cell === '');
+                    
+                    if (isEmptyRow) {
+                        const td = document.createElement('td');
+                        td.colSpan = row.length;
+                        td.style.height = '10px';
+                        td.style.border = 'none';
+                        tr.appendChild(td);
+                    } else {
+                        row.forEach((cell, cellIndex) => {
+                            const td = document.createElement('td');
+                            td.textContent = cell;
+                            
+                            // Styling logic
+                            const cellStr = String(cell);
+                            const isMainHeader = cellStr.includes('DASHBOARD') || 
+                                                cellStr.includes('ASSESSMENT') ||
+                                                cellStr.includes('ENGINE') ||
+                                                cellStr.includes('MATRIX') ||
+                                                cellStr.includes('REFERENCE DATA') ||
+                                                cellStr.includes('MONITORING') ||
+                                                cellStr.includes('STRATEGIES') ||
+                                                cellStr.includes('DOCUMENTATION');
+                            
+                            const isSectionHeader = cellStr.includes('STEP') || 
+                                                  cellStr.includes('Summary') ||
+                                                  cellStr.includes('Statistics') ||
+                                                  cellStr.includes('Metrics') ||
+                                                  cellStr.includes('Breakdown') ||
+                                                  cellStr.includes('TOTALS') ||
+                                                  cellStr.includes('Parameters') ||
+                                                  cellStr.includes('Calculations') ||
+                                                  cellStr.includes('Quick Reference');
+                            
+                            const isLabel = cellIndex === 0 && cell !== '';
+                            
+                            if (isMainHeader) {
+                                td.className = 'main-header';
+                            } else if (isSectionHeader) {
+                                td.className = 'section-header';
+                            } else if (isLabel) {
+                                td.className = 'label-cell';
+                            }
+                            
+                            tr.appendChild(td);
+                        });
+                    }
+                    
+                    tbody.appendChild(tr);
+                });
+                
+                table.appendChild(tbody);
+                container.appendChild(table);
+                loading.style.display = 'none';
+            }, 100);
+        }
+        
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
