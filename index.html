@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GAIA Framework - Green AI Impact Assessment & Optimization Tool for measuring and reducing AI environmental impact">
+    <meta name="keywords" content="Green AI, AI sustainability, carbon footprint, environmental impact, AI assessment">
+    <meta name="author" content="GAIA Framework">
+    <title>GAIA Framework - Green AI Impact Assessment Tool</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        h1 { font-size: 2.5em; margin-bottom: 10px; }
+
+        .logo {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle { color: #666; font-size: 1.1em; margin-bottom: 15px; }
+
+        .stat-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin: 10px 10px 0 0;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        select option { background: white; color: #333; }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 20px;
+            font-size: 1em;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .search-box:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .btn-secondary:hover { background: #e5e7eb; }
+
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .sheet-header h2 { font-size: 2em; color: #333; }
+
+        .row-count { color: #10b981; font-weight: 600; }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+            border-radius: 12px;
+        }
+
+        .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        table { width: 100%; border-collapse: collapse; background: white; }
+
+        td {
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            font-size: 0.95em;
+        }
+
+        tr:hover td { background: #f9fafb; transition: background 0.2s ease; }
+
+        .main-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .label-cell { background: #f3f4f6; font-weight: 600; }
+
+        .section-header {
+            background: #ede9fe;
+            color: #7c3aed;
+            font-weight: 700;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1em;
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.9;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .glass { padding: 20px; }
+            .controls { flex-direction: column; }
+            .search-box { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="glass">
+            <h1><span class="logo">GAIA</span> <span style="color: #333;">Framework</span></h1>
+            <p class="subtitle">Green AI Impact Assessment & Optimization Framework</p>
+            <span class="stat-badge" id="sheet-count">📊 8 Sheets</span>
+            <span class="stat-badge" id="total-rows">📋 0 Total Rows</span>
+        </div>
+
+        <div class="glass">
+            <label for="sheet-select" style="font-weight: 600; font-size: 1.1em; color: #333;">📋 Select Sheet:</label>
+            <select id="sheet-select" onchange="changeSheet()"></select>
+        </div>
+
+        <div class="glass">
+            <div class="controls">
+                <input type="text" class="search-box" id="search-box" placeholder="🔍 Search current sheet..." onkeyup="performSearch()">
+                <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+                <button class="btn btn-primary" onclick="exportToCSV()">📥 Download CSV</button>
+            </div>
+
+            <div class="sheet-header">
+                <h2 id="current-sheet-name">Dashboard</h2>
+                <span class="row-count"><span id="row-count">0</span> rows</span>
+            </div>
+
+            <div class="no-results" id="no-results">
+                <p>🔍 No results found</p>
+                <p style="font-size: 0.9em; color: #999; margin-top: 10px;">Try different search terms</p>
+            </div>
+
+            <div class="table-container" id="table-container"></div>
+        </div>
+
+        <div class="footer">
+            🌱 Powered by GAIA Framework | Green AI for a Sustainable Future
+        </div>
+    </div>
+
+    <div class="success-message" id="success-message"></div>
+
+    <script>
+        const workbookData = {"sheets":[{"name":"Dashboard","data":[["GREEN AI IMPACT ASSESSMENT DASHBOARD","","","","","",""],["","","","","","",""],["Current Assessment Summary","","","","","","Model Efficiency Comparison"],["","","","","","",""],["Active Model:","o3","","Efficiency Grade:","F","",""],["Monthly Queries:",10000,"","Monthly Carbon (kg):",75.55,"",""],["Environmental Score:",100,"","Monthly Water (L):",760,"",""],["Benefit Score:",71,"","Monthly Energy (kWh):",214.14,"",""],["","","","","","",""],["","","","","","",""],["Quick Actions & Alerts","","","","","",""],["","","","","","",""],["Alert Level:","⚠️ HIGH","","","","",""],["Recommended Action:","Switch to efficient model immediately","","","","",""],["Potential Savings:","30-50% reduction achievable","","","","",""],["","","","","","",""],["","","","","","",""],["Monthly Usage Trends","","","","","",""]],"rows":18,"columns":7},{"name":"AI Impact Assessment","data":[["GREEN AI IMPACT ASSESSMENT","","","","","",""],["","","","","","",""],["STEP 1: MODEL SELECTION","","","","STEP 3: BENEFIT ASSESSMENT","",""],["","","","","","",""],["Select AI Model:","o3","","","Time Saved (hrs/month):","",200],["Custom Model Name:","","","","Quality Improvement (%):","",30],["","","","","Strategic Value (1-10):","",8],["STEP 2: TASK DEFINITION","","","","Error Reduction (%):","",25],["","","","","User Satisfaction (1-10):","",7],["Task Type:","Document Analysis","","","","",""],["Query Complexity:","Medium","","","","",""],["Expected Monthly Queries:",10000,"","","","",""],["Task Criticality:","High","","","","",""],["Average Prompt Length:",1000,"","","","",""],["","","","","","",""],["ASSESSMENT RESULTS","","","","","",""],["","","","","","",""],["Environmental Impact","","","","Benefit Assessment","",""],["Energy per Query (Wh):","",21.414,"","Efficiency Score:","",80],["Water per Query (L):","",0.076,"","Quality Score:","",55],["Carbon per Query (gCO2e):","",7.555,"","Strategic Score:","",75],["","","","","","",""],["Monthly Total Impact","","","","","",""],["Total Energy (kWh):","",214.14,"≈ 1285 hours of LED lighting","","",""],["Total Water (kL):","",0.76,"≈ 3040 cups of drinking water","","",""],["Total Carbon (kgCO2e):","",75.55,"≈ Driving 302 km in a car","","",""],["","","","","","",""],["","","","","","",""],["FINAL ASSESSMENT","","","","","",""],["","","","","","",""],["Environmental Impact Score:","",100,"","ECO-EFFICIENCY GRADE:","","F"],["Benefit Score:","",71,"","Recommendation:","","Prohibited"]],"rows":32,"columns":7},{"name":"Calculation Engine","data":[["CALCULATION ENGINE","","","","","","","",""],["","","","","","","","",""],["Input Parameters","","","Per-Query Calculations","","","","Benefit Calculations",""],["","","","","","","","",""],["Selected Model:","o3","",21.414,"Wh","","",80,"Efficiency"],["Monthly Queries:",10000,"",0.076,"L","","",55,"Quality"],["Query Complexity:","Medium","",7.555,"gCO2e","","",75,"Strategic"],["Prompt Length:",1000,"","","","","","",""],["","","","Monthly Totals","","","","",""],["","","",214.14,"≈ 1285 hours of LED lighting","","","",""],["","","",0.76,"≈ 3040 cups of drinking water","","","",""],["","","",75.55,"≈ Driving 302 km in a car","","","",""],["","","","","","","","",""],["","","","Final Scores","","","","Total Benefit",""],["","","",100,"Environmental Impact Score","","",71,"Benefit Score"]],"rows":15,"columns":9},{"name":"Decision Matrix","data":[["DECISION MATRIX","","","","",""],["","","","","",""],["Grading Criteria","","","","",""],["Grade","Env Impact","Benefit Score","Color","Recommendation","Action Required"],["A+","<20",">80","Dark Green","Strongly Recommended","Implement immediately"],["A","20-35","70-80","Green","Recommended","Proceed with standard monitoring"],["B","35-50","70-80","Light Green","Recommended with monitoring","Weekly impact review"],["C","35-50","50-70","Yellow","Conditional approval","Mitigation plan required"],["D","50-70","50-70","Orange","Requires mitigation","Immediate mitigation needed"],["Current Assessment:",100,71,"Red","F","Prohibited"],["F",">70","Any","Dark Red","Prohibited","Use not permitted"]],"rows":11,"columns":6},{"name":"Reference Data","data":[["MODEL REFERENCE DATA","","","","","","","","ENVIRONMENTAL MULTIPLIERS","","",""],["Model","Energy_Wh","Water_L","Carbon_gCO2e","Provider","Hardware","Model_Size","","","","",""],["GPT-4.1 nano",0.271,0.002,0.096,"OpenAI","H200","Small","","Provider","PUE","WUE","CIF"],["GPT-4o mini",1.418,0.005,0.5,"OpenAI","A100","Medium","","OpenAI/Azure",1.12,0.3,0.353],["GPT-4o",1.214,0.004,0.428,"OpenAI","H100","Large","","Anthropic/AWS",1.14,0.18,0.385],["GPT-4 Turbo",6.758,0.024,2.382,"OpenAI","A100","Large","","Meta/AWS",1.14,0.18,0.385],["o1-mini",1.598,0.006,0.564,"OpenAI","H100","Medium","","DeepSeek",1.27,1.2,0.6],["o1",12.1,0.043,4.269,"OpenAI","H100","Large","","","","",""],["o3-mini",2.447,0.009,0.863,"OpenAI","H100","Medium","","","","",""],["o3",21.414,0.076,7.555,"OpenAI","H100","Large","","","","",""],["Claude-3.5 Haiku",0.5,0.001,0.193,"Anthropic","H100","Small","","","","",""],["Claude-3.5 Sonnet",2,0.004,0.77,"Anthropic","H100","Medium","","","","",""],["Claude-3.7 Sonnet",2.781,0.006,1.072,"Anthropic","H200","Large","","","","",""],["LLaMA-3.1-8B",0.329,0.001,0.127,"Meta","H100","Small","","","","",""],["LLaMA-3.1-70B",3.558,0.007,1.37,"Meta","H100","Medium","","","","",""],["LLaMA-3.1-405B",6.911,0.014,2.661,"Meta","H100","Large","","","","",""],["DeepSeek-V3",9.129,0.155,5.477,"DeepSeek","H800","Large","","","","",""],["DeepSeek-R1",29,0.493,17.4,"DeepSeek","H800","Large","","","","",""],["Custom",2,0.005,0.7,"Custom","Unknown","Unknown","","","","",""]],"rows":19,"columns":12},{"name":"Weekly Monitor","data":[["WEEKLY MONITORING DASHBOARD","","","","","","","",""],["","","","","","","","",""],["Week of:","2025-10-28","","Department:","IT Services","","","",""],["","","","","","","","",""],["Weekly Metrics","","","","","","","Performance Indicators",""],["Day","Queries","Energy (kWh)","Water (L)","Carbon (kg)","Cost ($)","","",""],["Monday",1500,1.821,6,0.642,0.21852,"","Weekly Target:",10000],["Tuesday",1800,2.1852,7.2,0.7704,0.262224,"","Actual Usage:",9000],["Wednesday",2000,2.428,8,0.856,0.29136,"","Variance:",-0.1],["Thursday",1700,2.0638,6.8,0.7276,0.247656,"","",""],["Friday",1200,1.4568,4.8,0.5136,0.174816,"","Status:","👍 On Track"],["Saturday",500,0.607,2,0.214,0.07284,"","",""],["Sunday",300,0.3642,1.2,0.1284,0.043704,"","",""],["TOTAL",9000,10.926,36,3.852,1.31112,"","",""],["","","","","","","","",""],["Weekly Alerts & Actions","","","","","","","",""],["","","","","","","","",""],["Alert Level:","MEDIUM","","","","","","",""],["Recommended Actions:","Continue monitoring","","","","","","",""]],"rows":19,"columns":9},{"name":"Mitigation Strategies","data":[["MITIGATION STRATEGIES","","","","","",""],["Level","Strategy","Impact Reduction","Effort","Cost","Timeline","Priority"],["Organization","Switch to efficient models","40-60%","Medium","Low","1 month","High"],["Organization","Choose renewable cloud regions","30-50%","Low","None","Immediate","High"],["Organization","Implement query limits","20-30%","Low","None","1 week","Medium"],["Organization","Schedule batch processing","15-25%","Medium","None","2 weeks","Medium"],["Team","Batch similar requests","15-25%","Low","None","Immediate","High"],["Team","Use caching for common queries","10-20%","Medium","Low","2 weeks","Medium"],["Team","Optimize prompts","10-15%","Low","None","1 week","High"],["Team","Implement review workflow","5-10%","Medium","Low","2 weeks","Low"],["Individual","Personal carbon budget","5-10%","Low","None","Immediate","Medium"],["Individual","Query during off-peak hours","5-10%","Low","None","Immediate","Low"],["Individual","Use simpler models for routine","20-30%","Low","None","Immediate","High"],["Individual","Prompt engineering training","10-20%","Medium","Medium","1 month","Medium"]],"rows":14,"columns":7},{"name":"Documentation","data":[["GAIA FRAMEWORK DOCUMENTATION","","","","",""],["","","","","",""],["Quick Reference Guide","","","","",""],["","","","","",""],["How to Use This Tool:","","","Formulas & Calculations:","",""],["1. Go to 'AI Impact Assessment' sheet","","","Environmental Score = (Energy/10 + Water*50 + Carbon*2)","",""],["2. Select your AI model from dropdown or enter custom model","","","Benefit Score = Efficiency*0.4 + Quality*0.3 + Strategic*0.3","",""],["3. Define task parameters (type, complexity, volume)","","","Query Impact = Base Impact × Complexity Factor × Length Factor","",""],["4. Enter benefit estimates (time saved, quality improvement)","","","","",""],["5. Review results in Dashboard and Decision Matrix","","","Decision Rules:","",""],["6. Check Weekly Monitor for ongoing tracking","","","If Environmental < 20 AND Benefit > 80 → A+","",""],["7. Implement strategies from Mitigation sheet","","","If Environmental < 35 AND Benefit > 70 → A","",""],["","","","If Environmental < 50 AND Benefit > 50 → B or C","",""],["Key Metrics Explained:","","","If Environmental > 70 → F (Prohibited)","",""],["• Wh (Watt-hour): Energy unit, 1 Wh ≈ LED bulb for 6 minutes","","","","",""],["• L (Liter): Water consumption, 1 L ≈ 4 cups of water","","","Support & Resources:","",""],["• gCO2e: Carbon emissions, 1 kg CO2 ≈ driving 4 km","","","Framework Version: 1.0","",""],["• PUE: Power Usage Effectiveness (data center efficiency)","","","Last Updated: October 2025","",""],["• WUE: Water Usage Effectiveness (cooling efficiency)","","","Support Email: gaia-support@gov.example","",""],["• CIF: Carbon Intensity Factor (grid emissions)","","","Documentation: /sustainability/gaia","",""],["","","","Training: learn.gov/gaia","",""],["Efficiency Grades:","","","","",""],["• A+: Excellent - Strongly recommended","","","","",""],["• A: Very Good - Recommended","","","","",""],["• B: Good - Recommended with monitoring","","","","",""],["• C: Fair - Conditional approval required","","","","",""],["• D: Poor - Mitigation required","","","","",""],["• E: Very Poor - Not recommended","","","","",""],["• F: Unacceptable - Prohibited","","","","",""]],"rows":29,"columns":6}],"summary":{"total_sheets":8,"sheet_info":[{"name":"Dashboard","rows":18,"columns":7},{"name":"AI Impact Assessment","rows":32,"columns":7},{"name":"Calculation Engine","rows":15,"columns":9},{"name":"Decision Matrix","rows":11,"columns":6},{"name":"Reference Data","rows":19,"columns":12},{"name":"Weekly Monitor","rows":19,"columns":9},{"name":"Mitigation Strategies","rows":14,"columns":7},{"name":"Documentation","rows":29,"columns":6}]}};
+
+        let currentSheet = 'Dashboard';
+        let currentData = [];
+        let searchTimeout = null;
+
+        function init() {
+            const select = document.getElementById('sheet-select');
+            let totalRows = 0;
+
+            workbookData.sheets.forEach(sheet => {
+                const option = document.createElement('option');
+                option.value = sheet.name;
+                option.textContent = `${sheet.name} (${sheet.rows} rows)`;
+                select.appendChild(option);
+                totalRows += sheet.rows;
+            });
+
+            document.getElementById('sheet-count').textContent = `📊 ${workbookData.summary.total_sheets} Sheets`;
+            document.getElementById('total-rows').textContent = `📋 ${totalRows} Total Rows`;
+
+            renderSheet(currentSheet);
+        }
+
+        function changeSheet() {
+            const select = document.getElementById('sheet-select');
+            currentSheet = select.value;
+            clearSearch();
+            renderSheet(currentSheet);
+        }
+
+        function renderSheet(sheetName) {
+            const sheet = workbookData.sheets.find(s => s.name === sheetName);
+            if (!sheet) return;
+
+            currentData = sheet.data;
+            const container = document.getElementById('table-container');
+            const rowCount = document.getElementById('row-count');
+            const sheetNameEl = document.getElementById('current-sheet-name');
+
+            sheetNameEl.textContent = sheetName;
+            rowCount.textContent = sheet.rows;
+
+            renderTable(currentData, container);
+            document.getElementById('no-results').style.display = 'none';
+        }
+
+        function renderTable(data, container) {
+            container.innerHTML = '';
+            const table = document.createElement('table');
+            const tbody = document.createElement('tbody');
+
+            data.forEach((row, rowIndex) => {
+                const tr = document.createElement('tr');
+                const isEmptyRow = row.every(cell => cell === '');
+
+                if (isEmptyRow) {
+                    const td = document.createElement('td');
+                    td.colSpan = row.length;
+                    td.style.height = '10px';
+                    td.style.border = 'none';
+                    tr.appendChild(td);
+                } else {
+                    row.forEach((cell, cellIndex) => {
+                        const td = document.createElement('td');
+                        td.textContent = cell;
+
+                        const cellStr = String(cell).toUpperCase();
+                        const isMainHeader = cellStr.includes('DASHBOARD') || cellStr.includes('ASSESSMENT') ||
+                                           cellStr.includes('ENGINE') || cellStr.includes('MATRIX') ||
+                                           cellStr.includes('REFERENCE DATA') || cellStr.includes('MONITORING') ||
+                                           cellStr.includes('STRATEGIES') || cellStr.includes('DOCUMENTATION');
+
+                        const isSectionHeader = cellStr.includes('STEP') || cellStr.includes('SUMMARY') ||
+                                              cellStr.includes('STATISTICS') || cellStr.includes('METRICS') ||
+                                              cellStr.includes('BREAKDOWN') || cellStr.includes('TOTALS') ||
+                                              cellStr.includes('PARAMETERS') || cellStr.includes('CALCULATIONS') ||
+                                              cellStr.includes('QUICK REFERENCE');
+
+                        const isLabel = cellIndex === 0 && cell !== '';
+
+                        if (isMainHeader) td.className = 'main-header';
+                        else if (isSectionHeader) td.className = 'section-header';
+                        else if (isLabel) td.className = 'label-cell';
+
+                        tr.appendChild(td);
+                    });
+                }
+                tbody.appendChild(tr);
+            });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
+        }
+
+        function performSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = document.getElementById('search-box').value.toLowerCase().trim();
+
+                if (query === '') {
+                    renderSheet(currentSheet);
+                    return;
+                }
+
+                const filteredData = currentData.filter(row => {
+                    return row.some(cell => String(cell).toLowerCase().includes(query));
+                });
+
+                const container = document.getElementById('table-container');
+                const noResults = document.getElementById('no-results');
+
+                if (filteredData.length === 0) {
+                    container.innerHTML = '';
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
+                    renderTable(filteredData, container);
+                }
+
+                document.getElementById('row-count').textContent = filteredData.length;
+            }, 300);
+        }
+
+        function clearSearch() {
+            document.getElementById('search-box').value = '';
+            renderSheet(currentSheet);
+        }
+
+        function exportToCSV() {
+            const sheet = workbookData.sheets.find(s => s.name === currentSheet);
+            if (!sheet) return;
+
+            let csv = '';
+            sheet.data.forEach(row => {
+                const csvRow = row.map(cell => {
+                    const cellStr = String(cell);
+                    if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+                        return `"${cellStr.replace(/"/g, '""')}"`;
+                    }
+                    return cellStr;
+                });
+                csv += csvRow.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${currentSheet}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showMessage('✓ CSV file downloaded successfully!');
+        }
+
+        function showMessage(text) {
+            const msg = document.getElementById('success-message');
+            msg.textContent = text;
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+
+        init();
+    </script>
+</body>
+</html>

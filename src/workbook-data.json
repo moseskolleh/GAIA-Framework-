@@ -1,0 +1,1641 @@
+{
+  "sheets": [
+    {
+      "name": "Dashboard",
+      "data": [
+        [
+          "GREEN AI IMPACT ASSESSMENT DASHBOARD",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Current Assessment Summary",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Model Efficiency Comparison"
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Active Model:",
+          "o3",
+          "",
+          "Efficiency Grade:",
+          "F",
+          "",
+          ""
+        ],
+        [
+          "Monthly Queries:",
+          10000,
+          "",
+          "Monthly Carbon (kg):",
+          75.55,
+          "",
+          ""
+        ],
+        [
+          "Environmental Score:",
+          100,
+          "",
+          "Monthly Water (L):",
+          760,
+          "",
+          ""
+        ],
+        [
+          "Benefit Score:",
+          71,
+          "",
+          "Monthly Energy (kWh):",
+          214.14,
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Quick Actions & Alerts",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Alert Level:",
+          "⚠️ HIGH",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Recommended Action:",
+          "Switch to efficient model immediately",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Potential Savings:",
+          "30-50% reduction achievable",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Monthly Usage Trends",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "rows": 18,
+      "columns": 7
+    },
+    {
+      "name": "AI Impact Assessment",
+      "data": [
+        [
+          "GREEN AI IMPACT ASSESSMENT",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "STEP 1: MODEL SELECTION",
+          "",
+          "",
+          "",
+          "STEP 3: BENEFIT ASSESSMENT",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Select AI Model:",
+          "o3",
+          "",
+          "",
+          "Time Saved (hrs/month):",
+          "",
+          200.0
+        ],
+        [
+          "Custom Model Name:",
+          "",
+          "",
+          "",
+          "Quality Improvement (%):",
+          "",
+          30.0
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "Strategic Value (1-10):",
+          "",
+          8.0
+        ],
+        [
+          "STEP 2: TASK DEFINITION",
+          "",
+          "",
+          "",
+          "Error Reduction (%):",
+          "",
+          25.0
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "User Satisfaction (1-10):",
+          "",
+          7.0
+        ],
+        [
+          "Task Type:",
+          "Document Analysis",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Query Complexity:",
+          "Medium",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Expected Monthly Queries:",
+          10000.0,
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Task Criticality:",
+          "High",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Average Prompt Length:",
+          1000.0,
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "ASSESSMENT RESULTS",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Environmental Impact",
+          "",
+          "",
+          "",
+          "Benefit Assessment",
+          "",
+          ""
+        ],
+        [
+          "Energy per Query (Wh):",
+          "",
+          21.414,
+          "",
+          "Efficiency Score:",
+          "",
+          80
+        ],
+        [
+          "Water per Query (L):",
+          "",
+          0.076,
+          "",
+          "Quality Score:",
+          "",
+          55
+        ],
+        [
+          "Carbon per Query (gCO2e):",
+          "",
+          7.555,
+          "",
+          "Strategic Score:",
+          "",
+          75
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Monthly Total Impact",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Total Energy (kWh):",
+          "",
+          214.14,
+          "≈ 1285 hours of LED lighting",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Total Water (kL):",
+          "",
+          0.76,
+          "≈ 3040 cups of drinking water",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Total Carbon (kgCO2e):",
+          "",
+          75.55,
+          "≈ Driving 302 km in a car",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "FINAL ASSESSMENT",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Environmental Impact Score:",
+          "",
+          100,
+          "",
+          "ECO-EFFICIENCY GRADE:",
+          "",
+          "F"
+        ],
+        [
+          "Benefit Score:",
+          "",
+          71,
+          "",
+          "Recommendation:",
+          "",
+          "Prohibited"
+        ]
+      ],
+      "rows": 32,
+      "columns": 7
+    },
+    {
+      "name": "Calculation Engine",
+      "data": [
+        [
+          "CALCULATION ENGINE",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Input Parameters",
+          "",
+          "",
+          "Per-Query Calculations",
+          "",
+          "",
+          "",
+          "Benefit Calculations",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Selected Model:",
+          "o3",
+          "",
+          21.414,
+          "Wh",
+          "",
+          "",
+          80,
+          "Efficiency"
+        ],
+        [
+          "Monthly Queries:",
+          10000,
+          "",
+          0.076,
+          "L",
+          "",
+          "",
+          55,
+          "Quality"
+        ],
+        [
+          "Query Complexity:",
+          "Medium",
+          "",
+          7.555,
+          "gCO2e",
+          "",
+          "",
+          75,
+          "Strategic"
+        ],
+        [
+          "Prompt Length:",
+          1000,
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "Monthly Totals",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          214.14,
+          "≈ 1285 hours of LED lighting",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          0.76,
+          "≈ 3040 cups of drinking water",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          75.55,
+          "≈ Driving 302 km in a car",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "Final Scores",
+          "",
+          "",
+          "",
+          "Total Benefit",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          100,
+          "Environmental Impact Score",
+          "",
+          "",
+          71,
+          "Benefit Score"
+        ]
+      ],
+      "rows": 15,
+      "columns": 9
+    },
+    {
+      "name": "Decision Matrix",
+      "data": [
+        [
+          "DECISION MATRIX",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Grading Criteria",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Grade",
+          "Env Impact",
+          "Benefit Score",
+          "Color",
+          "Recommendation",
+          "Action Required"
+        ],
+        [
+          "A+",
+          "<20",
+          ">80",
+          "Dark Green",
+          "Strongly Recommended",
+          "Implement immediately"
+        ],
+        [
+          "A",
+          "20-35",
+          "70-80",
+          "Green",
+          "Recommended",
+          "Proceed with standard monitoring"
+        ],
+        [
+          "B",
+          "35-50",
+          "70-80",
+          "Light Green",
+          "Recommended with monitoring",
+          "Weekly impact review"
+        ],
+        [
+          "C",
+          "35-50",
+          "50-70",
+          "Yellow",
+          "Conditional approval",
+          "Mitigation plan required"
+        ],
+        [
+          "D",
+          "50-70",
+          "50-70",
+          "Orange",
+          "Requires mitigation",
+          "Immediate mitigation needed"
+        ],
+        [
+          "Current Assessment:",
+          100,
+          71,
+          "Red",
+          "F",
+          "Prohibited"
+        ],
+        [
+          "F",
+          ">70",
+          "Any",
+          "Dark Red",
+          "Prohibited",
+          "Use not permitted"
+        ]
+      ],
+      "rows": 11,
+      "columns": 6
+    },
+    {
+      "name": "Reference Data",
+      "data": [
+        [
+          "MODEL REFERENCE DATA",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "ENVIRONMENTAL MULTIPLIERS",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Model",
+          "Energy_Wh",
+          "Water_L",
+          "Carbon_gCO2e",
+          "Provider",
+          "Hardware",
+          "Model_Size",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "GPT-4.1 nano",
+          0.271,
+          0.002,
+          0.096,
+          "OpenAI",
+          "H200",
+          "Small",
+          "",
+          "Provider",
+          "PUE",
+          "WUE",
+          "CIF"
+        ],
+        [
+          "GPT-4o mini",
+          1.418,
+          0.005,
+          0.5,
+          "OpenAI",
+          "A100",
+          "Medium",
+          "",
+          "OpenAI/Azure",
+          1.12,
+          0.3,
+          0.353
+        ],
+        [
+          "GPT-4o",
+          1.214,
+          0.004,
+          0.428,
+          "OpenAI",
+          "H100",
+          "Large",
+          "",
+          "Anthropic/AWS",
+          1.14,
+          0.18,
+          0.385
+        ],
+        [
+          "GPT-4 Turbo",
+          6.758,
+          0.024,
+          2.382,
+          "OpenAI",
+          "A100",
+          "Large",
+          "",
+          "Meta/AWS",
+          1.14,
+          0.18,
+          0.385
+        ],
+        [
+          "o1-mini",
+          1.598,
+          0.006,
+          0.564,
+          "OpenAI",
+          "H100",
+          "Medium",
+          "",
+          "DeepSeek",
+          1.27,
+          1.2,
+          0.6
+        ],
+        [
+          "o1",
+          12.1,
+          0.043,
+          4.269,
+          "OpenAI",
+          "H100",
+          "Large",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "o3-mini",
+          2.447,
+          0.009,
+          0.863,
+          "OpenAI",
+          "H100",
+          "Medium",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "o3",
+          21.414,
+          0.076,
+          7.555,
+          "OpenAI",
+          "H100",
+          "Large",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Claude-3.5 Haiku",
+          0.5,
+          0.001,
+          0.193,
+          "Anthropic",
+          "H100",
+          "Small",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Claude-3.5 Sonnet",
+          2.0,
+          0.004,
+          0.77,
+          "Anthropic",
+          "H100",
+          "Medium",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Claude-3.7 Sonnet",
+          2.781,
+          0.006,
+          1.072,
+          "Anthropic",
+          "H200",
+          "Large",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "LLaMA-3.1-8B",
+          0.329,
+          0.001,
+          0.127,
+          "Meta",
+          "H100",
+          "Small",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "LLaMA-3.1-70B",
+          3.558,
+          0.007,
+          1.37,
+          "Meta",
+          "H100",
+          "Medium",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "LLaMA-3.1-405B",
+          6.911,
+          0.014,
+          2.661,
+          "Meta",
+          "H100",
+          "Large",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "DeepSeek-V3",
+          9.129,
+          0.155,
+          5.477,
+          "DeepSeek",
+          "H800",
+          "Large",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "DeepSeek-R1",
+          29.0,
+          0.493,
+          17.4,
+          "DeepSeek",
+          "H800",
+          "Large",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Custom",
+          2.0,
+          0.005,
+          0.7,
+          "Custom",
+          "Unknown",
+          "Unknown",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "rows": 19,
+      "columns": 12
+    },
+    {
+      "name": "Weekly Monitor",
+      "data": [
+        [
+          "WEEKLY MONITORING DASHBOARD",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Week of:",
+          "2025-10-28",
+          "",
+          "Department:",
+          "IT Services",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Weekly Metrics",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Performance Indicators",
+          ""
+        ],
+        [
+          "Day",
+          "Queries",
+          "Energy (kWh)",
+          "Water (L)",
+          "Carbon (kg)",
+          "Cost ($)",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Monday",
+          1500.0,
+          1.821,
+          6,
+          0.642,
+          0.21852,
+          "",
+          "Weekly Target:",
+          10000.0
+        ],
+        [
+          "Tuesday",
+          1800.0,
+          2.1852,
+          7.2,
+          0.7704,
+          0.262224,
+          "",
+          "Actual Usage:",
+          9000
+        ],
+        [
+          "Wednesday",
+          2000.0,
+          2.428,
+          8,
+          0.856,
+          0.29136,
+          "",
+          "Variance:",
+          -0.1
+        ],
+        [
+          "Thursday",
+          1700.0,
+          2.0638,
+          6.8,
+          0.7276,
+          0.247656,
+          "",
+          "",
+          ""
+        ],
+        [
+          "Friday",
+          1200.0,
+          1.4568,
+          4.8,
+          0.5136,
+          0.174816,
+          "",
+          "Status:",
+          "👍 On Track"
+        ],
+        [
+          "Saturday",
+          500.0,
+          0.607,
+          2,
+          0.214,
+          0.07284,
+          "",
+          "",
+          ""
+        ],
+        [
+          "Sunday",
+          300.0,
+          0.3642,
+          1.2,
+          0.1284,
+          0.043704,
+          "",
+          "",
+          ""
+        ],
+        [
+          "TOTAL",
+          9000,
+          10.926,
+          36,
+          3.852,
+          1.31112,
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Weekly Alerts & Actions",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Alert Level:",
+          "MEDIUM",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Recommended Actions:",
+          "Continue monitoring",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "rows": 19,
+      "columns": 9
+    },
+    {
+      "name": "Mitigation Strategies",
+      "data": [
+        [
+          "MITIGATION STRATEGIES",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Level",
+          "Strategy",
+          "Impact Reduction",
+          "Effort",
+          "Cost",
+          "Timeline",
+          "Priority"
+        ],
+        [
+          "Organization",
+          "Switch to efficient models",
+          "40-60%",
+          "Medium",
+          "Low",
+          "1 month",
+          "High"
+        ],
+        [
+          "Organization",
+          "Choose renewable cloud regions",
+          "30-50%",
+          "Low",
+          "None",
+          "Immediate",
+          "High"
+        ],
+        [
+          "Organization",
+          "Implement query limits",
+          "20-30%",
+          "Low",
+          "None",
+          "1 week",
+          "Medium"
+        ],
+        [
+          "Organization",
+          "Schedule batch processing",
+          "15-25%",
+          "Medium",
+          "None",
+          "2 weeks",
+          "Medium"
+        ],
+        [
+          "Team",
+          "Batch similar requests",
+          "15-25%",
+          "Low",
+          "None",
+          "Immediate",
+          "High"
+        ],
+        [
+          "Team",
+          "Use caching for common queries",
+          "10-20%",
+          "Medium",
+          "Low",
+          "2 weeks",
+          "Medium"
+        ],
+        [
+          "Team",
+          "Optimize prompts",
+          "10-15%",
+          "Low",
+          "None",
+          "1 week",
+          "High"
+        ],
+        [
+          "Team",
+          "Implement review workflow",
+          "5-10%",
+          "Medium",
+          "Low",
+          "2 weeks",
+          "Low"
+        ],
+        [
+          "Individual",
+          "Personal carbon budget",
+          "5-10%",
+          "Low",
+          "None",
+          "Immediate",
+          "Medium"
+        ],
+        [
+          "Individual",
+          "Query during off-peak hours",
+          "5-10%",
+          "Low",
+          "None",
+          "Immediate",
+          "Low"
+        ],
+        [
+          "Individual",
+          "Use simpler models for routine",
+          "20-30%",
+          "Low",
+          "None",
+          "Immediate",
+          "High"
+        ],
+        [
+          "Individual",
+          "Prompt engineering training",
+          "10-20%",
+          "Medium",
+          "Medium",
+          "1 month",
+          "Medium"
+        ]
+      ],
+      "rows": 14,
+      "columns": 7
+    },
+    {
+      "name": "Documentation",
+      "data": [
+        [
+          "GAIA FRAMEWORK DOCUMENTATION",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Quick Reference Guide",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "How to Use This Tool:",
+          "",
+          "",
+          "Formulas & Calculations:",
+          "",
+          ""
+        ],
+        [
+          "1. Go to 'AI Impact Assessment' sheet",
+          "",
+          "",
+          "Environmental Score = (Energy/10 + Water*50 + Carbon*2)",
+          "",
+          ""
+        ],
+        [
+          "2. Select your AI model from dropdown or enter custom model",
+          "",
+          "",
+          "Benefit Score = Efficiency*0.4 + Quality*0.3 + Strategic*0.3",
+          "",
+          ""
+        ],
+        [
+          "3. Define task parameters (type, complexity, volume)",
+          "",
+          "",
+          "Query Impact = Base Impact × Complexity Factor × Length Factor",
+          "",
+          ""
+        ],
+        [
+          "4. Enter benefit estimates (time saved, quality improvement)",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "5. Review results in Dashboard and Decision Matrix",
+          "",
+          "",
+          "Decision Rules:",
+          "",
+          ""
+        ],
+        [
+          "6. Check Weekly Monitor for ongoing tracking",
+          "",
+          "",
+          "If Environmental < 20 AND Benefit > 80 → A+",
+          "",
+          ""
+        ],
+        [
+          "7. Implement strategies from Mitigation sheet",
+          "",
+          "",
+          "If Environmental < 35 AND Benefit > 70 → A",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "If Environmental < 50 AND Benefit > 50 → B or C",
+          "",
+          ""
+        ],
+        [
+          "Key Metrics Explained:",
+          "",
+          "",
+          "If Environmental > 70 → F (Prohibited)",
+          "",
+          ""
+        ],
+        [
+          "• Wh (Watt-hour): Energy unit, 1 Wh ≈ LED bulb for 6 minutes",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "• L (Liter): Water consumption, 1 L ≈ 4 cups of water",
+          "",
+          "",
+          "Support & Resources:",
+          "",
+          ""
+        ],
+        [
+          "• gCO2e: Carbon emissions, 1 kg CO2 ≈ driving 4 km",
+          "",
+          "",
+          "Framework Version: 1.0",
+          "",
+          ""
+        ],
+        [
+          "• PUE: Power Usage Effectiveness (data center efficiency)",
+          "",
+          "",
+          "Last Updated: October 2025",
+          "",
+          ""
+        ],
+        [
+          "• WUE: Water Usage Effectiveness (cooling efficiency)",
+          "",
+          "",
+          "Support Email: gaia-support@gov.example",
+          "",
+          ""
+        ],
+        [
+          "• CIF: Carbon Intensity Factor (grid emissions)",
+          "",
+          "",
+          "Documentation: /sustainability/gaia",
+          "",
+          ""
+        ],
+        [
+          "",
+          "",
+          "",
+          "Training: learn.gov/gaia",
+          "",
+          ""
+        ],
+        [
+          "Efficiency Grades:",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "• A+: Excellent - Strongly recommended",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "• A: Very Good - Recommended",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "• B: Good - Recommended with monitoring",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "• C: Fair - Conditional approval required",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "• D: Poor - Mitigation required",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "• E: Very Poor - Not recommended",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "• F: Unacceptable - Prohibited",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "rows": 29,
+      "columns": 6
+    }
+  ],
+  "summary": {
+    "total_sheets": 8,
+    "sheet_info": [
+      {
+        "name": "Dashboard",
+        "rows": 18,
+        "columns": 7
+      },
+      {
+        "name": "AI Impact Assessment",
+        "rows": 32,
+        "columns": 7
+      },
+      {
+        "name": "Calculation Engine",
+        "rows": 15,
+        "columns": 9
+      },
+      {
+        "name": "Decision Matrix",
+        "rows": 11,
+        "columns": 6
+      },
+      {
+        "name": "Reference Data",
+        "rows": 19,
+        "columns": 12
+      },
+      {
+        "name": "Weekly Monitor",
+        "rows": 19,
+        "columns": 9
+      },
+      {
+        "name": "Mitigation Strategies",
+        "rows": 14,
+        "columns": 7
+      },
+      {
+        "name": "Documentation",
+        "rows": 29,
+        "columns": 6
+      }
+    ]
+  }
+}
