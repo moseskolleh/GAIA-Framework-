@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GAIA Framework - Green AI Impact Assessment & Optimization Tool for measuring and reducing AI environmental impact">
+    <meta name="keywords" content="Green AI, AI sustainability, carbon footprint, environmental impact, AI assessment">
+    <meta name="author" content="GAIA Framework">
+    <title>GAIA Framework - Green AI Impact Assessment Tool</title>
+    <style>
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --border-color: #e5e7eb;
+            --hover-bg: #f9fafb;
+            --label-bg: #f3f4f6;
+            --section-header-bg: #ede9fe;
+            --section-header-text: #7c3aed;
+            --success-color: #10b981;
+            --chart-bg: white;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --glass-bg: rgba(30, 30, 46, 0.95);
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-color: #374151;
+            --hover-bg: #374151;
+            --label-bg: #1f2937;
+            --section-header-bg: #312e81;
+            --section-header-text: #c4b5fd;
+            --success-color: #34d399;
+            --chart-bg: #1f2937;
+            --shadow-color: rgba(0, 0, 0, 0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px var(--shadow-color);
+            margin-bottom: 20px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-content { flex: 1; min-width: 300px; }
+
+        h1 { font-size: 2.5em; margin-bottom: 10px; color: var(--text-primary); }
+
+        .logo {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle { color: var(--text-secondary); font-size: 1.1em; margin-bottom: 15px; }
+
+        .theme-toggle {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            background: var(--glass-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .stat-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin: 10px 10px 0 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: var(--label-bg);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover { background: var(--hover-bg); }
+
+        .tab.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .view-content { display: none; }
+        .view-content.active { display: block; }
+
+        select {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--success-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 20px;
+            font-size: 1em;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            outline: none;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus { border-color: var(--success-color); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--label-bg);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover { background: var(--hover-bg); }
+
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .sheet-header h2 { font-size: 2em; color: var(--text-primary); }
+
+        .row-count { color: var(--success-color); font-weight: 600; }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+            border-radius: 12px;
+        }
+
+        .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
+        .table-container::-webkit-scrollbar-track { background: var(--label-bg); border-radius: 10px; }
+        .table-container::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; }
+
+        table { width: 100%; border-collapse: collapse; background: var(--chart-bg); }
+
+        td {
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            font-size: 0.95em;
+            color: var(--text-primary);
+            transition: background 0.2s ease;
+        }
+
+        tr:hover td { background: var(--hover-bg); }
+
+        .main-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .label-cell { background: var(--label-bg); font-weight: 600; }
+
+        .section-header {
+            background: var(--section-header-bg);
+            color: var(--section-header-text);
+            font-weight: 700;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            display: none;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card {
+            background: var(--chart-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px var(--shadow-color); }
+
+        .chart-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        canvas { max-width: 100%; height: auto !important; }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.9;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8em; }
+            .glass { padding: 20px; }
+            .controls { flex-direction: column; }
+            .search-box { width: 100%; }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="glass">
+            <div class="header-controls">
+                <div class="header-content">
+                    <h1><span class="logo">GAIA</span> <span>Framework</span></h1>
+                    <p class="subtitle">Green AI Impact Assessment & Optimization Framework</p>
+                    <span class="stat-badge" id="sheet-count">📊 8 Sheets</span>
+                    <span class="stat-badge" id="total-rows">📋 0 Total Rows</span>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Dark Mode</button>
+            </div>
+        </div>
+
+        <div class="glass">
+            <div class="tabs">
+                <button class="tab active" onclick="switchView('data')">📊 Data View</button>
+                <button class="tab" onclick="switchView('charts')">📈 Charts & Analytics</button>
+            </div>
+
+            <div id="data-view" class="view-content active">
+                <label for="sheet-select" style="font-weight: 600; font-size: 1.1em; color: var(--text-primary);">📋 Select Sheet:</label>
+                <select id="sheet-select" onchange="changeSheet()"></select>
+
+                <div style="margin-top: 20px;">
+                    <div class="controls">
+                        <input type="text" class="search-box" id="search-box" placeholder="🔍 Search current sheet..." onkeyup="performSearch()">
+                        <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+                        <button class="btn btn-primary" onclick="exportToCSV()">📥 Download CSV</button>
+                    </div>
+
+                    <div class="sheet-header">
+                        <h2 id="current-sheet-name">Dashboard</h2>
+                        <span class="row-count"><span id="row-count">0</span> rows</span>
+                    </div>
+
+                    <div class="no-results" id="no-results">
+                        <p>🔍 No results found</p>
+                        <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 10px;">Try different search terms</p>
+                    </div>
+
+                    <div class="table-container" id="table-container"></div>
+                </div>
+            </div>
+
+            <div id="charts-view" class="view-content">
+                <h2 style="color: var(--text-primary); margin-bottom: 20px;">📈 Environmental Impact Analytics</h2>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3>⚡ Top AI Models by Energy Consumption</h3>
+                        <canvas id="energyChart" width="400" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>💧 Top AI Models by Water Usage</h3>
+                        <canvas id="waterChart" width="400" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>🌍 Top AI Models by Carbon Emissions</h3>
+                        <canvas id="carbonChart" width="400" height="300"></canvas>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>📊 Weekly Usage Trends</h3>
+                        <canvas id="weeklyChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card" style="margin-top: 20px;">
+                    <h3>📈 Model Comparison - Environmental Impact</h3>
+                    <canvas id="comparisonChart" width="800" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            🌱 Powered by GAIA Framework | Green AI for a Sustainable Future
+        </div>
+    </div>
+
+    <div class="success-message" id="success-message"></div>
+
+    <script>
+        const workbookData = {"sheets":[{"name":"Dashboard","data":[["GREEN AI IMPACT ASSESSMENT DASHBOARD","","","","","",""],["","","","","","",""],["Current Assessment Summary","","","","","","Model Efficiency Comparison"],["","","","","","",""],["Active Model:","o3","","Efficiency Grade:","F","",""],["Monthly Queries:",10000,"","Monthly Carbon (kg):",75.55,"",""],["Environmental Score:",100,"","Monthly Water (L):",760,"",""],["Benefit Score:",71,"","Monthly Energy (kWh):",214.14,"",""],["","","","","","",""],["","","","","","",""],["Quick Actions & Alerts","","","","","",""],["","","","","","",""],["Alert Level:","⚠️ HIGH","","","","",""],["Recommended Action:","Switch to efficient model immediately","","","","",""],["Potential Savings:","30-50% reduction achievable","","","","",""],["","","","","","",""],["","","","","","",""],["Monthly Usage Trends","","","","","",""]],"rows":18,"columns":7},{"name":"AI Impact Assessment","data":[["GREEN AI IMPACT ASSESSMENT","","","","","",""],["","","","","","",""],["STEP 1: MODEL SELECTION","","","","STEP 3: BENEFIT ASSESSMENT","",""],["","","","","","",""],["Select AI Model:","o3","","","Time Saved (hrs/month):","",200],["Custom Model Name:","","","","Quality Improvement (%):","",30],["","","","","Strategic Value (1-10):","",8],["STEP 2: TASK DEFINITION","","","","Error Reduction (%):","",25],["","","","","User Satisfaction (1-10):","",7],["Task Type:","Document Analysis","","","","",""],["Query Complexity:","Medium","","","","",""],["Expected Monthly Queries:",10000,"","","","",""],["Task Criticality:","High","","","","",""],["Average Prompt Length:",1000,"","","","",""],["","","","","","",""],["ASSESSMENT RESULTS","","","","","",""],["","","","","","",""],["Environmental Impact","","","","Benefit Assessment","",""],["Energy per Query (Wh):","",21.414,"","Efficiency Score:","",80],["Water per Query (L):","",0.076,"","Quality Score:","",55],["Carbon per Query (gCO2e):","",7.555,"","Strategic Score:","",75],["","","","","","",""],["Monthly Total Impact","","","","","",""],["Total Energy (kWh):","",214.14,"≈ 1285 hours of LED lighting","","",""],["Total Water (kL):","",0.76,"≈ 3040 cups of drinking water","","",""],["Total Carbon (kgCO2e):","",75.55,"≈ Driving 302 km in a car","","",""],["","","","","","",""],["","","","","","",""],["FINAL ASSESSMENT","","","","","",""],["","","","","","",""],["Environmental Impact Score:","",100,"","ECO-EFFICIENCY GRADE:","","F"],["Benefit Score:","",71,"","Recommendation:","","Prohibited"]],"rows":32,"columns":7},{"name":"Calculation Engine","data":[["CALCULATION ENGINE","","","","","","","",""],["","","","","","","","",""],["Input Parameters","","","Per-Query Calculations","","","","Benefit Calculations",""],["","","","","","","","",""],["Selected Model:","o3","",21.414,"Wh","","",80,"Efficiency"],["Monthly Queries:",10000,"",0.076,"L","","",55,"Quality"],["Query Complexity:","Medium","",7.555,"gCO2e","","",75,"Strategic"],["Prompt Length:",1000,"","","","","","",""],["","","","Monthly Totals","","","","",""],["","","",214.14,"≈ 1285 hours of LED lighting","","","",""],["","","",0.76,"≈ 3040 cups of drinking water","","","",""],["","","",75.55,"≈ Driving 302 km in a car","","","",""],["","","","","","","","",""],["","","","Final Scores","","","","Total Benefit",""],["","","",100,"Environmental Impact Score","","",71,"Benefit Score"]],"rows":15,"columns":9},{"name":"Decision Matrix","data":[["DECISION MATRIX","","","","",""],["","","","","",""],["Grading Criteria","","","","",""],["Grade","Env Impact","Benefit Score","Color","Recommendation","Action Required"],["A+","<20",">80","Dark Green","Strongly Recommended","Implement immediately"],["A","20-35","70-80","Green","Recommended","Proceed with standard monitoring"],["B","35-50","70-80","Light Green","Recommended with monitoring","Weekly impact review"],["C","35-50","50-70","Yellow","Conditional approval","Mitigation plan required"],["D","50-70","50-70","Orange","Requires mitigation","Immediate mitigation needed"],["Current Assessment:",100,71,"Red","F","Prohibited"],["F",">70","Any","Dark Red","Prohibited","Use not permitted"]],"rows":11,"columns":6},{"name":"Reference Data","data":[["MODEL REFERENCE DATA","","","","","","","","ENVIRONMENTAL MULTIPLIERS","","",""],["Model","Energy_Wh","Water_L","Carbon_gCO2e","Provider","Hardware","Model_Size","","","","",""],["GPT-4.1 nano",0.271,0.002,0.096,"OpenAI","H200","Small","","Provider","PUE","WUE","CIF"],["GPT-4o mini",1.418,0.005,0.5,"OpenAI","A100","Medium","","OpenAI/Azure",1.12,0.3,0.353],["GPT-4o",1.214,0.004,0.428,"OpenAI","H100","Large","","Anthropic/AWS",1.14,0.18,0.385],["GPT-4 Turbo",6.758,0.024,2.382,"OpenAI","A100","Large","","Meta/AWS",1.14,0.18,0.385],["o1-mini",1.598,0.006,0.564,"OpenAI","H100","Medium","","DeepSeek",1.27,1.2,0.6],["o1",12.1,0.043,4.269,"OpenAI","H100","Large","","","","",""],["o3-mini",2.447,0.009,0.863,"OpenAI","H100","Medium","","","","",""],["o3",21.414,0.076,7.555,"OpenAI","H100","Large","","","","",""],["Claude-3.5 Haiku",0.5,0.001,0.193,"Anthropic","H100","Small","","","","",""],["Claude-3.5 Sonnet",2,0.004,0.77,"Anthropic","H100","Medium","","","","",""],["Claude-3.7 Sonnet",2.781,0.006,1.072,"Anthropic","H200","Large","","","","",""],["LLaMA-3.1-8B",0.329,0.001,0.127,"Meta","H100","Small","","","","",""],["LLaMA-3.1-70B",3.558,0.007,1.37,"Meta","H100","Medium","","","","",""],["LLaMA-3.1-405B",6.911,0.014,2.661,"Meta","H100","Large","","","","",""],["DeepSeek-V3",9.129,0.155,5.477,"DeepSeek","H800","Large","","","","",""],["DeepSeek-R1",29,0.493,17.4,"DeepSeek","H800","Large","","","","",""],["Custom",2,0.005,0.7,"Custom","Unknown","Unknown","","","","",""]],"rows":19,"columns":12},{"name":"Weekly Monitor","data":[["WEEKLY MONITORING DASHBOARD","","","","","","","",""],["","","","","","","","",""],["Week of:","2025-10-28","","Department:","IT Services","","","",""],["","","","","","","","",""],["Weekly Metrics","","","","","","","Performance Indicators",""],["Day","Queries","Energy (kWh)","Water (L)","Carbon (kg)","Cost ($)","","",""],["Monday",1500,1.821,6,0.642,0.21852,"","Weekly Target:",10000],["Tuesday",1800,2.1852,7.2,0.7704,0.262224,"","Actual Usage:",9000],["Wednesday",2000,2.428,8,0.856,0.29136,"","Variance:",-0.1],["Thursday",1700,2.0638,6.8,0.7276,0.247656,"","",""],["Friday",1200,1.4568,4.8,0.5136,0.174816,"","Status:","👍 On Track"],["Saturday",500,0.607,2,0.214,0.07284,"","",""],["Sunday",300,0.3642,1.2,0.1284,0.043704,"","",""],["TOTAL",9000,10.926,36,3.852,1.31112,"","",""],["","","","","","","","",""],["Weekly Alerts & Actions","","","","","","","",""],["","","","","","","","",""],["Alert Level:","MEDIUM","","","","","","",""],["Recommended Actions:","Continue monitoring","","","","","","",""]],"rows":19,"columns":9},{"name":"Mitigation Strategies","data":[["MITIGATION STRATEGIES","","","","","",""],["Level","Strategy","Impact Reduction","Effort","Cost","Timeline","Priority"],["Organization","Switch to efficient models","40-60%","Medium","Low","1 month","High"],["Organization","Choose renewable cloud regions","30-50%","Low","None","Immediate","High"],["Organization","Implement query limits","20-30%","Low","None","1 week","Medium"],["Organization","Schedule batch processing","15-25%","Medium","None","2 weeks","Medium"],["Team","Batch similar requests","15-25%","Low","None","Immediate","High"],["Team","Use caching for common queries","10-20%","Medium","Low","2 weeks","Medium"],["Team","Optimize prompts","10-15%","Low","None","1 week","High"],["Team","Implement review workflow","5-10%","Medium","Low","2 weeks","Low"],["Individual","Personal carbon budget","5-10%","Low","None","Immediate","Medium"],["Individual","Query during off-peak hours","5-10%","Low","None","Immediate","Low"],["Individual","Use simpler models for routine","20-30%","Low","None","Immediate","High"],["Individual","Prompt engineering training","10-20%","Medium","Medium","1 month","Medium"]],"rows":14,"columns":7},{"name":"Documentation","data":[["GAIA FRAMEWORK DOCUMENTATION","","","","",""],["","","","","",""],["Quick Reference Guide","","","","",""],["","","","","",""],["How to Use This Tool:","","","Formulas & Calculations:","",""],["1. Go to 'AI Impact Assessment' sheet","","","Environmental Score = (Energy/10 + Water*50 + Carbon*2)","",""],["2. Select your AI model from dropdown or enter custom model","","","Benefit Score = Efficiency*0.4 + Quality*0.3 + Strategic*0.3","",""],["3. Define task parameters (type, complexity, volume)","","","Query Impact = Base Impact × Complexity Factor × Length Factor","",""],["4. Enter benefit estimates (time saved, quality improvement)","","","","",""],["5. Review results in Dashboard and Decision Matrix","","","Decision Rules:","",""],["6. Check Weekly Monitor for ongoing tracking","","","If Environmental < 20 AND Benefit > 80 → A+","",""],["7. Implement strategies from Mitigation sheet","","","If Environmental < 35 AND Benefit > 70 → A","",""],["","","","If Environmental < 50 AND Benefit > 50 → B or C","",""],["Key Metrics Explained:","","","If Environmental > 70 → F (Prohibited)","",""],["• Wh (Watt-hour): Energy unit, 1 Wh ≈ LED bulb for 6 minutes","","","","",""],["• L (Liter): Water consumption, 1 L ≈ 4 cups of water","","","Support & Resources:","",""],["• gCO2e: Carbon emissions, 1 kg CO2 ≈ driving 4 km","","","Framework Version: 1.0","",""],["• PUE: Power Usage Effectiveness (data center efficiency)","","","Last Updated: October 2025","",""],["• WUE: Water Usage Effectiveness (cooling efficiency)","","","Support Email: gaia-support@gov.example","",""],["• CIF: Carbon Intensity Factor (grid emissions)","","","Documentation: /sustainability/gaia","",""],["","","","Training: learn.gov/gaia","",""],["Efficiency Grades:","","","","",""],["• A+: Excellent - Strongly recommended","","","","",""],["• A: Very Good - Recommended","","","","",""],["• B: Good - Recommended with monitoring","","","","",""],["• C: Fair - Conditional approval required","","","","",""],["• D: Poor - Mitigation required","","","","",""],["• E: Very Poor - Not recommended","","","","",""],["• F: Unacceptable - Prohibited","","","","",""]],"rows":29,"columns":6}],"summary":{"total_sheets":8,"sheet_info":[{"name":"Dashboard","rows":18,"columns":7},{"name":"AI Impact Assessment","rows":32,"columns":7},{"name":"Calculation Engine","rows":15,"columns":9},{"name":"Decision Matrix","rows":11,"columns":6},{"name":"Reference Data","rows":19,"columns":12},{"name":"Weekly Monitor","rows":19,"columns":9},{"name":"Mitigation Strategies","rows":14,"columns":7},{"name":"Documentation","rows":29,"columns":6}]}};
+
+        let currentSheet = 'Dashboard';
+        let currentData = [];
+        let searchTimeout = null;
+
+        // Theme management
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('theme-btn');
+
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                btn.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                btn.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+
+            // Redraw charts with new colors
+            if (document.getElementById('charts-view').classList.contains('active')) {
+                drawAllCharts();
+            }
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-btn').textContent = '☀️ Light Mode';
+            }
+        }
+
+        // View switching
+        function switchView(view) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
+
+            if (view === 'data') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('data-view').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('charts-view').classList.add('active');
+                drawAllCharts();
+            }
+        }
+
+        // Initialize
+        function init() {
+            loadTheme();
+
+            const select = document.getElementById('sheet-select');
+            let totalRows = 0;
+
+            workbookData.sheets.forEach(sheet => {
+                const option = document.createElement('option');
+                option.value = sheet.name;
+                option.textContent = `${sheet.name} (${sheet.rows} rows)`;
+                select.appendChild(option);
+                totalRows += sheet.rows;
+            });
+
+            document.getElementById('sheet-count').textContent = `📊 ${workbookData.summary.total_sheets} Sheets`;
+            document.getElementById('total-rows').textContent = `📋 ${totalRows} Total Rows`;
+
+            renderSheet(currentSheet);
+        }
+
+        function changeSheet() {
+            const select = document.getElementById('sheet-select');
+            currentSheet = select.value;
+            clearSearch();
+            renderSheet(currentSheet);
+        }
+
+        function renderSheet(sheetName) {
+            const sheet = workbookData.sheets.find(s => s.name === sheetName);
+            if (!sheet) return;
+
+            currentData = sheet.data;
+            const container = document.getElementById('table-container');
+            const rowCount = document.getElementById('row-count');
+            const sheetNameEl = document.getElementById('current-sheet-name');
+
+            sheetNameEl.textContent = sheetName;
+            rowCount.textContent = sheet.rows;
+
+            renderTable(currentData, container);
+            document.getElementById('no-results').style.display = 'none';
+        }
+
+        function renderTable(data, container) {
+            container.innerHTML = '';
+            const table = document.createElement('table');
+            const tbody = document.createElement('tbody');
+
+            data.forEach((row, rowIndex) => {
+                const tr = document.createElement('tr');
+                const isEmptyRow = row.every(cell => cell === '');
+
+                if (isEmptyRow) {
+                    const td = document.createElement('td');
+                    td.colSpan = row.length;
+                    td.style.height = '10px';
+                    td.style.border = 'none';
+                    tr.appendChild(td);
+                } else {
+                    row.forEach((cell, cellIndex) => {
+                        const td = document.createElement('td');
+                        td.textContent = cell;
+
+                        const cellStr = String(cell).toUpperCase();
+                        const isMainHeader = cellStr.includes('DASHBOARD') || cellStr.includes('ASSESSMENT') ||
+                                           cellStr.includes('ENGINE') || cellStr.includes('MATRIX') ||
+                                           cellStr.includes('REFERENCE DATA') || cellStr.includes('MONITORING') ||
+                                           cellStr.includes('STRATEGIES') || cellStr.includes('DOCUMENTATION');
+
+                        const isSectionHeader = cellStr.includes('STEP') || cellStr.includes('SUMMARY') ||
+                                              cellStr.includes('STATISTICS') || cellStr.includes('METRICS') ||
+                                              cellStr.includes('BREAKDOWN') || cellStr.includes('TOTALS') ||
+                                              cellStr.includes('PARAMETERS') || cellStr.includes('CALCULATIONS') ||
+                                              cellStr.includes('QUICK REFERENCE');
+
+                        const isLabel = cellIndex === 0 && cell !== '';
+
+                        if (isMainHeader) td.className = 'main-header';
+                        else if (isSectionHeader) td.className = 'section-header';
+                        else if (isLabel) td.className = 'label-cell';
+
+                        tr.appendChild(td);
+                    });
+                }
+                tbody.appendChild(tr);
+            });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
+        }
+
+        function performSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = document.getElementById('search-box').value.toLowerCase().trim();
+
+                if (query === '') {
+                    renderSheet(currentSheet);
+                    return;
+                }
+
+                const filteredData = currentData.filter(row => {
+                    return row.some(cell => String(cell).toLowerCase().includes(query));
+                });
+
+                const container = document.getElementById('table-container');
+                const noResults = document.getElementById('no-results');
+
+                if (filteredData.length === 0) {
+                    container.innerHTML = '';
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
+                    renderTable(filteredData, container);
+                }
+
+                document.getElementById('row-count').textContent = filteredData.length;
+            }, 300);
+        }
+
+        function clearSearch() {
+            document.getElementById('search-box').value = '';
+            renderSheet(currentSheet);
+        }
+
+        function exportToCSV() {
+            const sheet = workbookData.sheets.find(s => s.name === currentSheet);
+            if (!sheet) return;
+
+            let csv = '';
+            sheet.data.forEach(row => {
+                const csvRow = row.map(cell => {
+                    const cellStr = String(cell);
+                    if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+                        return `"${cellStr.replace(/"/g, '""')}"`;
+                    }
+                    return cellStr;
+                });
+                csv += csvRow.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${currentSheet}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showMessage('✓ CSV file downloaded successfully!');
+        }
+
+        function showMessage(text) {
+            const msg = document.getElementById('success-message');
+            msg.textContent = text;
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+
+        // Chart drawing functions
+        function drawAllCharts() {
+            drawEnergyChart();
+            drawWaterChart();
+            drawCarbonChart();
+            drawWeeklyChart();
+            drawComparisonChart();
+        }
+
+        function getChartColors() {
+            const isDark = document.body.classList.contains('dark-mode');
+            return {
+                text: isDark ? '#e5e7eb' : '#333',
+                grid: isDark ? '#374151' : '#e5e7eb',
+                bars: ['#10b981', '#059669', '#34d399', '#6ee7b7', '#a7f3d0']
+            };
+        }
+
+        function drawBarChart(canvasId, data, title, unit) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const colors = getChartColors();
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 60;
+            const barWidth = (width - padding * 2) / data.length - 10;
+            const maxValue = Math.max(...data.map(d => d.value));
+
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = colors.text;
+            ctx.font = '12px sans-serif';
+
+            // Draw bars
+            data.forEach((item, i) => {
+                const barHeight = ((item.value / maxValue) * (height - padding * 2));
+                const x = padding + (i * (barWidth + 10));
+                const y = height - padding - barHeight;
+
+                // Gradient bar
+                const gradient = ctx.createLinearGradient(x, y, x, height - padding);
+                gradient.addColorStop(0, colors.bars[i % colors.bars.length]);
+                gradient.addColorStop(1, colors.bars[(i + 1) % colors.bars.length]);
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, barWidth, barHeight);
+
+                // Value label
+                ctx.fillStyle = colors.text;
+                ctx.textAlign = 'center';
+                ctx.fillText(item.value.toFixed(2), x + barWidth / 2, y - 5);
+
+                // Name label
+                ctx.save();
+                ctx.translate(x + barWidth / 2, height - padding + 15);
+                ctx.rotate(-Math.PI / 4);
+                ctx.textAlign = 'right';
+                ctx.fillText(item.name, 0, 0);
+                ctx.restore();
+            });
+
+            // Y-axis
+            ctx.strokeStyle = colors.grid;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+        }
+
+        function drawEnergyChart() {
+            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
+            if (!refData) return;
+
+            const models = refData.data.slice(2, 10).map(row => ({
+                name: row[0],
+                value: parseFloat(row[1]) || 0
+            })).filter(m => m.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
+
+            drawBarChart('energyChart', models, 'Energy (Wh)', 'Wh');
+        }
+
+        function drawWaterChart() {
+            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
+            if (!refData) return;
+
+            const models = refData.data.slice(2, 10).map(row => ({
+                name: row[0],
+                value: parseFloat(row[2]) || 0
+            })).filter(m => m.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
+
+            drawBarChart('waterChart', models, 'Water (L)', 'L');
+        }
+
+        function drawCarbonChart() {
+            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
+            if (!refData) return;
+
+            const models = refData.data.slice(2, 10).map(row => ({
+                name: row[0],
+                value: parseFloat(row[3]) || 0
+            })).filter(m => m.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
+
+            drawBarChart('carbonChart', models, 'Carbon (gCO2e)', 'gCO2e');
+        }
+
+        function drawWeeklyChart() {
+            const weeklyData = workbookData.sheets.find(s => s.name === 'Weekly Monitor');
+            if (!weeklyData) return;
+
+            const canvas = document.getElementById('weeklyChart');
+            const ctx = canvas.getContext('2d');
+            const colors = getChartColors();
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 60;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const days = weeklyData.data.slice(6, 13);
+            const queries = days.map(d => parseFloat(d[1]) || 0);
+            const maxQueries = Math.max(...queries);
+
+            const stepX = (width - padding * 2) / (queries.length - 1);
+            const stepY = (height - padding * 2) / maxQueries;
+
+            // Draw line
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            queries.forEach((q, i) => {
+                const x = padding + (i * stepX);
+                const y = height - padding - (q * stepY);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Draw points
+            ctx.fillStyle = '#059669';
+            queries.forEach((q, i) => {
+                const x = padding + (i * stepX);
+                const y = height - padding - (q * stepY);
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Labels
+                ctx.fillStyle = colors.text;
+                ctx.textAlign = 'center';
+                ctx.font = '11px sans-serif';
+                ctx.fillText(days[i][0], x, height - padding + 20);
+                ctx.fillText(q, x, y - 10);
+            });
+
+            // Axes
+            ctx.strokeStyle = colors.grid;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+        }
+
+        function drawComparisonChart() {
+            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
+            if (!refData) return;
+
+            const canvas = document.getElementById('comparisonChart');
+            const ctx = canvas.getContext('2d');
+            const colors = getChartColors();
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 100;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const models = refData.data.slice(2, 8).map(row => ({
+                name: row[0],
+                energy: parseFloat(row[1]) || 0,
+                water: (parseFloat(row[2]) || 0) * 100, // Scale up for visibility
+                carbon: parseFloat(row[3]) || 0
+            }));
+
+            const categories = ['Energy (Wh)', 'Water (L×100)', 'Carbon (gCO2e)'];
+            const barGroupWidth = (width - padding * 2) / models.length;
+            const barWidth = barGroupWidth / 4;
+
+            models.forEach((model, i) => {
+                const x = padding + (i * barGroupWidth);
+                const maxHeight = height - padding * 2;
+
+                // Normalize values
+                const energyH = (model.energy / 30) * maxHeight;
+                const waterH = (model.water / 10) * maxHeight;
+                const carbonH = (model.carbon / 20) * maxHeight;
+
+                // Draw bars
+                [energyH, waterH, carbonH].forEach((h, j) => {
+                    const barX = x + (j * barWidth);
+                    const barY = height - padding - h;
+
+                    ctx.fillStyle = colors.bars[j];
+                    ctx.fillRect(barX, barY, barWidth - 2, h);
+                });
+
+                // Model name
+                ctx.fillStyle = colors.text;
+                ctx.save();
+                ctx.translate(x + barGroupWidth / 2, height - padding + 30);
+                ctx.rotate(-Math.PI / 6);
+                ctx.textAlign = 'right';
+                ctx.font = '10px sans-serif';
+                ctx.fillText(model.name, 0, 0);
+                ctx.restore();
+            });
+
+            // Legend
+            ctx.font = '12px sans-serif';
+            categories.forEach((cat, i) => {
+                const x = width - padding - 150;
+                const y = padding + (i * 25);
+                ctx.fillStyle = colors.bars[i];
+                ctx.fillRect(x, y - 10, 15, 15);
+                ctx.fillStyle = colors.text;
+                ctx.fillText(cat, x + 20, y + 2);
+            });
+
+            // Axes
+            ctx.strokeStyle = colors.grid;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+        }
+
+        init();
+    </script>
+</body>
+</html>

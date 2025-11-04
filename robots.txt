@@ -1,0 +1,12 @@
+# robots.txt for GAIA Framework
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://moseskolleh.github.io/GAIA-Framework-/sitemap.xml
+
+# Disallow specific files
+Disallow: /*.xlsx
+Disallow: /src/
+Disallow: /extract_excel_data.py
