@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>GAIA Framework - Clear Cache Instructions</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 36px;
+        }
+        .status {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+        .step {
+            background: #f3f4f6;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        code {
+            background: #1f2937;
+            color: #10b981;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+        .big-button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .big-button:hover {
+            transform: translateY(-2px);
+            background: #5568d3;
+        }
+        ul {
+            line-height: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>✅ GAIA Framework is Deployed!</h1>
+
+        <div class="status success">
+            ✓ Files are deployed correctly on GitHub Pages<br>
+            ✓ CSV file is accessible (HTTP 200 OK)<br>
+            ✓ Assets folder is properly organized
+        </div>
+
+        <div class="status warning">
+            ⚠️ You're seeing an error because of browser cache!
+        </div>
+
+        <h2>🔧 Fix: Clear Your Browser Cache</h2>
+
+        <div class="step">
+            <h3>Step 1: Force Refresh (Try This First)</h3>
+            <ul>
+                <li><strong>Windows/Linux:</strong> Press <code>Ctrl + Shift + R</code> or <code>Ctrl + F5</code></li>
+                <li><strong>Mac:</strong> Press <code>Cmd + Shift + R</code></li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Clear Browser Cache (If Step 1 Didn't Work)</h3>
+            <p><strong>Chrome/Edge:</strong></p>
+            <ol>
+                <li>Press <code>Ctrl + Shift + Delete</code> (or <code>Cmd + Shift + Delete</code> on Mac)</li>
+                <li>Select "Cached images and files"</li>
+                <li>Click "Clear data"</li>
+            </ol>
+
+            <p><strong>Firefox:</strong></p>
+            <ol>
+                <li>Press <code>Ctrl + Shift + Delete</code></li>
+                <li>Select "Cached Web Content"</li>
+                <li>Click "Clear Now"</li>
+            </ol>
+
+            <p><strong>Safari:</strong></p>
+            <ol>
+                <li>Go to Safari menu → Preferences → Advanced</li>
+                <li>Enable "Show Develop menu in menu bar"</li>
+                <li>Develop → Empty Caches</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Try Incognito/Private Mode</h3>
+            <ul>
+                <li><strong>Chrome/Edge:</strong> <code>Ctrl + Shift + N</code></li>
+                <li><strong>Firefox:</strong> <code>Ctrl + Shift + P</code></li>
+                <li><strong>Safari:</strong> <code>Cmd + Shift + N</code></li>
+            </ul>
+            <p>Then visit the site in the private window.</p>
+        </div>
+
+        <a href="https://moseskolleh.github.io/GAIA-Framework-/" class="big-button" target="_blank">
+            🚀 Open GAIA Framework
+        </a>
+
+        <h2>✅ What You Should See After Clearing Cache</h2>
+        <ul>
+            <li>✓ Model dropdown with 54 AI models (at top of dashboard)</li>
+            <li>✓ No error messages</li>
+            <li>✓ "Environmental Score" showing correct values</li>
+            <li>✓ Documentation section with 8 Excel sheets</li>
+            <li>✓ Efficiency scores changing based on model selected</li>
+        </ul>
+
+        <h2>🔍 Verify in Browser Console</h2>
+        <ol>
+            <li>Press <code>F12</code> to open Developer Tools</li>
+            <li>Click "Console" tab</li>
+            <li>Refresh the page</li>
+            <li>You should see:
+                <ul>
+                    <li><code>✓ Loaded 54 AI models</code></li>
+                    <li><code>✓ Loaded workbook data with 8 sheets</code></li>
+                    <li><code>✓ GAIA Dashboard initialized successfully</code></li>
+                </ul>
+            </li>
+        </ol>
+
+        <div class="status success" style="margin-top: 40px;">
+            <strong>Still having issues?</strong><br>
+            Wait 5 minutes for GitHub Pages CDN cache to fully clear, then try again.
+        </div>
+    </div>
+</body>
+</html>
