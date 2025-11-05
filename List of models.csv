@@ -1,0 +1,37 @@
+Name,Developer,Release date,Number of parameters,Context window,License,Access,Input,Output
+Qwen 2.5 / 2.5-Max,Alibaba Cloud,Sep 2024 / Jan 2025,Up to 72B,Up to 1M tokens,"Apache 2.0 (for <72B), Proprietary (for Max)","Alibaba Cloud API, Hugging Face","Multimodal (audio, image, text, video)",Text
+Claude 3.7 Sonnet,Anthropic,Feb 2025,Not publicly disclosed,"200,000 tokens",Proprietary,"Anthropic API, Amazon Bedrock, Google Vertex AI","Multimodal (image, text)",Text
+Claude 3.5 Haiku,Anthropic,Oct 2024,Not publicly disclosed,"200,000 tokens",Proprietary,"Anthropic API, Amazon Bedrock, Google Vertex AI","Multimodal (image, text)",Text
+Claude 3 Opus,Anthropic,Mar 2024,Not publicly disclosed,"200,000 tokens",Proprietary,"Anthropic API, Amazon Bedrock, Google Vertex AI","Multimodal (image, text)",Text
+Command R,Cohere,Mar 2024,35 Billion,"128,000 tokens","Proprietary (""Custom"")","Cohere API, Amazon Bedrock, Microsoft Azure",Text,Text
+Command R+,Cohere,Apr 2024,104 Billion,"128,000 tokens","Proprietary (""Custom"")","Cohere API, Amazon Bedrock, Microsoft Azure",Text,Text
+Command R7B,Cohere,Dec 2024,7 Billion,"128,000 tokens","Proprietary (""Custom"")",Cohere API,Text,Text
+DeepSeek-R1,DeepSeek,Jan 2025,671 Billion (Mixture-of-Experts),"128,000 tokens",MIT License (Open source),"DeepSeek API, Hugging Face",Text,Text
+Gemini 2.0 Flash,Google DeepMind,Dec 2024,Not publicly disclosed,1 million tokens,Proprietary,"Gemini API, Google Vertex AI","Multimodal (audio, image, text, video)",Text
+Gemini 2.0 Pro,Google DeepMind,Dec 2024,Not publicly disclosed,1-2 million tokens,Proprietary,"Gemini API, Google Vertex AI","Multimodal (audio, image, text, video)",Text
+Granite 3.2,IBM,Feb 2025,8 Billion,"128,000 tokens",Apache 2.0 (Open source),"IBM watsonx.ai, Hugging Face, Ollama",Text,Text
+Granite Vision,IBM,Feb 2025,2 Billion,"128,000 tokens",Apache 2.0 (Open source),"IBM watsonx.ai, Hugging Face","Multimodal (image, text)",Text
+Granite Code,IBM,May 2024,"3B, 8B, 20B, 34B","128,000 tokens",Apache 2.0 (Open source),"IBM watsonx.ai, Hugging Face",Text,Text
+Granite Guardian,IBM,May 2024,"2B, 3B, 5B, 8B",N/A (Guardrail model),Apache 2.0 (Open source),"IBM watsonx.ai, Hugging Face",Text,Text (Classification)
+Granite Embedding,IBM,May 2024,1B,N/A (Embedding model),Apache 2.0 (Open source),"IBM watsonx.ai, Hugging Face",Text,Vector Embeddings
+Llama 3.1,Meta,Jul 2024,"8B, 70B, 405B","128,000 tokens",Llama 3 Community License,"Download (Hugging Face, Meta)",Text,Text
+Llama 3.2,Meta,Sep 2024,"1B, 3B, 11B, 90B","128,000 tokens (8k for quantized)",Llama 3.2 Community License,"Download (Hugging Face, Meta)","Multimodal (image, text)",Text
+Llama 3.3,Meta,Dec 2024,70 Billion,"128,000 tokens",Llama 3.2 Community License,"Download (Hugging Face, Meta)",Text,Text
+Mistral Large 2,Mistral AI,Jul 2024,123 Billion,"128,000 tokens",Proprietary (Mistral Commercial License),"API (La Plateforme), Azure, Bedrock, watsonx.ai",Text,Text
+Mistral Small 3,Mistral AI,Jan 2025,24 Billion,"32,000 tokens",Apache 2.0 (Open source),"API (La Plateforme), Hugging Face",Text,Text
+Codestral,Mistral AI,May 2024,22 Billion,"256,000 tokens",Mistral Research License (Non-commercial),"API (La Plateforme), Hugging Face",Text (Code),Text (Code)
+Pixtral Large,Mistral AI,Jan 2025,124 Billion,"128,000 tokens",Proprietary (Mistral Commercial License),API (La Plateforme),"Multimodal (image, text)",Text
+GPT-4o,OpenAI,May 2024,Not publicly disclosed,"128,000 tokens",Proprietary,OpenAI API,"Multimodal (audio, image, text, video)","Multimodal (audio, image, text)"
+GPT-4o mini,OpenAI,Jul 2024,Not publicly disclosed,"128,000 tokens",Proprietary,OpenAI API,"Multimodal (image, text)",Text
+o1,OpenAI,Sep 2024 (Preview),Not publicly disclosed,"200,000 tokens",Proprietary,OpenAI API,"Multimodal (image, text)",Text
+o1-mini,OpenAI,Sep 2024,Not publicly disclosed,"128,000 tokens",Proprietary,OpenAI API,Text,Text
+o3-mini,OpenAI,Jan 2025,Not publicly disclosed,"128,000 tokens",Proprietary,OpenAI API,Text,Text
+Falcon 2 11B,TII,May 2024,11 Billion,"~8,000 tokens",TII Falcon 2.0 License (Open source),Hugging Face,Text,Text
+Falcon 3,TII,Dec 2024,"1B, 3B, 7B, 10B","Up to 32,000 tokens",TII Falcon 3.0 License (Open source),Hugging Face,Text,Text
+Falcon Mamba 7B,TII,Aug 2024,7 Billion,N/A (State Space Model),TII Falcon Mamba 1.0 License (Open source),Hugging Face,Text,Text
+Falcon 40B,TII,May 2023,40 Billion,"2,048 tokens",Apache 2.0 (Open source),Hugging Face,Text,Text
+Falcon 180B,TII,Sep 2023,180 Billion,"2,048 tokens",TII Falcon 180B License (Open source),Hugging Face,Text,Text
+Grok-1,xAI,Mar 2024,314 Billion (Mixture-of-Experts),"8,192 tokens",Apache 2.0 (Open source),Download (Weights),Text,Text
+Grok-1.5,xAI,Mar 2024,Not publicly disclosed,"128,000 tokens",Proprietary,𝕏 (X platform),Text,Text
+Grok-2,xAI,Aug 2024,Not publicly disclosed,"128,000 tokens",Proprietary,𝕏 (X platform),"Multimodal (image, text)",Text
+Grok 3,xAI,Feb 2025,2.7 Trillion (Mixture-of-Experts),"128,000 tokens",Proprietary,𝕏 (X platform),"Multimodal (image, text)",Text
