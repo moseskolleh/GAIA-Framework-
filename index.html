@@ -1080,7 +1080,7 @@
 
         async function loadWorkbookData() {
             try {
-                const response = await fetch('./src/workbook-data.json');
+                const response = await fetch('./assets/workbook-data.json');
                 workbookData = await response.json();
                 console.log(`✓ Loaded workbook data with ${workbookData.sheets.length} sheets`);
             } catch (error) {
