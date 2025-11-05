@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GAIA Calculation Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+        .test { margin: 20px 0; padding: 15px; background: #2a2a2a; border-left: 4px solid #4a9eff; }
+        .pass { border-left-color: #4ade80; }
+        .fail { border-left-color: #f87171; }
+        h2 { color: #4a9eff; }
+    </style>
+</head>
+<body>
+    <h1>🧪 GAIA Calculation Test</h1>
+    <p>Testing with GPT-4.1 nano (10,000 queries, 1,000 tokens each)</p>
+
+    <div id="results"></div>
+
+    <script>
+        // Exact functions from index.html
+        function calculateEnvironmentalScore(energy_kwh, water_l, carbon_kg) {
+            const water_kl = water_l / 1000;
+            return (energy_kwh / 10) + (water_kl * 50) + (carbon_kg * 2);
+        }
+
+        function calculateBenefitScore(efficiency, quality, strategic) {
+            return (efficiency * 0.4) + (quality * 0.3) + (strategic * 0.3);
+        }
+
+        function determineEfficiencyScore(envScore, benefitScore) {
+            if (envScore < 20 && benefitScore > 80) return 'A+';
+            if (envScore < 35 && benefitScore > 70) return 'A';
+            if (envScore < 50 && benefitScore > 50) return 'B';
+            if (envScore < 50 && benefitScore >= 40) return 'C';
+            if (envScore < 70 && benefitScore >= 50) return 'D';
+            if (envScore >= 70 || benefitScore < 40) return 'F';
+            return 'F';
+        }
+
+        // Test data for GPT-4.1 nano
+        const energy_kwh = 3.0;
+        const water_l = 6;
+        const carbon_kg = 1.1;
+        const efficiency = 80;
+        const quality = 55;
+        const strategic = 75;
+
+        // Run calculations
+        const envScore = calculateEnvironmentalScore(energy_kwh, water_l, carbon_kg);
+        const benefitScore = calculateBenefitScore(efficiency, quality, strategic);
+        const grade = determineEfficiencyScore(envScore, benefitScore);
+
+        // Display results
+        const results = document.getElementById('results');
+
+        const water_kl = water_l / 1000;
+        const energy_contrib = energy_kwh / 10;
+        const water_contrib = water_kl * 50;
+        const carbon_contrib = carbon_kg * 2;
+
+        results.innerHTML = `
+            <div class="test">
+                <h2>📊 Input Data</h2>
+                <p>Energy: ${energy_kwh} kWh</p>
+                <p>Water: ${water_l} L (= ${water_kl} kL)</p>
+                <p>Carbon: ${carbon_kg} kg CO2e</p>
+                <p>Benefit Scores: Efficiency=${efficiency}, Quality=${quality}, Strategic=${strategic}</p>
+            </div>
+
+            <div class="test">
+                <h2>🧮 Environmental Score Calculation</h2>
+                <p>Water in kL: ${water_l} ÷ 1000 = ${water_kl}</p>
+                <p>Energy contribution: ${energy_kwh} ÷ 10 = ${energy_contrib.toFixed(2)}</p>
+                <p>Water contribution: ${water_kl} × 50 = ${water_contrib.toFixed(2)}</p>
+                <p>Carbon contribution: ${carbon_kg} × 2 = ${carbon_contrib.toFixed(2)}</p>
+                <p><strong>Environmental Score = ${energy_contrib.toFixed(2)} + ${water_contrib.toFixed(2)} + ${carbon_contrib.toFixed(2)} = ${envScore.toFixed(2)}</strong></p>
+            </div>
+
+            <div class="test">
+                <h2>🎯 Benefit Score Calculation</h2>
+                <p>Benefit Score = (${efficiency} × 0.4) + (${quality} × 0.3) + (${strategic} × 0.3)</p>
+                <p>Benefit Score = ${(efficiency * 0.4).toFixed(1)} + ${(quality * 0.3).toFixed(1)} + ${(strategic * 0.3).toFixed(1)}</p>
+                <p><strong>Benefit Score = ${benefitScore.toFixed(2)}</strong></p>
+            </div>
+
+            <div class="test ${grade === 'A' ? 'pass' : 'fail'}">
+                <h2>🏆 Final Grade</h2>
+                <p>Environmental Score: ${envScore.toFixed(2)}</p>
+                <p>Benefit Score: ${benefitScore.toFixed(2)}</p>
+                <p>Checking grading logic:</p>
+                <p>- envScore < 35? ${envScore < 35 ? 'YES ✓' : 'NO ✗'}</p>
+                <p>- benefitScore > 70? ${benefitScore > 70 ? 'YES ✓' : 'NO ✗'}</p>
+                <p><strong style="font-size: 24px;">EFFICIENCY SCORE: ${grade} ${grade === 'A' ? '🟢' : grade === 'F' ? '🔴' : '🟡'}</strong></p>
+                <p><strong>${grade === 'A' ? '✅ CORRECT - Should be A' : '❌ WRONG - Should be A but got ' + grade}</strong></p>
+            </div>
+        `;
+    </script>
+</body>
+</html>
