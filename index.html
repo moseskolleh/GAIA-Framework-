@@ -755,10 +755,16 @@
                 </div>
 
                 <div class="model-info">
-                    <div class="info-item" style="grid-column: 1 / -1;">
+                    <div class="info-item" style="grid-column: 1 / 2;">
                         <span class="info-label">Select Model:</span>
                         <select class="model-select-dropdown" id="model-select-dropdown" onchange="selectModelFromDropdown()">
                             <option value="">-- Choose a model --</option>
+                        </select>
+                    </div>
+                    <div class="info-item" style="grid-column: 2 / -1;">
+                        <span class="info-label">Select Sheet:</span>
+                        <select class="model-select-dropdown" id="sheet-select-dropdown" onchange="selectSheetFromDropdown()">
+                            <option value="">-- Choose a sheet to view --</option>
                         </select>
                     </div>
                     <div class="info-item">
@@ -827,6 +833,18 @@
                         <button class="btn btn-primary" onclick="viewAlternatives()">View All Alternatives</button>
                         <button class="btn btn-secondary" onclick="compareModels()">Compare Models</button>
                         <button class="btn btn-secondary" onclick="applyRecommendation()">Apply This Model</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sheet Viewer Section -->
+            <div class="sheet-viewer-section" id="sheet-viewer-section" style="display: none;">
+                <div class="executive-summary">
+                    <div class="summary-header">
+                        <span id="sheet-viewer-title">📄 SHEET VIEWER</span>
+                    </div>
+                    <div class="collapsible-inner">
+                        <div class="doc-content" id="sheet-viewer-content"></div>
                     </div>
                 </div>
             </div>
@@ -1607,6 +1625,16 @@ Custom,Custom,2.000,0.005,0.700,Unknown,Unknown,Unknown,Unknown,0.00,0.00`;
         function initializeDocumentation() {
             if (!workbookData) return;
 
+            // Initialize main sheet selector at the top
+            const sheetSelect = document.getElementById('sheet-select-dropdown');
+            workbookData.sheets.forEach(sheet => {
+                const option = document.createElement('option');
+                option.value = sheet.name;
+                option.textContent = sheet.name;
+                sheetSelect.appendChild(option);
+            });
+
+            // Initialize old documentation dropdown (keep for backward compatibility)
             const select = document.getElementById('doc-sheet-select');
             workbookData.sheets.forEach(sheet => {
                 const option = document.createElement('option');
@@ -1614,6 +1642,66 @@ Custom,Custom,2.000,0.005,0.700,Unknown,Unknown,Unknown,Unknown,0.00,0.00`;
                 option.textContent = sheet.name;
                 select.appendChild(option);
             });
+        }
+
+        function selectSheetFromDropdown() {
+            const dropdown = document.getElementById('sheet-select-dropdown');
+            const sheetName = dropdown.value;
+
+            if (!sheetName) {
+                // Hide sheet viewer if no sheet selected
+                document.getElementById('sheet-viewer-section').style.display = 'none';
+                return;
+            }
+
+            displaySheet(sheetName);
+        }
+
+        function displaySheet(sheetName) {
+            if (!workbookData) return;
+
+            const sheet = workbookData.sheets.find(s => s.name === sheetName);
+            if (!sheet) return;
+
+            // Show the sheet viewer section
+            const viewerSection = document.getElementById('sheet-viewer-section');
+            viewerSection.style.display = 'block';
+
+            // Update title
+            document.getElementById('sheet-viewer-title').textContent = `📄 ${sheet.name.toUpperCase()}`;
+
+            // Render the sheet content
+            const content = document.getElementById('sheet-viewer-content');
+            let html = '<div class="table-container"><table>';
+
+            sheet.data.forEach((row, rowIndex) => {
+                html += '<tr>';
+                row.forEach((cell, cellIndex) => {
+                    const cellStr = String(cell).toUpperCase();
+                    let className = '';
+
+                    if (cellStr.includes('DASHBOARD') || cellStr.includes('ASSESSMENT') ||
+                        cellStr.includes('ENGINE') || cellStr.includes('MATRIX') ||
+                        cellStr.includes('REFERENCE DATA') || cellStr.includes('MONITORING') ||
+                        cellStr.includes('STRATEGIES') || cellStr.includes('DOCUMENTATION')) {
+                        className = 'main-header';
+                    } else if (cellStr.includes('STEP') || cellStr.includes('SUMMARY') ||
+                              cellStr.includes('METRICS') || cellStr.includes('TOTALS')) {
+                        className = 'section-header';
+                    } else if (cellIndex === 0 && cell !== '') {
+                        className = 'label-cell';
+                    }
+
+                    html += `<td class="${className}">${cell || ''}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</table></div>';
+            content.innerHTML = html;
+
+            // Scroll to the sheet viewer
+            viewerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function loadDocSheet() {
