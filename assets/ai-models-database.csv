@@ -1,0 +1,55 @@
+model_name,provider,energy_wh,water_l,carbon_gco2e,parameters_b,context_length,license,hardware,cost_per_1m_input,cost_per_1m_output
+GPT-4.1 nano,OpenAI,0.271,0.002,0.096,Unknown,128000,Proprietary,H200,0.15,0.60
+GPT-4o mini,OpenAI,1.418,0.005,0.500,Unknown,128000,Proprietary,A100,0.15,0.60
+GPT-4o,OpenAI,1.214,0.004,0.428,Unknown,128000,Proprietary,H100,5.00,15.00
+GPT-4 Turbo,OpenAI,6.758,0.024,2.382,Unknown,128000,Proprietary,A100,10.00,30.00
+o1-mini,OpenAI,1.598,0.006,0.564,Unknown,128000,Proprietary,H100,3.00,12.00
+o1,OpenAI,12.100,0.043,4.269,Unknown,200000,Proprietary,H100,15.00,60.00
+o3-mini,OpenAI,2.447,0.009,0.863,Unknown,128000,Proprietary,H100,3.50,14.00
+o3,OpenAI,21.414,0.076,7.555,Unknown,128000,Proprietary,H100,20.00,80.00
+Claude-3.5 Haiku,Anthropic,0.500,0.001,0.193,Unknown,200000,Proprietary,H100,0.25,1.25
+Claude-3.5 Sonnet,Anthropic,2.000,0.004,0.770,Unknown,200000,Proprietary,H100,3.00,15.00
+Claude-3.7 Sonnet,Anthropic,2.781,0.006,1.072,Unknown,200000,Proprietary,H200,3.00,15.00
+Claude-3 Opus,Anthropic,5.500,0.010,2.120,Unknown,200000,Proprietary,H100,15.00,75.00
+Llama-3.1-8B,Meta,0.329,0.001,0.127,8,128000,Open Source,H100,0.00,0.00
+Llama-3.1-70B,Meta,3.558,0.007,1.370,70,128000,Open Source,H100,0.00,0.00
+Llama-3.1-405B,Meta,6.911,0.014,2.661,405,128000,Open Source,H100,0.00,0.00
+Llama-3.2-1B,Meta,0.180,0.001,0.064,1,128000,Open Source,H100,0.00,0.00
+Llama-3.2-3B,Meta,0.250,0.001,0.088,3,128000,Open Source,H100,0.00,0.00
+Llama-3.2-11B,Meta,0.450,0.002,0.159,11,128000,Open Source,H100,0.00,0.00
+Llama-3.2-90B,Meta,4.200,0.008,1.485,90,128000,Open Source,H100,0.00,0.00
+Llama-3.3-70B,Meta,3.600,0.007,1.272,70,128000,Open Source,H100,0.00,0.00
+DeepSeek-V3,DeepSeek,9.129,0.155,5.477,671,128000,Open Source,H800,0.00,0.00
+DeepSeek-R1,DeepSeek,29.000,0.493,17.400,671,128000,Open Source,H800,0.00,0.00
+Qwen-2.5-7B,Alibaba Cloud,0.350,0.001,0.124,7,32000,Apache 2.0,A100,0.10,0.40
+Qwen-2.5-14B,Alibaba Cloud,0.700,0.002,0.247,14,32000,Apache 2.0,A100,0.20,0.80
+Qwen-2.5-32B,Alibaba Cloud,1.600,0.006,0.565,32,32000,Apache 2.0,H100,0.50,2.00
+Qwen-2.5-72B,Alibaba Cloud,3.600,0.013,1.271,72,32000,Apache 2.0,H100,1.00,4.00
+Qwen-2.5-Max,Alibaba Cloud,8.500,0.030,3.001,Unknown,1000000,Proprietary,H100,2.00,6.00
+Gemini-2.0-Flash,Google DeepMind,1.800,0.006,0.635,Unknown,1000000,Proprietary,TPU v5,0.10,0.30
+Gemini-2.0-Pro,Google DeepMind,5.500,0.019,1.942,Unknown,2000000,Proprietary,TPU v5,1.25,5.00
+Command-R,Cohere,1.750,0.006,0.618,35,128000,Proprietary,H100,0.50,1.50
+Command-R-Plus,Cohere,5.200,0.018,1.836,104,128000,Proprietary,H100,3.00,15.00
+Command-R7B,Cohere,0.350,0.001,0.124,7,128000,Proprietary,H100,0.15,0.60
+Mistral-Large-2,Mistral AI,6.150,0.022,2.171,123,128000,Proprietary,H100,3.00,9.00
+Mistral-Small-3,Mistral AI,1.200,0.004,0.424,24,32000,Apache 2.0,H100,0.20,0.60
+Codestral,Mistral AI,1.100,0.004,0.388,22,256000,Research License,H100,0.30,0.90
+Pixtral-Large,Mistral AI,6.200,0.022,2.189,124,128000,Proprietary,H100,3.00,9.00
+Granite-3.2-8B,IBM,0.400,0.001,0.141,8,128000,Apache 2.0,A100,0.00,0.00
+Granite-Vision-2B,IBM,0.200,0.001,0.071,2,128000,Apache 2.0,A100,0.00,0.00
+Granite-Code-8B,IBM,0.400,0.001,0.141,8,128000,Apache 2.0,A100,0.00,0.00
+Granite-Code-20B,IBM,1.000,0.004,0.353,20,128000,Apache 2.0,A100,0.00,0.00
+Granite-Code-34B,IBM,1.700,0.006,0.600,34,128000,Apache 2.0,A100,0.00,0.00
+Falcon-2-11B,TII,0.550,0.002,0.194,11,8000,Open Source,H100,0.00,0.00
+Falcon-3-1B,TII,0.150,0.001,0.053,1,32000,Open Source,H100,0.00,0.00
+Falcon-3-3B,TII,0.250,0.001,0.088,3,32000,Open Source,H100,0.00,0.00
+Falcon-3-7B,TII,0.350,0.001,0.124,7,32000,Open Source,H100,0.00,0.00
+Falcon-3-10B,TII,0.500,0.002,0.177,10,32000,Open Source,H100,0.00,0.00
+Falcon-Mamba-7B,TII,0.350,0.001,0.124,7,32000,Open Source,H100,0.00,0.00
+Falcon-40B,TII,2.000,0.007,0.706,40,2048,Apache 2.0,A100,0.00,0.00
+Falcon-180B,TII,9.000,0.032,3.177,180,2048,Open Source,A100,0.00,0.00
+Grok-1,xAI,15.700,0.055,5.542,314,8192,Apache 2.0,H100,0.00,0.00
+Grok-1.5,xAI,18.500,0.065,6.531,Unknown,128000,Proprietary,H100,5.00,15.00
+Grok-2,xAI,22.000,0.077,7.766,Unknown,128000,Proprietary,H100,8.00,24.00
+Grok-3,xAI,42.500,0.149,15.003,2700,128000,Proprietary,H100,10.00,30.00
+Custom,Custom,2.000,0.005,0.700,Unknown,Unknown,Unknown,Unknown,0.00,0.00
