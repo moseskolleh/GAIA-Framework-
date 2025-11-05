@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAIA Assets Loading Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4a9eff;
+        }
+        .success {
+            border-left-color: #4ade80;
+        }
+        .error {
+            border-left-color: #f87171;
+        }
+        h1 {
+            color: #4a9eff;
+        }
+        h2 {
+            color: #fbbf24;
+            margin-top: 0;
+        }
+        .status {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .details {
+            background: #1a1a1a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        pre {
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 GAIA Framework - Assets Loading Test</h1>
+    <p>Testing that all assets load correctly from the /assets folder...</p>
+
+    <div id="csv-test" class="test-section">
+        <h2>📄 CSV File Test</h2>
+        <p>Loading: <code>./assets/ai-models-database.csv</code></p>
+        <div id="csv-status">⏳ Testing...</div>
+    </div>
+
+    <div id="json-test" class="test-section">
+        <h2>📦 JSON File Test</h2>
+        <p>Loading: <code>./assets/workbook-data.json</code></p>
+        <div id="json-status">⏳ Testing...</div>
+    </div>
+
+    <div id="structure" class="test-section">
+        <h2>📁 Expected Folder Structure</h2>
+        <pre>
+GAIA-Framework-/
+├── index.html (main app)
+├── test-calculation.html
+├── test-assets-loading.html (this file)
+├── assets/
+│   ├── README.md
+│   ├── ai-models-database.csv (54 models)
+│   └── workbook-data.json (8 sheets)
+├── GAIA_Complete_Tool.xlsx
+└── Other documentation files
+        </pre>
+    </div>
+
+    <script>
+        async function testCSV() {
+            const section = document.getElementById('csv-test');
+            const status = document.getElementById('csv-status');
+
+            try {
+                const response = await fetch('./assets/ai-models-database.csv');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const text = await response.text();
+                const lines = text.trim().split('\n');
+                const modelCount = lines.length - 1; // Subtract header
+
+                section.classList.add('success');
+                status.innerHTML = `
+                    <div class="status">✅ SUCCESS</div>
+                    <div class="details">
+                        <p>✓ File loaded successfully</p>
+                        <p>✓ Found ${modelCount} models</p>
+                        <p>✓ File size: ${(text.length / 1024).toFixed(2)} KB</p>
+                        <p>✓ First line: ${lines[0].substring(0, 60)}...</p>
+                    </div>
+                `;
+            } catch (error) {
+                section.classList.add('error');
+                status.innerHTML = `
+                    <div class="status">❌ FAILED</div>
+                    <div class="details">
+                        <p>Error: ${error.message}</p>
+                        <p>Make sure you're opening this file from the project root!</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testJSON() {
+            const section = document.getElementById('json-test');
+            const status = document.getElementById('json-status');
+
+            try {
+                const response = await fetch('./assets/workbook-data.json');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+                const sheetCount = data.sheets ? data.sheets.length : 0;
+                const sheetNames = data.sheets ? data.sheets.map(s => s.name).join(', ') : 'None';
+
+                section.classList.add('success');
+                status.innerHTML = `
+                    <div class="status">✅ SUCCESS</div>
+                    <div class="details">
+                        <p>✓ File loaded successfully</p>
+                        <p>✓ Found ${sheetCount} Excel sheets</p>
+                        <p>✓ Sheets: ${sheetNames}</p>
+                        <p>✓ Total data size: ${JSON.stringify(data).length.toLocaleString()} characters</p>
+                    </div>
+                `;
+            } catch (error) {
+                section.classList.add('error');
+                status.innerHTML = `
+                    <div class="status">❌ FAILED</div>
+                    <div class="details">
+                        <p>Error: ${error.message}</p>
+                        <p>Make sure you're opening this file from the project root!</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Run tests
+        testCSV();
+        testJSON();
+    </script>
+</body>
+</html>
