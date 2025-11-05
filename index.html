@@ -1236,8 +1236,26 @@
 
             const { monthlyQueries, avgTokens, pue, wue, cif, benefitScores } = currentSettings;
             const monthly = calculateMonthlyImpact(currentModel, monthlyQueries, avgTokens, pue, wue, cif);
+
+            console.log('[GAIA] Monthly Impact:', {
+                energy_kwh: monthly.energy_kwh,
+                water_l: monthly.water_l,
+                carbon_kg: monthly.carbon_kg
+            });
+
             const envScore = calculateEnvironmentalScore(monthly.energy_kwh, monthly.water_l, monthly.carbon_kg);
             const benefitScore = calculateBenefitScore(benefitScores.efficiency, benefitScores.quality, benefitScores.strategic);
+
+            console.log('[GAIA] Score Calculation:', {
+                envScore: envScore.toFixed(2),
+                water_l: monthly.water_l,
+                water_kl: (monthly.water_l / 1000).toFixed(6),
+                water_contribution: ((monthly.water_l / 1000) * 50).toFixed(2),
+                energy_contribution: (monthly.energy_kwh / 10).toFixed(2),
+                carbon_contribution: (monthly.carbon_kg * 2).toFixed(2),
+                benefitScore: benefitScore.toFixed(2)
+            });
+
             const score = determineEfficiencyScore(envScore, benefitScore);
             const monthlyCost = calculateMonthlyCost(currentModel, monthlyQueries, avgTokens);
 
