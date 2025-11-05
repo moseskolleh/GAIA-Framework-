@@ -1301,7 +1301,7 @@ Custom,Custom,2.000,0.005,0.700,Unknown,Unknown,Unknown,Unknown,0.00,0.00`;
 
             console.log('[GAIA] Calculated - EnvScore:', envScore.toFixed(2), 'BenefitScore:', benefitScore.toFixed(2), 'EfficiencyScore:', score);
 
-            document.getElementById('current-model-name').textContent = currentModel.model_name;
+            // Model name is displayed in the dropdown, no separate element needed
             document.getElementById('current-score').textContent = `${score} ${getScoreEmoji(score)}`;
             document.getElementById('current-queries').textContent = monthlyQueries.toLocaleString();
             document.getElementById('current-status').textContent = envScore > 70 ? '🔴 Critical' : envScore > 35 ? '⚠️ High Impact' : '✓ Acceptable';
