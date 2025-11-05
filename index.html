@@ -746,7 +746,33 @@
             </button>
         </div>
 
-        <!-- Main Dashboard -->
+        <!-- View Selector (Always Visible) -->
+        <div class="dashboard-card" style="margin-bottom: 20px;">
+            <div class="executive-summary">
+                <div class="summary-header">
+                    <span>📋 VIEW SELECTOR</span>
+                </div>
+                <div style="padding: 15px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label style="font-weight: 600; margin-bottom: 8px; display: block;">Select View:</label>
+                            <select class="model-select-dropdown" id="sheet-select-dropdown" onchange="selectSheetFromDropdown()">
+                                <option value="Dashboard">📊 Interactive Dashboard</option>
+                            </select>
+                        </div>
+                        <div id="model-selector-container">
+                            <label style="font-weight: 600; margin-bottom: 8px; display: block;">Select Model:</label>
+                            <select class="model-select-dropdown" id="model-select-dropdown" onchange="selectModelFromDropdown()">
+                                <option value="">-- Choose a model --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard (Interactive) -->
+        <div id="main-dashboard-container">
         <div class="dashboard-card">
             <!-- Executive Summary -->
             <div class="executive-summary">
@@ -755,18 +781,6 @@
                 </div>
 
                 <div class="model-info">
-                    <div class="info-item" style="grid-column: 1 / 2;">
-                        <span class="info-label">Select Model:</span>
-                        <select class="model-select-dropdown" id="model-select-dropdown" onchange="selectModelFromDropdown()">
-                            <option value="">-- Choose a model --</option>
-                        </select>
-                    </div>
-                    <div class="info-item" style="grid-column: 2 / -1;">
-                        <span class="info-label">Select Sheet:</span>
-                        <select class="model-select-dropdown" id="sheet-select-dropdown" onchange="selectSheetFromDropdown()">
-                            <option value="">-- Choose a sheet to view --</option>
-                        </select>
-                    </div>
                     <div class="info-item">
                         <span class="info-label">Efficiency Score:</span>
                         <span class="info-value" id="current-score">F 🔴</span>
@@ -833,18 +847,6 @@
                         <button class="btn btn-primary" onclick="viewAlternatives()">View All Alternatives</button>
                         <button class="btn btn-secondary" onclick="compareModels()">Compare Models</button>
                         <button class="btn btn-secondary" onclick="applyRecommendation()">Apply This Model</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sheet Viewer Section -->
-            <div class="sheet-viewer-section" id="sheet-viewer-section" style="display: none;">
-                <div class="executive-summary">
-                    <div class="summary-header">
-                        <span id="sheet-viewer-title">📄 SHEET VIEWER</span>
-                    </div>
-                    <div class="collapsible-inner">
-                        <div class="doc-content" id="sheet-viewer-content"></div>
                     </div>
                 </div>
             </div>
@@ -1009,6 +1011,22 @@
                     </div>
                     <div class="collapsible-content">
                         <div class="collapsible-inner" id="calculation-details"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <!-- End Main Dashboard Container -->
+
+        <!-- Sheet Viewer Section (Excel Workbook Sheets) -->
+        <div class="sheet-viewer-section" id="sheet-viewer-section" style="display: none;">
+            <div class="dashboard-card">
+                <div class="executive-summary">
+                    <div class="summary-header">
+                        <span id="sheet-viewer-title">📄 SHEET VIEWER</span>
+                    </div>
+                    <div class="collapsible-inner">
+                        <div class="doc-content" id="sheet-viewer-content"></div>
                     </div>
                 </div>
             </div>
@@ -1625,12 +1643,25 @@ Custom,Custom,2.000,0.005,0.700,Unknown,Unknown,Unknown,Unknown,0.00,0.00`;
         function initializeDocumentation() {
             if (!workbookData) return;
 
-            // Initialize main sheet selector at the top
+            // Initialize main sheet selector at the top (Dashboard is already added in HTML)
             const sheetSelect = document.getElementById('sheet-select-dropdown');
             workbookData.sheets.forEach(sheet => {
                 const option = document.createElement('option');
                 option.value = sheet.name;
-                option.textContent = sheet.name;
+
+                // Add icons for better UX
+                const icons = {
+                    'Dashboard': '📊',
+                    'AI Impact Assessment': '🔍',
+                    'Calculation Engine': '🧮',
+                    'Decision Matrix': '⚖️',
+                    'Reference Data': '📚',
+                    'Weekly Monitor': '📈',
+                    'Mitigation Strategies': '🛡️',
+                    'Documentation': '📄'
+                };
+
+                option.textContent = `${icons[sheet.name] || '📋'} ${sheet.name}`;
                 sheetSelect.appendChild(option);
             });
 
@@ -1646,15 +1677,27 @@ Custom,Custom,2.000,0.005,0.700,Unknown,Unknown,Unknown,Unknown,0.00,0.00`;
 
         function selectSheetFromDropdown() {
             const dropdown = document.getElementById('sheet-select-dropdown');
-            const sheetName = dropdown.value;
+            const viewName = dropdown.value;
 
-            if (!sheetName) {
-                // Hide sheet viewer if no sheet selected
-                document.getElementById('sheet-viewer-section').style.display = 'none';
-                return;
+            const mainDashboard = document.getElementById('main-dashboard-container');
+            const sheetViewer = document.getElementById('sheet-viewer-section');
+            const modelSelector = document.getElementById('model-selector-container');
+
+            if (viewName === 'Dashboard') {
+                // Show interactive dashboard
+                mainDashboard.style.display = 'block';
+                sheetViewer.style.display = 'none';
+                modelSelector.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                console.log('✓ Switched to Interactive Dashboard view');
+            } else {
+                // Show selected sheet
+                mainDashboard.style.display = 'none';
+                sheetViewer.style.display = 'block';
+                modelSelector.style.display = 'none';
+                displaySheet(viewName);
+                console.log(`✓ Switched to ${viewName} sheet view`);
             }
-
-            displaySheet(sheetName);
         }
 
         function displaySheet(sheetName) {
@@ -1700,8 +1743,8 @@ Custom,Custom,2.000,0.005,0.700,Unknown,Unknown,Unknown,Unknown,0.00,0.00`;
             html += '</table></div>';
             content.innerHTML = html;
 
-            // Scroll to the sheet viewer
-            viewerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Scroll to top when switching views
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function loadDocSheet() {
