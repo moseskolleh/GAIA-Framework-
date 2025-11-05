@@ -1162,7 +1162,10 @@
         }
 
         function calculateEnvironmentalScore(energy_kwh, water_l, carbon_kg) {
-            return (energy_kwh / 10) + (water_l * 50) + (carbon_kg * 2);
+            // Formula expects water in kiloliters (kL), not liters
+            // Excel formula: (Energy_kWh/10) + (Water_kL*50) + (Carbon_kg*2)
+            const water_kl = water_l / 1000;
+            return (energy_kwh / 10) + (water_kl * 50) + (carbon_kg * 2);
         }
 
         function calculateBenefitScore(efficiency, quality, strategic) {
@@ -1170,12 +1173,24 @@
         }
 
         function determineEfficiencyScore(envScore, benefitScore) {
+            // A+: Excellent environmental score with high benefit
             if (envScore < 20 && benefitScore > 80) return 'A+';
-            if (envScore >= 20 && envScore < 35 && benefitScore > 70) return 'A';
-            if (envScore >= 35 && envScore < 50 && (benefitScore > 70 || benefitScore > 50)) return 'B';
-            if (envScore >= 35 && envScore < 50 && benefitScore >= 50 && benefitScore <= 70) return 'C';
-            if (envScore >= 50 && envScore < 70 && benefitScore >= 50) return 'D';
-            if (envScore >= 70 || (envScore > 50 && benefitScore < 50)) return 'F';
+
+            // A: Low environmental impact with good benefit
+            if (envScore < 35 && benefitScore > 70) return 'A';
+
+            // B: Moderate environmental impact with good benefit, or low impact with moderate benefit
+            if (envScore < 50 && benefitScore > 50) return 'B';
+
+            // C: Moderate environmental impact with moderate benefit
+            if (envScore < 50 && benefitScore >= 40) return 'C';
+
+            // D: High environmental impact but with good benefit, or moderate impact with low benefit
+            if (envScore < 70 && benefitScore >= 50) return 'D';
+
+            // F: High environmental impact, or poor benefit score
+            if (envScore >= 70 || benefitScore < 40) return 'F';
+
             return 'F';
         }
 
@@ -1431,7 +1446,8 @@
                     <p>Carbon_kg = monthly_energy_kwh × CIF</p>
                     <br>
                     <p><strong>Environmental Score:</strong></p>
-                    <p>Score = (Energy_kWh / 10) + (Water_L × 50) + (Carbon_kg × 2)</p>
+                    <p>Score = (Energy_kWh / 10) + (Water_kL × 50) + (Carbon_kg × 2)</p>
+                    <p style="font-size: 0.85em; color: var(--text-muted);">Note: Water must be in kiloliters (kL): 1 kL = 1000 L</p>
                 </div>
             `;
         }
