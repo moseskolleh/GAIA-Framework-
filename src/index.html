@@ -924,7 +924,7 @@
 
         async function loadModelsDatabase() {
             try {
-                const response = await fetch('../assets/ai-models-database.csv');
+                const response = await fetch('./assets/ai-models-database.csv');
                 const csvText = await response.text();
                 modelsDatabase = parseCSV(csvText);
                 console.log(`✓ Loaded ${modelsDatabase.length} AI models`);
