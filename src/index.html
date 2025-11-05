@@ -1211,7 +1211,12 @@
         // ============================================================================
 
         function updateDashboard() {
-            if (!currentModel) return;
+            if (!currentModel) {
+                console.warn('[GAIA] Cannot update dashboard - no model selected');
+                return;
+            }
+
+            console.log('[GAIA] Updating dashboard for model:', currentModel.model_name);
 
             const { monthlyQueries, avgTokens, pue, wue, cif, benefitScores } = currentSettings;
             const monthly = calculateMonthlyImpact(currentModel, monthlyQueries, avgTokens, pue, wue, cif);
@@ -1220,10 +1225,14 @@
             const score = determineEfficiencyScore(envScore, benefitScore);
             const monthlyCost = calculateMonthlyCost(currentModel, monthlyQueries, avgTokens);
 
+            console.log('[GAIA] Calculated - EnvScore:', envScore.toFixed(2), 'BenefitScore:', benefitScore.toFixed(2), 'EfficiencyScore:', score);
+
             document.getElementById('current-model-name').textContent = currentModel.model_name;
             document.getElementById('current-score').textContent = `${score} ${getScoreEmoji(score)}`;
             document.getElementById('current-queries').textContent = monthlyQueries.toLocaleString();
             document.getElementById('current-status').textContent = envScore > 70 ? '🔴 Critical' : envScore > 35 ? '⚠️ High Impact' : '✓ Acceptable';
+
+            console.log('[GAIA] Updated efficiency score display to:', score, getScoreEmoji(score));
 
             document.getElementById('monthly-energy').textContent = monthly.energy_kwh.toFixed(1);
             document.getElementById('monthly-water').textContent = Math.round(monthly.water_l);
@@ -1606,8 +1615,9 @@
                 groupedModels[provider].forEach(model => {
                     const envIndicator = getEnvironmentalIndicator(model);
                     const isSelected = currentModel && currentModel.model_name === model.model_name;
+                    const modelNameEscaped = model.model_name.replace(/'/g, "\\'");
                     html += `
-                        <div class="model-option ${isSelected ? 'selected' : ''}" onclick="selectModel('${model.model_name}')">
+                        <div class="model-option ${isSelected ? 'selected' : ''}" data-model-name="${model.model_name}" onclick="selectModel('${modelNameEscaped}')">
                             <div class="model-name">
                                 <span class="env-indicator ${envIndicator}"></span>
                                 ${model.model_name}
@@ -1653,8 +1663,9 @@
             filtered.forEach(model => {
                 const envIndicator = getEnvironmentalIndicator(model);
                 const isSelected = currentModel && currentModel.model_name === model.model_name;
+                const modelNameEscaped = model.model_name.replace(/'/g, "\\'");
                 dropdown.innerHTML += `
-                    <div class="model-option ${isSelected ? 'selected' : ''}" onclick="selectModel('${model.model_name}')">
+                    <div class="model-option ${isSelected ? 'selected' : ''}" data-model-name="${model.model_name}" onclick="selectModel('${modelNameEscaped}')">
                         <div class="model-name">
                             <span class="env-indicator ${envIndicator}"></span>
                             ${model.model_name}
@@ -1671,21 +1682,32 @@
         }
 
         function selectModel(modelName) {
+            console.log('[GAIA] Selecting model:', modelName);
             currentModel = modelsDatabase.find(m => m.model_name === modelName);
-            if (currentModel) {
-                const multipliers = providerMultipliers[currentModel.provider] || providerMultipliers.default;
-                currentSettings.pue = multipliers.pue;
-                currentSettings.wue = multipliers.wue;
-                currentSettings.cif = multipliers.cif;
 
-                updateDashboard();
-                renderModelDropdown();
-
-                const section = document.getElementById('model-selector-section');
-                if (section.classList.contains('expanded')) {
-                    toggleSection(section);
-                }
+            if (!currentModel) {
+                console.error('[GAIA] Model not found:', modelName);
+                return;
             }
+
+            console.log('[GAIA] Model found:', currentModel);
+
+            const multipliers = providerMultipliers[currentModel.provider] || providerMultipliers.default;
+            currentSettings.pue = multipliers.pue;
+            currentSettings.wue = multipliers.wue;
+            currentSettings.cif = multipliers.cif;
+
+            console.log('[GAIA] Updated settings with PUE:', currentSettings.pue, 'WUE:', currentSettings.wue, 'CIF:', currentSettings.cif);
+
+            updateDashboard();
+            renderModelDropdown();
+
+            const section = document.getElementById('model-selector-section');
+            if (section.classList.contains('expanded')) {
+                toggleSection(section);
+            }
+
+            console.log('[GAIA] Dashboard updated successfully');
         }
 
         // ============================================================================
