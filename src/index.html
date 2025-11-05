@@ -125,20 +125,27 @@
             flex-wrap: wrap;
         }
 
-        .change-model-btn {
-            padding: 10px 20px;
-            background: var(--info-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+        .model-select-dropdown {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1em;
             font-weight: 600;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .change-model-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        .model-select-dropdown:hover {
+            border-color: var(--info-color);
+        }
+
+        .model-select-dropdown:focus {
+            outline: none;
+            border-color: var(--info-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .model-info {
@@ -745,13 +752,14 @@
             <div class="executive-summary">
                 <div class="summary-header">
                     <span>📊 CURRENT ASSESSMENT</span>
-                    <button class="change-model-btn" onclick="showModelSelector()">Change Model</button>
                 </div>
 
                 <div class="model-info">
-                    <div class="info-item">
-                        <span class="info-label">Model:</span>
-                        <span class="info-value" id="current-model-name">o3</span>
+                    <div class="info-item" style="grid-column: 1 / -1;">
+                        <span class="info-label">Select Model:</span>
+                        <select class="model-select-dropdown" id="model-select-dropdown" onchange="selectModelFromDropdown()">
+                            <option value="">-- Choose a model --</option>
+                        </select>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Efficiency Score:</span>
@@ -825,31 +833,6 @@
 
             <!-- Collapsible Sections -->
             <div id="collapsible-sections">
-                <!-- Model Selector -->
-                <div class="collapsible-section" id="model-selector-section">
-                    <div class="collapsible-header" onclick="toggleSection('model-selector-section')">
-                        <h3>🤖 AI MODEL SELECTOR</h3>
-                        <span class="collapse-icon">▼</span>
-                    </div>
-                    <div class="collapsible-content">
-                        <div class="collapsible-inner">
-                            <div class="model-selector-container" style="border: none; padding: 0;">
-                                <div class="search-filter-row">
-                                    <input type="text" class="model-search" id="model-search" placeholder="🔍 Search models by name or provider..." oninput="filterModels()">
-                                    <select class="filter-select" id="provider-filter" onchange="filterModels()">
-                                        <option value="">All Providers</option>
-                                    </select>
-                                    <select class="filter-select" id="license-filter" onchange="filterModels()">
-                                        <option value="">All Licenses</option>
-                                        <option value="Open Source">Open Source</option>
-                                        <option value="Proprietary">Proprietary</option>
-                                    </select>
-                                </div>
-                                <div class="model-dropdown" id="model-dropdown"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Interactive Calculator -->
                 <div class="collapsible-section">
@@ -1236,8 +1219,26 @@
 
             const { monthlyQueries, avgTokens, pue, wue, cif, benefitScores } = currentSettings;
             const monthly = calculateMonthlyImpact(currentModel, monthlyQueries, avgTokens, pue, wue, cif);
+
+            console.log('[GAIA] Monthly Impact:', {
+                energy_kwh: monthly.energy_kwh,
+                water_l: monthly.water_l,
+                carbon_kg: monthly.carbon_kg
+            });
+
             const envScore = calculateEnvironmentalScore(monthly.energy_kwh, monthly.water_l, monthly.carbon_kg);
             const benefitScore = calculateBenefitScore(benefitScores.efficiency, benefitScores.quality, benefitScores.strategic);
+
+            console.log('[GAIA] Score Calculation:', {
+                envScore: envScore.toFixed(2),
+                water_l: monthly.water_l,
+                water_kl: (monthly.water_l / 1000).toFixed(6),
+                water_contribution: ((monthly.water_l / 1000) * 50).toFixed(2),
+                energy_contribution: (monthly.energy_kwh / 10).toFixed(2),
+                carbon_contribution: (monthly.carbon_kg * 2).toFixed(2),
+                benefitScore: benefitScore.toFixed(2)
+            });
+
             const score = determineEfficiencyScore(envScore, benefitScore);
             const monthlyCost = calculateMonthlyCost(currentModel, monthlyQueries, avgTokens);
 
@@ -1603,22 +1604,10 @@
         // ============================================================================
 
         function initializeModelSelector() {
-            const providers = [...new Set(modelsDatabase.map(m => m.provider))].sort();
-            const providerFilter = document.getElementById('provider-filter');
-            providers.forEach(provider => {
-                const option = document.createElement('option');
-                option.value = provider;
-                option.textContent = provider;
-                providerFilter.appendChild(option);
-            });
+            const dropdown = document.getElementById('model-select-dropdown');
 
-            renderModelDropdown();
-        }
-
-        function renderModelDropdown() {
-            const dropdown = document.getElementById('model-dropdown');
+            // Group models by provider
             const groupedModels = {};
-
             modelsDatabase.forEach(model => {
                 if (!groupedModels[model.provider]) {
                     groupedModels[model.provider] = [];
@@ -1626,33 +1615,34 @@
                 groupedModels[model.provider].push(model);
             });
 
-            let html = '';
+            // Add options grouped by provider
             Object.keys(groupedModels).sort().forEach(provider => {
-                html += `<div class="model-group">`;
-                html += `<div class="model-group-header">${provider} (${groupedModels[provider].length} models)</div>`;
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = `${provider} (${groupedModels[provider].length} models)`;
+
                 groupedModels[provider].forEach(model => {
-                    const envIndicator = getEnvironmentalIndicator(model);
-                    const isSelected = currentModel && currentModel.model_name === model.model_name;
-                    const modelNameEscaped = model.model_name.replace(/'/g, "\\'");
-                    html += `
-                        <div class="model-option ${isSelected ? 'selected' : ''}" data-model-name="${model.model_name}" onclick="selectModel('${modelNameEscaped}')">
-                            <div class="model-name">
-                                <span class="env-indicator ${envIndicator}"></span>
-                                ${model.model_name}
-                            </div>
-                            <div class="model-specs">
-                                <span>⚡ ${model.energy_wh.toFixed(2)} Wh</span>
-                                <span>💧 ${model.water_l.toFixed(3)} L</span>
-                                <span>🌍 ${model.carbon_gco2e.toFixed(2)} g CO2e</span>
-                                <span>💰 ${model.cost_per_1m_input > 0 ? '$' + model.cost_per_1m_input : 'Free'}</span>
-                            </div>
-                        </div>
-                    `;
+                    const option = document.createElement('option');
+                    option.value = model.model_name;
+                    option.textContent = `${model.model_name} - ⚡${model.energy_wh.toFixed(1)}Wh 💧${model.water_l.toFixed(3)}L`;
+                    optgroup.appendChild(option);
                 });
-                html += `</div>`;
+
+                dropdown.appendChild(optgroup);
             });
 
-            dropdown.innerHTML = html;
+            // Set initial selection
+            if (currentModel) {
+                dropdown.value = currentModel.model_name;
+            }
+        }
+
+        function selectModelFromDropdown() {
+            const dropdown = document.getElementById('model-select-dropdown');
+            const modelName = dropdown.value;
+
+            if (!modelName) return;
+
+            selectModel(modelName);
         }
 
         function getEnvironmentalIndicator(model) {
@@ -1660,43 +1650,6 @@
             if (score < 5) return 'good';
             if (score < 15) return 'medium';
             return 'poor';
-        }
-
-        function filterModels() {
-            const searchTerm = document.getElementById('model-search').value.toLowerCase();
-            const providerFilter = document.getElementById('provider-filter').value;
-            const licenseFilter = document.getElementById('license-filter').value;
-
-            const filtered = modelsDatabase.filter(model => {
-                const matchesSearch = model.model_name.toLowerCase().includes(searchTerm) ||
-                                     model.provider.toLowerCase().includes(searchTerm);
-                const matchesProvider = !providerFilter || model.provider === providerFilter;
-                const matchesLicense = !licenseFilter || model.license.includes(licenseFilter);
-                return matchesSearch && matchesProvider && matchesLicense;
-            });
-
-            const dropdown = document.getElementById('model-dropdown');
-            dropdown.innerHTML = '';
-
-            filtered.forEach(model => {
-                const envIndicator = getEnvironmentalIndicator(model);
-                const isSelected = currentModel && currentModel.model_name === model.model_name;
-                const modelNameEscaped = model.model_name.replace(/'/g, "\\'");
-                dropdown.innerHTML += `
-                    <div class="model-option ${isSelected ? 'selected' : ''}" data-model-name="${model.model_name}" onclick="selectModel('${modelNameEscaped}')">
-                        <div class="model-name">
-                            <span class="env-indicator ${envIndicator}"></span>
-                            ${model.model_name}
-                        </div>
-                        <div class="model-specs">
-                            <span>⚡ ${model.energy_wh.toFixed(2)} Wh</span>
-                            <span>💧 ${model.water_l.toFixed(3)} L</span>
-                            <span>🌍 ${model.carbon_gco2e.toFixed(2)} g CO2e</span>
-                            <span>${model.provider}</span>
-                        </div>
-                    </div>
-                `;
-            });
         }
 
         function selectModel(modelName) {
@@ -1717,13 +1670,13 @@
 
             console.log('[GAIA] Updated settings with PUE:', currentSettings.pue, 'WUE:', currentSettings.wue, 'CIF:', currentSettings.cif);
 
-            updateDashboard();
-            renderModelDropdown();
-
-            const section = document.getElementById('model-selector-section');
-            if (section.classList.contains('expanded')) {
-                toggleSection(section);
+            // Update dropdown selection
+            const dropdown = document.getElementById('model-select-dropdown');
+            if (dropdown) {
+                dropdown.value = modelName;
             }
+
+            updateDashboard();
 
             console.log('[GAIA] Dashboard updated successfully');
         }
@@ -1788,13 +1741,7 @@
             localStorage.setItem(section.id || 'section', section.classList.contains('expanded'));
         }
 
-        function showModelSelector() {
-            const section = document.getElementById('model-selector-section');
-            if (!section.classList.contains('expanded')) {
-                toggleSection(section);
-            }
-            document.getElementById('model-search').focus();
-        }
+        // Model selector is now a dropdown in the dashboard header
 
         function viewAlternatives() {
             const sections = document.querySelectorAll('.collapsible-section');
