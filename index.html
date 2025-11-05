@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GAIA Framework - Green AI Impact Assessment & Optimization Tool with Dynamic Model Selection">
-    <title>GAIA Executive Dashboard - Dynamic AI Impact Assessment</title>
+    <meta name="description" content="Green Artificial Intelligence Assessment (GAIA) Framework - Measure and reduce AI environmental impact">
+    <title>GAIA Framework - Green AI Impact Assessment</title>
     <style>
         :root {
             --bg-gradient-start: #667eea;
@@ -24,6 +24,20 @@
             --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
+        body.dark-mode {
+            --bg-gradient-start: #1a1f3a;
+            --bg-gradient-end: #2d1b3d;
+            --glass-bg: rgba(30, 30, 46, 0.95);
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-color: #374151;
+            --hover-bg: #374151;
+            --label-bg: #1f2937;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -32,6 +46,7 @@
             min-height: 100vh;
             padding: 20px;
             color: var(--text-primary);
+            transition: all 0.3s ease;
         }
 
         .container { max-width: 1400px; margin: 0 auto; }
@@ -44,10 +59,17 @@
             padding: 30px;
             box-shadow: var(--shadow-lg);
             margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
+        .header-content { flex: 1; }
+
         h1 {
-            font-size: 2.5em;
+            font-size: 2.2em;
             margin-bottom: 10px;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             -webkit-background-clip: text;
@@ -55,7 +77,24 @@
             background-clip: text;
         }
 
-        .subtitle { color: var(--text-secondary); font-size: 1.1em; margin-bottom: 15px; }
+        .subtitle { color: var(--text-secondary); font-size: 1em; margin-bottom: 15px; }
+
+        .theme-toggle-btn {
+            padding: 12px 24px;
+            background: var(--glass-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
 
         /* Dashboard Card */
         .dashboard-card {
@@ -73,7 +112,7 @@
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 25px;
-            background: linear-gradient(to right, #ffffff, #f9fafb);
+            background: var(--glass-bg);
         }
 
         .summary-header {
@@ -113,7 +152,7 @@
             display: flex;
             justify-content: space-between;
             padding: 10px;
-            background: white;
+            background: var(--label-bg);
             border-radius: 8px;
             border: 1px solid var(--border-color);
         }
@@ -130,7 +169,7 @@
         }
 
         .metric-card {
-            background: white;
+            background: var(--label-bg);
             padding: 20px;
             border-radius: 12px;
             box-shadow: var(--shadow);
@@ -173,7 +212,7 @@
             flex: 1;
             min-width: 250px;
             padding: 20px;
-            background: white;
+            background: var(--label-bg);
             border-radius: 12px;
             border-left: 6px solid var(--info-color);
         }
@@ -269,7 +308,7 @@
 
         /* Collapsible Sections */
         .collapsible-section {
-            background: white;
+            background: var(--label-bg);
             border-radius: 12px;
             margin-bottom: 15px;
             overflow: hidden;
@@ -317,11 +356,12 @@
 
         .collapsible-inner {
             padding: 25px;
+            background: var(--glass-bg);
         }
 
         /* Model Selector */
         .model-selector-container {
-            background: white;
+            background: var(--glass-bg);
             padding: 25px;
             border-radius: 12px;
             margin-bottom: 20px;
@@ -349,6 +389,8 @@
             border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1em;
+            background: var(--glass-bg);
+            color: var(--text-primary);
         }
 
         .model-search:focus {
@@ -361,7 +403,8 @@
             border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1em;
-            background: white;
+            background: var(--glass-bg);
+            color: var(--text-primary);
             cursor: pointer;
         }
 
@@ -370,7 +413,7 @@
             overflow-y: auto;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            background: white;
+            background: var(--glass-bg);
         }
 
         .model-group {
@@ -401,7 +444,7 @@
         }
 
         .model-option.selected {
-            background: #e6f7f0;
+            background: rgba(16, 185, 129, 0.1);
             border-left: 4px solid var(--success-color);
         }
 
@@ -509,6 +552,8 @@
             border: none;
             border-radius: 5px;
             font-size: 1em;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1f2937;
         }
 
         .calc-results {
@@ -553,12 +598,72 @@
         }
 
         .best-value {
-            background: #d1fae5;
+            background: rgba(16, 185, 129, 0.2);
             font-weight: 600;
         }
 
         .worst-value {
-            background: #fee2e2;
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Documentation Dropdown */
+        .doc-dropdown-container {
+            margin-bottom: 20px;
+        }
+
+        .doc-select {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .doc-content {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--glass-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .main-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .label-cell {
+            background: var(--label-bg);
+            font-weight: 600;
+        }
+
+        .section-header {
+            background: var(--hover-bg);
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         /* Equivalents */
@@ -570,7 +675,7 @@
         }
 
         .equivalent-card {
-            background: white;
+            background: var(--label-bg);
             padding: 20px;
             border-radius: 8px;
             border-left: 4px solid var(--info-color);
@@ -600,9 +705,9 @@
             margin: 15px 0;
         }
 
-        .message.success { background: #d1fae5; color: #065f46; }
-        .message.warning { background: #fef3c7; color: #92400e; }
-        .message.error { background: #fee2e2; color: #991b1b; }
+        .message.success { background: rgba(16, 185, 129, 0.2); color: var(--success-color); }
+        .message.warning { background: rgba(245, 158, 11, 0.2); color: var(--warning-color); }
+        .message.error { background: rgba(239, 68, 68, 0.2); color: var(--danger-color); }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -611,6 +716,7 @@
             .metrics-grid { grid-template-columns: 1fr; }
             .score-display { flex-direction: column; }
             .infrastructure-inputs { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; }
         }
 
         /* Scrollbar */
@@ -623,8 +729,13 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🎯 GAIA EXECUTIVE DASHBOARD</h1>
-            <p class="subtitle">Green AI Impact Assessment & Optimization Framework</p>
+            <div class="header-content">
+                <h1>🌱 Green Artificial Intelligence Assessment (GAIA) Framework</h1>
+                <p class="subtitle">Measure and reduce AI environmental impact through data-driven insights</p>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleDarkMode()" id="theme-toggle">
+                🌙 Dark Mode
+            </button>
         </div>
 
         <!-- Main Dashboard -->
@@ -642,8 +753,8 @@
                         <span class="info-value" id="current-model-name">o3</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Grade:</span>
-                        <span class="info-value" id="current-grade">F 🔴</span>
+                        <span class="info-label">Efficiency Score:</span>
+                        <span class="info-value" id="current-score">F 🔴</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Monthly Queries:</span>
@@ -701,7 +812,7 @@
                         <li>Save 95% water (720 L/month)</li>
                         <li>Save 90% carbon (68 kg CO2e/month)</li>
                         <li>Save $125/month in costs</li>
-                        <li>Improve grade from F to A 🟢</li>
+                        <li>Improve efficiency score from F to A 🟢</li>
                     </ul>
                     <div class="action-buttons">
                         <button class="btn btn-primary" onclick="viewAlternatives()">View All Alternatives</button>
@@ -805,8 +916,8 @@
                                         <strong id="calc-env-score">100</strong>
                                     </div>
                                     <div class="calc-result-item">
-                                        <span>Grade:</span>
-                                        <strong id="calc-grade">F 🔴</strong>
+                                        <span>Efficiency Score:</span>
+                                        <strong id="calc-score">F 🔴</strong>
                                     </div>
                                 </div>
 
@@ -869,6 +980,25 @@
                     </div>
                 </div>
 
+                <!-- Documentation -->
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this.parentElement)">
+                        <h3>📚 EXCEL WORKBOOK DOCUMENTATION</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-inner">
+                            <div class="doc-dropdown-container">
+                                <label for="doc-sheet-select" style="font-weight: 600; margin-bottom: 10px; display: block;">Select Excel Sheet:</label>
+                                <select class="doc-select" id="doc-sheet-select" onchange="loadDocSheet()">
+                                    <option value="">-- Choose a sheet --</option>
+                                </select>
+                            </div>
+                            <div class="doc-content" id="doc-content" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Technical Details -->
                 <div class="collapsible-section">
                     <div class="collapsible-header" onclick="toggleSection(this.parentElement)">
@@ -884,7 +1014,7 @@
 
         <!-- Footer -->
         <div style="text-align: center; color: white; margin-top: 30px; opacity: 0.9;">
-            🌱 Powered by GAIA Framework | Green AI for a Sustainable Future
+            🌱 Green Artificial Intelligence Assessment (GAIA) Framework | Sustainable AI for a Better Future
         </div>
     </div>
 
@@ -894,6 +1024,7 @@
         // ============================================================================
 
         let modelsDatabase = [];
+        let workbookData = null;
         let currentModel = null;
         let currentSettings = {
             monthlyQueries: 10000,
@@ -919,6 +1050,33 @@
         };
 
         // ============================================================================
+        // DARK MODE
+        // ============================================================================
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const btn = document.getElementById('theme-toggle');
+
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                btn.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                btn.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-toggle').textContent = '☀️ Light Mode';
+            }
+        }
+
+        // ============================================================================
         // CSV LOADING & PARSING
         // ============================================================================
 
@@ -928,10 +1086,21 @@
                 const csvText = await response.text();
                 modelsDatabase = parseCSV(csvText);
                 console.log(`✓ Loaded ${modelsDatabase.length} AI models`);
+                await loadWorkbookData();
                 initializeApp();
             } catch (error) {
                 console.error('Error loading models database:', error);
-                document.body.innerHTML = '<div style="padding: 50px; text-align: center;"><h2>Error loading models database</h2><p>Please ensure assets/ai-models-database.csv exists</p></div>';
+                document.body.innerHTML = '<div style="padding: 50px; text-align: center; color: white;"><h2>Error loading models database</h2><p>Please ensure assets/ai-models-database.csv exists</p></div>';
+            }
+        }
+
+        async function loadWorkbookData() {
+            try {
+                const response = await fetch('./src/workbook-data.json');
+                workbookData = await response.json();
+                console.log(`✓ Loaded workbook data with ${workbookData.sheets.length} sheets`);
+            } catch (error) {
+                console.error('Error loading workbook data:', error);
             }
         }
 
@@ -965,7 +1134,6 @@
         // ============================================================================
 
         function calculateQueryImpact(model, queryTokens) {
-            // Per-query calculations: base_value * (tokens / 1,000,000)
             return {
                 energy_wh: model.energy_wh * (queryTokens / 1000000),
                 water_l: model.water_l * (queryTokens / 1000000),
@@ -976,7 +1144,6 @@
         function calculateMonthlyImpact(model, monthlyQueries, avgQueryTokens, pue, wue, cif) {
             const perQuery = calculateQueryImpact(model, avgQueryTokens);
 
-            // Monthly totals with infrastructure multipliers
             const energy_wh = perQuery.energy_wh * monthlyQueries * pue;
             const energy_kwh = energy_wh / 1000;
             const water_l = perQuery.water_l * monthlyQueries * wue;
@@ -993,17 +1160,14 @@
         }
 
         function calculateEnvironmentalScore(energy_kwh, water_l, carbon_kg) {
-            // Environmental Score = (Energy_kWh / 10) + (Water_L * 50) + (Carbon_kg * 2)
             return (energy_kwh / 10) + (water_l * 50) + (carbon_kg * 2);
         }
 
         function calculateBenefitScore(efficiency, quality, strategic) {
-            // Benefit Score = (Efficiency * 0.4) + (Quality * 0.3) + (Strategic * 0.3)
             return (efficiency * 0.4) + (quality * 0.3) + (strategic * 0.3);
         }
 
-        function determineGrade(envScore, benefitScore) {
-            // Grading logic from Decision Matrix
+        function determineEfficiencyScore(envScore, benefitScore) {
             if (envScore < 20 && benefitScore > 80) return 'A+';
             if (envScore >= 20 && envScore < 35 && benefitScore > 70) return 'A';
             if (envScore >= 35 && envScore < 50 && (benefitScore > 70 || benefitScore > 50)) return 'B';
@@ -1013,17 +1177,17 @@
             return 'F';
         }
 
-        function getGradeEmoji(grade) {
+        function getScoreEmoji(score) {
             const emojiMap = {
                 'A+': '🟢', 'A': '🟢', 'B': '🟡',
                 'C': '🟡', 'D': '🟠', 'F': '🔴'
             };
-            return emojiMap[grade] || '⚪';
+            return emojiMap[score] || '⚪';
         }
 
         function calculateMonthlyCost(model, monthlyQueries, avgTokens) {
             const inputCost = (monthlyQueries * avgTokens / 1000000) * model.cost_per_1m_input;
-            const outputCost = (monthlyQueries * avgTokens / 1000000) * model.cost_per_1m_output * 0.5; // Assume 50% output
+            const outputCost = (monthlyQueries * avgTokens / 1000000) * model.cost_per_1m_output * 0.5;
             return inputCost + outputCost;
         }
 
@@ -1052,41 +1216,27 @@
             const monthly = calculateMonthlyImpact(currentModel, monthlyQueries, avgTokens, pue, wue, cif);
             const envScore = calculateEnvironmentalScore(monthly.energy_kwh, monthly.water_l, monthly.carbon_kg);
             const benefitScore = calculateBenefitScore(benefitScores.efficiency, benefitScores.quality, benefitScores.strategic);
-            const grade = determineGrade(envScore, benefitScore);
+            const score = determineEfficiencyScore(envScore, benefitScore);
             const monthlyCost = calculateMonthlyCost(currentModel, monthlyQueries, avgTokens);
 
-            // Update header info
             document.getElementById('current-model-name').textContent = currentModel.model_name;
-            document.getElementById('current-grade').textContent = `${grade} ${getGradeEmoji(grade)}`;
+            document.getElementById('current-score').textContent = `${score} ${getScoreEmoji(score)}`;
             document.getElementById('current-queries').textContent = monthlyQueries.toLocaleString();
             document.getElementById('current-status').textContent = envScore > 70 ? '🔴 Critical' : envScore > 35 ? '⚠️ High Impact' : '✓ Acceptable';
 
-            // Update metrics
             document.getElementById('monthly-energy').textContent = monthly.energy_kwh.toFixed(1);
             document.getElementById('monthly-water').textContent = Math.round(monthly.water_l);
             document.getElementById('monthly-carbon').textContent = monthly.carbon_kg.toFixed(1);
             document.getElementById('monthly-cost').textContent = '$' + Math.round(monthlyCost);
 
-            // Update scores
             document.getElementById('env-score').textContent = Math.round(envScore);
             document.getElementById('benefit-score').textContent = Math.round(benefitScore);
 
-            // Update metric card colors
             updateMetricCardColors(envScore);
-
-            // Update recommendation
             updateRecommendation();
-
-            // Update equivalents
             updateEquivalents(monthly);
-
-            // Update alternatives
             updateAlternatives();
-
-            // Update calculation details
             updateCalculationDetails();
-
-            // Update mitigation strategies
             updateMitigationStrategies();
         }
 
@@ -1101,7 +1251,6 @@
         }
 
         function updateRecommendation() {
-            // Find best alternative model
             const alternatives = findBestAlternatives();
             if (alternatives.length === 0) return;
 
@@ -1119,7 +1268,7 @@
                 <li>Save ${Math.abs(savings.water_saved_percent).toFixed(0)}% water (${Math.abs(savings.water_saved_l).toFixed(0)} L/month)</li>
                 <li>Save ${Math.abs(savings.carbon_saved_percent).toFixed(0)}% carbon (${Math.abs(savings.carbon_saved_kg).toFixed(1)} kg CO2e/month)</li>
                 <li>Save $${Math.abs(costSavings).toFixed(0)}/month in costs</li>
-                <li>Improve grade from ${best.currentGrade} to ${best.grade} ${getGradeEmoji(best.grade)}</li>
+                <li>Improve efficiency score from ${best.currentScore} to ${best.score} ${getScoreEmoji(best.score)}</li>
             `;
         }
 
@@ -1128,23 +1277,23 @@
             const currentMonthly = calculateMonthlyImpact(currentModel, monthlyQueries, avgTokens, pue, wue, cif);
             const currentEnvScore = calculateEnvironmentalScore(currentMonthly.energy_kwh, currentMonthly.water_l, currentMonthly.carbon_kg);
             const benefitScore = calculateBenefitScore(benefitScores.efficiency, benefitScores.quality, benefitScores.strategic);
-            const currentGrade = determineGrade(currentEnvScore, benefitScore);
+            const currentScore = determineEfficiencyScore(currentEnvScore, benefitScore);
 
             const alternatives = modelsDatabase
                 .filter(m => m.model_name !== currentModel.model_name)
                 .map(model => {
                     const monthly = calculateMonthlyImpact(model, monthlyQueries, avgTokens, pue, wue, cif);
                     const envScore = calculateEnvironmentalScore(monthly.energy_kwh, monthly.water_l, monthly.carbon_kg);
-                    const grade = determineGrade(envScore, benefitScore);
+                    const score = determineEfficiencyScore(envScore, benefitScore);
                     const savings = calculateSavings(currentModel, model, monthlyQueries, avgTokens, pue, wue, cif);
 
                     return {
                         model,
                         monthly,
                         envScore,
-                        grade,
+                        score,
                         savings,
-                        currentGrade,
+                        currentScore,
                         improvement: currentEnvScore - envScore
                     };
                 })
@@ -1166,7 +1315,7 @@
 
             let html = '<table class="comparison-table"><thead><tr>';
             html += '<th>Model</th><th>Provider</th><th>Energy (kWh)</th><th>Water (L)</th>';
-            html += '<th>Carbon (kg)</th><th>Grade</th><th>Savings</th></tr></thead><tbody>';
+            html += '<th>Carbon (kg)</th><th>Efficiency Score</th><th>Savings</th></tr></thead><tbody>';
 
             alternatives.forEach(alt => {
                 html += `<tr>
@@ -1175,7 +1324,7 @@
                     <td>${alt.monthly.energy_kwh.toFixed(1)}</td>
                     <td>${Math.round(alt.monthly.water_l)}</td>
                     <td>${alt.monthly.carbon_kg.toFixed(1)}</td>
-                    <td>${alt.grade} ${getGradeEmoji(alt.grade)}</td>
+                    <td>${alt.score} ${getScoreEmoji(alt.score)}</td>
                     <td>
                         ⚡ ${Math.abs(alt.savings.energy_saved_percent).toFixed(0)}%<br>
                         💧 ${Math.abs(alt.savings.water_saved_percent).toFixed(0)}%<br>
@@ -1258,7 +1407,7 @@
                 </table>
 
                 <h4 style="margin-top: 20px;">Formulas Used:</h4>
-                <div class="message" style="background: #f3f4f6; color: #1f2937; font-family: monospace; font-size: 0.9em;">
+                <div class="message" style="background: var(--label-bg); color: var(--text-primary); font-family: monospace; font-size: 0.9em;">
                     <p><strong>Per-Query Impact:</strong></p>
                     <p>Energy = base_energy_wh × (tokens / 1,000,000)</p>
                     <p>Water = base_water_l × (tokens / 1,000,000)</p>
@@ -1366,6 +1515,62 @@
         }
 
         // ============================================================================
+        // DOCUMENTATION FUNCTIONS
+        // ============================================================================
+
+        function initializeDocumentation() {
+            if (!workbookData) return;
+
+            const select = document.getElementById('doc-sheet-select');
+            workbookData.sheets.forEach(sheet => {
+                const option = document.createElement('option');
+                option.value = sheet.name;
+                option.textContent = sheet.name;
+                select.appendChild(option);
+            });
+        }
+
+        function loadDocSheet() {
+            const sheetName = document.getElementById('doc-sheet-select').value;
+            if (!sheetName || !workbookData) return;
+
+            const sheet = workbookData.sheets.find(s => s.name === sheetName);
+            if (!sheet) return;
+
+            const content = document.getElementById('doc-content');
+            content.style.display = 'block';
+
+            let html = `<h3 style="margin-bottom: 15px;">${sheet.name}</h3>`;
+            html += '<div class="table-container"><table>';
+
+            sheet.data.forEach((row, rowIndex) => {
+                html += '<tr>';
+                row.forEach((cell, cellIndex) => {
+                    const cellStr = String(cell).toUpperCase();
+                    let className = '';
+
+                    if (cellStr.includes('DASHBOARD') || cellStr.includes('ASSESSMENT') ||
+                        cellStr.includes('ENGINE') || cellStr.includes('MATRIX') ||
+                        cellStr.includes('REFERENCE DATA') || cellStr.includes('MONITORING') ||
+                        cellStr.includes('STRATEGIES') || cellStr.includes('DOCUMENTATION')) {
+                        className = 'main-header';
+                    } else if (cellStr.includes('STEP') || cellStr.includes('SUMMARY') ||
+                              cellStr.includes('METRICS') || cellStr.includes('TOTALS')) {
+                        className = 'section-header';
+                    } else if (cellIndex === 0 && cell !== '') {
+                        className = 'label-cell';
+                    }
+
+                    html += `<td class="${className}">${cell || ''}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</table></div>';
+            content.innerHTML = html;
+        }
+
+        // ============================================================================
         // MODEL SELECTOR FUNCTIONS
         // ============================================================================
 
@@ -1441,7 +1646,6 @@
                 return matchesSearch && matchesProvider && matchesLicense;
             });
 
-            // Re-render with filtered models
             const dropdown = document.getElementById('model-dropdown');
             dropdown.innerHTML = '';
 
@@ -1468,7 +1672,6 @@
         function selectModel(modelName) {
             currentModel = modelsDatabase.find(m => m.model_name === modelName);
             if (currentModel) {
-                // Update multipliers based on provider
                 const multipliers = providerMultipliers[currentModel.provider] || providerMultipliers.default;
                 currentSettings.pue = multipliers.pue;
                 currentSettings.wue = multipliers.wue;
@@ -1477,7 +1680,6 @@
                 updateDashboard();
                 renderModelDropdown();
 
-                // Collapse model selector
                 const section = document.getElementById('model-selector-section');
                 if (section.classList.contains('expanded')) {
                     toggleSection(section);
@@ -1506,13 +1708,13 @@
                 currentSettings.benefitScores.quality,
                 currentSettings.benefitScores.strategic
             );
-            const grade = determineGrade(envScore, benefitScore);
+            const score = determineEfficiencyScore(envScore, benefitScore);
 
             document.getElementById('calc-energy').textContent = `${monthly.energy_kwh.toFixed(2)} kWh`;
             document.getElementById('calc-water').textContent = `${Math.round(monthly.water_l)} L`;
             document.getElementById('calc-carbon').textContent = `${monthly.carbon_kg.toFixed(2)} kg CO2e`;
             document.getElementById('calc-env-score').textContent = Math.round(envScore);
-            document.getElementById('calc-grade').textContent = `${grade} ${getGradeEmoji(grade)}`;
+            document.getElementById('calc-score').textContent = `${score} ${getScoreEmoji(score)}`;
         }
 
         function resetCalculator() {
@@ -1542,8 +1744,6 @@
             const section = typeof sectionOrId === 'string' ?
                 document.getElementById(sectionOrId) : sectionOrId;
             section.classList.toggle('expanded');
-
-            // Save state
             localStorage.setItem(section.id || 'section', section.classList.contains('expanded'));
         }
 
@@ -1586,15 +1786,14 @@
         // ============================================================================
 
         function initializeApp() {
-            // Set default model (o3)
             currentModel = modelsDatabase.find(m => m.model_name === 'o3') || modelsDatabase[0];
 
-            // Initialize UI components
+            loadTheme();
             initializeModelSelector();
+            initializeDocumentation();
             updateDashboard();
             resetCalculator();
 
-            // Load saved expansion states
             document.querySelectorAll('.collapsible-section').forEach(section => {
                 const savedState = localStorage.getItem(section.id || 'section');
                 if (savedState === 'true') {
@@ -1607,7 +1806,6 @@
             console.log(`✓ Database: ${modelsDatabase.length} models loaded`);
         }
 
-        // Load database on page load
         window.addEventListener('DOMContentLoaded', loadModelsDatabase);
     </script>
 </body>
