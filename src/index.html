@@ -1135,10 +1135,11 @@
         // ============================================================================
 
         function calculateQueryImpact(model, queryTokens) {
+            // CSV values are per 1K tokens, so we divide by 1000, not 1000000
             return {
-                energy_wh: model.energy_wh * (queryTokens / 1000000),
-                water_l: model.water_l * (queryTokens / 1000000),
-                carbon_g: model.carbon_gco2e * (queryTokens / 1000000)
+                energy_wh: model.energy_wh * (queryTokens / 1000),
+                water_l: model.water_l * (queryTokens / 1000),
+                carbon_g: model.carbon_gco2e * (queryTokens / 1000)
             };
         }
 
@@ -1419,14 +1420,15 @@
                 <h4 style="margin-top: 20px;">Formulas Used:</h4>
                 <div class="message" style="background: var(--label-bg); color: var(--text-primary); font-family: monospace; font-size: 0.9em;">
                     <p><strong>Per-Query Impact:</strong></p>
-                    <p>Energy = base_energy_wh × (tokens / 1,000,000)</p>
-                    <p>Water = base_water_l × (tokens / 1,000,000)</p>
-                    <p>Carbon = base_carbon_g × (tokens / 1,000,000)</p>
+                    <p>Energy = base_energy_wh × (tokens / 1,000)</p>
+                    <p>Water = base_water_l × (tokens / 1,000)</p>
+                    <p>Carbon = base_carbon_g × (tokens / 1,000)</p>
+                    <p style="font-size: 0.85em; color: var(--text-muted);">Note: Base values in CSV are per 1K tokens</p>
                     <br>
                     <p><strong>Monthly Impact:</strong></p>
-                    <p>Energy = per_query_wh × monthly_queries × PUE / 1000</p>
-                    <p>Water = per_query_l × monthly_queries × WUE</p>
-                    <p>Carbon = (monthly_energy_kwh × CIF)</p>
+                    <p>Energy_kWh = per_query_wh × monthly_queries × PUE / 1000</p>
+                    <p>Water_L = per_query_l × monthly_queries × WUE</p>
+                    <p>Carbon_kg = monthly_energy_kwh × CIF</p>
                     <br>
                     <p><strong>Environmental Score:</strong></p>
                     <p>Score = (Energy_kWh / 10) + (Water_L × 50) + (Carbon_kg × 2)</p>
