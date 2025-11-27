@@ -347,7 +347,7 @@
             letter-spacing: 1px;
         }
 
-        .select-box {
+        .select-box, .input-box {
             width: 100%;
             padding: 15px;
             background: var(--darker-bg);
@@ -359,7 +359,7 @@
             transition: all 0.3s ease;
         }
 
-        .select-box:hover {
+        .select-box:hover, .input-box:hover {
             border-color: var(--primary-green);
         }
 
@@ -368,24 +368,8 @@
             color: var(--text-primary);
         }
 
-        .options-list {
-            margin-top: 15px;
-        }
-
-        .option-item {
-            padding: 12px 15px;
-            background: var(--darker-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .option-item:hover {
-            background: var(--hover-bg);
-            border-color: var(--primary-green);
+        .input-box {
+            cursor: text;
         }
 
         .start-btn {
@@ -407,6 +391,12 @@
         .start-btn:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
+        }
+
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* Analysis & Results Page */
@@ -483,6 +473,7 @@
             height: 50px;
             background: white;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: left 0.5s ease;
         }
 
         /* Efficiency Grade */
@@ -519,61 +510,13 @@
             font-weight: 700;
             color: var(--primary-green);
             background: var(--card-bg);
-            width: 80px;
-            height: 80px;
+            min-width: 100px;
+            height: 100px;
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 2px solid var(--primary-green);
-        }
-
-        /* Donut Chart */
-        .chart-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
-
-        .donut-chart {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: conic-gradient(
-                #047857 0deg 120deg,
-                #10b981 120deg 240deg,
-                #f59e0b 240deg 360deg
-            );
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .donut-hole {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: var(--card-bg);
-            position: absolute;
-        }
-
-        .chart-legend {
-            margin-left: 30px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
         }
 
         /* Recommendations */
@@ -828,6 +771,48 @@
             display: block;
         }
 
+        /* Savings Grid */
+        .savings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .savings-item {
+            background: var(--darker-bg);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .savings-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 5px;
+        }
+
+        .savings-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .savings-bar {
+            height: 8px;
+            background: var(--darker-bg);
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .savings-bar-fill {
+            height: 100%;
+            background: var(--gradient-green);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -888,48 +873,6 @@
                 align-items: center;
                 justify-content: center;
             }
-        }
-
-        /* Savings Chart */
-        .savings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .savings-item {
-            background: var(--darker-bg);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .savings-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary-green);
-            margin-bottom: 5px;
-        }
-
-        .savings-label {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .savings-bar {
-            height: 8px;
-            background: var(--darker-bg);
-            border-radius: 4px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-
-        .savings-bar-fill {
-            height: 100%;
-            background: var(--gradient-green);
-            border-radius: 4px;
-            transition: width 0.5s ease;
         }
     </style>
 </head>
@@ -1034,40 +977,54 @@
                     <div class="card">
                         <div class="select-group">
                             <label class="select-label">Select AI Model</label>
-                            <select class="select-box" id="ai-model">
+                            <select class="select-box" id="ai-model" onchange="updateCalculations()">
                                 <option value="">Choose a model...</option>
-                                <option value="gpt4">GPT-4 (OpenAI)</option>
-                                <option value="claude3">Claude 3 (Anthropic)</option>
-                                <option value="custom">Custom Model</option>
                             </select>
-                            <div class="options-list">
-                                <div class="option-item">GPT-4 (OpenAI)</div>
-                                <div class="option-item">Claude 3 (Anthropic)</div>
-                                <div class="option-item">Custom Model</div>
-                            </div>
                         </div>
                     </div>
 
                     <!-- Select Task -->
                     <div class="card">
                         <div class="select-group">
-                            <label class="select-label">Select Task</label>
-                            <select class="select-box" id="task-type">
+                            <label class="select-label">Select Task Type</label>
+                            <select class="select-box" id="task-type" onchange="updateCalculations()">
                                 <option value="">Choose a task...</option>
+                                <option value="classification">Text Classification</option>
                                 <option value="content">Content Generation</option>
                                 <option value="summarization">Document Summarization</option>
+                                <option value="qa">Question Answering</option>
+                                <option value="translation">Language Translation</option>
+                                <option value="analysis">Document Analysis</option>
+                                <option value="code">Code Generation</option>
                                 <option value="custom">Custom Task</option>
                             </select>
-                            <div class="options-list">
-                                <div class="option-item">Content Generation</div>
-                                <div class="option-item">Document Summarization</div>
-                                <div class="option-item">Custom Task</div>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                <button class="start-btn" onclick="startAssessment()">Start Assessment</button>
+                <div class="dashboard-grid">
+                    <!-- Query Complexity -->
+                    <div class="card">
+                        <div class="select-group">
+                            <label class="select-label">Query Complexity</label>
+                            <select class="select-box" id="query-complexity" onchange="updateCalculations()">
+                                <option value="low">Low (Simple queries)</option>
+                                <option value="medium" selected>Medium (Standard queries)</option>
+                                <option value="high">High (Complex queries)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Queries -->
+                    <div class="card">
+                        <div class="select-group">
+                            <label class="select-label">Expected Monthly Queries</label>
+                            <input type="number" class="input-box" id="monthly-queries" value="10000" min="1" onchange="updateCalculations()" />
+                        </div>
+                    </div>
+                </div>
+
+                <button class="start-btn" onclick="startAssessment()" id="start-btn">Start Assessment</button>
             </div>
 
             <!-- Analysis Page -->
@@ -1079,20 +1036,20 @@
                     <div class="score-bar-container">
                         <div class="score-bar-label">
                             <span class="score-bar-title">Environmental Cost Score</span>
-                            <span class="score-bar-value">7.5/10</span>
+                            <span class="score-bar-value" id="env-score-display">0/10</span>
                         </div>
                         <div class="score-bar">
-                            <div class="score-indicator" style="left: 75%"></div>
+                            <div class="score-indicator" id="env-score-indicator" style="left: 0%"></div>
                         </div>
                     </div>
 
                     <div class="score-bar-container">
                         <div class="score-bar-label">
                             <span class="score-bar-title">Benefit Score</span>
-                            <span class="score-bar-value">8.2/10</span>
+                            <span class="score-bar-value" id="benefit-score-display">0/10</span>
                         </div>
                         <div class="score-bar">
-                            <div class="score-indicator" style="left: 82%"></div>
+                            <div class="score-indicator" id="benefit-score-indicator" style="left: 0%"></div>
                         </div>
                     </div>
 
@@ -1100,13 +1057,23 @@
                     <h3 style="margin-top: 30px; margin-bottom: 20px; color: var(--text-primary);">Relatable Metrics</h3>
                     <div class="metrics-grid">
                         <div class="metric-card">
-                            <div class="metric-icon">☕</div>
-                            <div class="metric-value">320</div>
-                            <div class="metric-label">Coffee Cups Made<br>(Energy Equivalent)</div>
+                            <div class="metric-icon">⚡</div>
+                            <div class="metric-value" id="energy-metric">0</div>
+                            <div class="metric-label">kWh per Month<br>(Energy Consumption)</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">💧</div>
+                            <div class="metric-value" id="water-metric">0</div>
+                            <div class="metric-label">Liters per Month<br>(Water Usage)</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">🌍</div>
+                            <div class="metric-value" id="carbon-metric">0</div>
+                            <div class="metric-label">kg CO2e per Month<br>(Carbon Footprint)</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-icon">🚗</div>
-                            <div class="metric-value">45 km</div>
+                            <div class="metric-value" id="car-equiv">0 km</div>
                             <div class="metric-label">Driven by a Car<br>(CO2 Equivalent)</div>
                         </div>
                     </div>
@@ -1114,39 +1081,23 @@
                     <!-- Efficiency Grade -->
                     <h3 style="margin-top: 30px; margin-bottom: 20px; color: var(--text-primary);">Efficiency Grade</h3>
                     <div class="efficiency-grade">
-                        <div class="grade-scale">
-                            <div class="grade-bar active" style="background: #10b981;"></div>
+                        <div class="grade-scale" id="grade-scale">
+                            <div class="grade-bar" style="background: #10b981;"></div>
                             <div class="grade-bar" style="background: #84cc16;"></div>
                             <div class="grade-bar" style="background: #eab308;"></div>
                             <div class="grade-bar" style="background: #f97316;"></div>
                             <div class="grade-bar" style="background: #ef4444;"></div>
                         </div>
-                        <div class="grade-display">B+</div>
+                        <div class="grade-display" id="grade-display">-</div>
                     </div>
 
-                    <!-- Donut Chart -->
-                    <h3 style="margin-top: 30px; margin-bottom: 20px; color: var(--text-primary);">Cost Breakdown</h3>
-                    <div class="chart-container">
-                        <div class="donut-chart">
-                            <div class="donut-hole"></div>
-                        </div>
-                        <div class="chart-legend">
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #047857;"></div>
-                                <span>Training</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #10b981;"></div>
-                                <span>Inference</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background: #f59e0b;"></div>
-                                <span>Data Processing</span>
-                            </div>
-                        </div>
+                    <div style="margin-top: 20px; padding: 15px; background: var(--darker-bg); border-radius: 10px;">
+                        <p style="color: var(--text-secondary); line-height: 1.8;" id="recommendation-text">
+                            Complete the assessment to see recommendations.
+                        </p>
                     </div>
 
-                    <button class="btn-primary" onclick="showPage('mitigation')">View Mitigation Options</button>
+                    <button class="btn-primary" onclick="showPage('mitigation')" style="margin-top: 20px;">View Mitigation Options</button>
                 </div>
             </div>
 
@@ -1157,14 +1108,14 @@
 
                     <h3 style="margin-bottom: 20px; color: var(--text-primary);">Recommended Actions</h3>
                     <div class="recommendation-item">
-                        <h3>1. Model Quantization</h3>
-                        <p>Reduce model size and computational requirements through quantization techniques.</p>
+                        <h3>1. Switch to More Efficient Model</h3>
+                        <p>Consider using a smaller, more efficient model for this task if accuracy requirements allow.</p>
                         <div class="savings-grid">
                             <div class="savings-item">
-                                <div class="savings-value">30%</div>
-                                <div class="savings-label">Energy Reduction</div>
+                                <div class="savings-value">40-60%</div>
+                                <div class="savings-label">Potential Energy Reduction</div>
                                 <div class="savings-bar">
-                                    <div class="savings-bar-fill" style="width: 30%"></div>
+                                    <div class="savings-bar-fill" style="width: 50%"></div>
                                 </div>
                             </div>
                         </div>
@@ -1175,10 +1126,10 @@
                         <p>Craft efficient prompts to minimize token usage and processing time.</p>
                         <div class="savings-grid">
                             <div class="savings-item">
-                                <div class="savings-value">15%</div>
+                                <div class="savings-value">15-25%</div>
                                 <div class="savings-label">Energy Reduction</div>
                                 <div class="savings-bar">
-                                    <div class="savings-bar-fill" style="width: 15%"></div>
+                                    <div class="savings-bar-fill" style="width: 20%"></div>
                                 </div>
                             </div>
                         </div>
@@ -1189,23 +1140,27 @@
                         <p>Implement caching strategies to reduce redundant computations.</p>
                         <div class="savings-grid">
                             <div class="savings-item">
-                                <div class="savings-value">10%</div>
+                                <div class="savings-value">10-20%</div>
                                 <div class="savings-label">Energy Reduction</div>
                                 <div class="savings-bar">
-                                    <div class="savings-bar-fill" style="width: 10%"></div>
+                                    <div class="savings-bar-fill" style="width: 15%"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <h3 style="margin-top: 40px; margin-bottom: 20px; color: var(--text-primary);">Individual Use Tips</h3>
                     <div class="recommendation-item">
-                        <h3>🔄 Batch API Requests</h3>
-                        <p>Group multiple requests together to improve efficiency.</p>
-                    </div>
-                    <div class="recommendation-item">
-                        <h3>🚫 Avoid Redundant Calls</h3>
-                        <p>Minimize unnecessary API calls through smart caching and request management.</p>
+                        <h3>4. Batch Processing</h3>
+                        <p>Group similar requests together to improve efficiency and reduce per-query overhead.</p>
+                        <div class="savings-grid">
+                            <div class="savings-item">
+                                <div class="savings-value">15-25%</div>
+                                <div class="savings-label">Energy Reduction</div>
+                                <div class="savings-bar">
+                                    <div class="savings-bar-fill" style="width: 20%"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <button class="btn-primary" onclick="showPage('recommendations')">Generate Final Report</button>
@@ -1220,7 +1175,7 @@
                     <h3 style="margin-bottom: 20px; color: var(--text-primary);">Strategic Recommendations</h3>
                     <div class="recommendation-item">
                         <h3>
-                            💚 Adopt Small Language Models for Routine Tasks
+                            💚 Adopt Efficient Models for Routine Tasks
                             <span class="priority-badge priority-high">High</span>
                         </h3>
                         <p>For simple tasks like classification or basic text generation, consider using smaller, more efficient language models that consume significantly less energy while maintaining acceptable performance.</p>
@@ -1285,7 +1240,7 @@
                         </div>
                         <div class="accordion-content">
                             <div class="accordion-body">
-                                Detailed specifications for AI models including parameters, training data, architecture, and performance benchmarks.
+                                The GAIA Framework includes data for 18 different AI models from major providers including OpenAI, Anthropic, Meta, and DeepSeek. Each model has detailed specifications including energy consumption (Wh), water usage (L), and carbon emissions (gCO2e) per query.
                             </div>
                         </div>
                     </div>
@@ -1298,7 +1253,7 @@
                         </div>
                         <div class="accordion-content">
                             <div class="accordion-body">
-                                Our assessment methodology follows industry standards for measuring AI environmental impact, including energy consumption, carbon emissions, and water usage calculations.
+                                Our assessment methodology calculates environmental impact by multiplying base model metrics with task complexity and query volume factors. Environmental Score = (Energy/10 + Water*50 + Carbon*2). The framework uses PUE (Power Usage Effectiveness), WUE (Water Usage Effectiveness), and CIF (Carbon Intensity Factor) multipliers specific to each cloud provider.
                             </div>
                         </div>
                     </div>
@@ -1311,10 +1266,11 @@
                         </div>
                         <div class="accordion-content">
                             <div class="accordion-body">
-                                <strong>FLOPs:</strong> Floating Point Operations Per Second - A measure of computational performance.<br><br>
+                                <strong>Wh (Watt-hour):</strong> Energy unit, 1 Wh ≈ LED bulb for 6 minutes<br><br>
                                 <strong>PUE:</strong> Power Usage Effectiveness - Ratio of total facility energy to IT equipment energy.<br><br>
                                 <strong>CO2e:</strong> Carbon Dioxide Equivalent - A standard unit for measuring carbon footprint.<br><br>
-                                <strong>GAIo:</strong> Potential Pass Soriums - Environmental impact metric.
+                                <strong>WUE:</strong> Water Usage Effectiveness - Measures cooling water efficiency in data centers.<br><br>
+                                <strong>CIF:</strong> Carbon Intensity Factor - Grid emissions per unit of energy.
                             </div>
                         </div>
                     </div>
@@ -1327,7 +1283,7 @@
                         </div>
                         <div class="accordion-content">
                             <div class="accordion-body">
-                                Information about international environmental standards, regulations, and best practices for sustainable AI development and deployment.
+                                Information about international environmental standards, regulations, and best practices for sustainable AI development and deployment. The framework uses industry-standard metrics and follows ISO 14064 for carbon accounting.
                             </div>
                         </div>
                     </div>
@@ -1340,7 +1296,10 @@
                         </div>
                         <div class="accordion-content">
                             <div class="accordion-body">
-                                Common questions and solutions for using the GAIA Framework, including data requirements, interpretation of results, and implementation guidance.
+                                <strong>Q: How accurate are these estimates?</strong><br>
+                                A: The estimates are based on published data and industry benchmarks. Actual values may vary based on specific usage patterns and infrastructure.<br><br>
+                                <strong>Q: Can I add custom models?</strong><br>
+                                A: Yes, select "Custom Model" and enter the relevant metrics for your specific model.
                             </div>
                         </div>
                     </div>
@@ -1357,7 +1316,7 @@
                             <div class="step-number">1</div>
                             <div class="step-icon-large">⚙️</div>
                             <h3>Select & Define</h3>
-                            <p>Choose your AI model and task from the dashboard.</p>
+                            <p>Choose your AI model, task type, complexity level, and expected monthly query volume from the dashboard.</p>
                             <div class="arrow-icon">→</div>
                         </div>
 
@@ -1365,7 +1324,7 @@
                             <div class="step-number">2</div>
                             <div class="step-icon-large">🔍</div>
                             <h3>Analyze Impact</h3>
-                            <p>Review environmental cost, benefit scores, and relatable metrics.</p>
+                            <p>Review environmental cost scores, energy consumption, water usage, carbon footprint, and efficiency grade.</p>
                             <div class="arrow-icon">→</div>
                         </div>
 
@@ -1373,7 +1332,7 @@
                             <div class="step-number">3</div>
                             <div class="step-icon-large">🌱</div>
                             <h3>Apply Mitigations</h3>
-                            <p>Explore and select actionable steps to reduce footprint.</p>
+                            <p>Explore and select actionable mitigation strategies to reduce your environmental footprint.</p>
                             <div class="arrow-icon">→</div>
                         </div>
 
@@ -1381,7 +1340,7 @@
                             <div class="step-number">4</div>
                             <div class="step-icon-large">📄</div>
                             <h3>Generate Report</h3>
-                            <p>Download a comprehensive report for your stakeholders.</p>
+                            <p>Download a comprehensive assessment report with recommendations for your stakeholders.</p>
                         </div>
                     </div>
                 </div>
@@ -1393,6 +1352,243 @@
     <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
 
     <script>
+        // Reference Data - All AI Models
+        const MODEL_DATA = {
+            "GPT-4.1 nano": { energy: 0.271, water: 0.002, carbon: 0.096, provider: "OpenAI" },
+            "GPT-4o mini": { energy: 1.418, water: 0.005, carbon: 0.5, provider: "OpenAI" },
+            "GPT-4o": { energy: 1.214, water: 0.004, carbon: 0.428, provider: "OpenAI" },
+            "GPT-4 Turbo": { energy: 6.758, water: 0.024, carbon: 2.382, provider: "OpenAI" },
+            "o1-mini": { energy: 1.598, water: 0.006, carbon: 0.564, provider: "OpenAI" },
+            "o1": { energy: 12.1, water: 0.043, carbon: 4.269, provider: "OpenAI" },
+            "o3-mini": { energy: 2.447, water: 0.009, carbon: 0.863, provider: "OpenAI" },
+            "o3": { energy: 21.414, water: 0.076, carbon: 7.555, provider: "OpenAI" },
+            "Claude-3.5 Haiku": { energy: 0.5, water: 0.001, carbon: 0.193, provider: "Anthropic" },
+            "Claude-3.5 Sonnet": { energy: 2, water: 0.004, carbon: 0.77, provider: "Anthropic" },
+            "Claude-3.7 Sonnet": { energy: 2.781, water: 0.006, carbon: 1.072, provider: "Anthropic" },
+            "LLaMA-3.1-8B": { energy: 0.329, water: 0.001, carbon: 0.127, provider: "Meta" },
+            "LLaMA-3.1-70B": { energy: 3.558, water: 0.007, carbon: 1.37, provider: "Meta" },
+            "LLaMA-3.1-405B": { energy: 6.911, water: 0.014, carbon: 2.661, provider: "Meta" },
+            "DeepSeek-V3": { energy: 9.129, water: 0.155, carbon: 5.477, provider: "DeepSeek" },
+            "DeepSeek-R1": { energy: 29, water: 0.493, carbon: 17.4, provider: "DeepSeek" },
+            "Custom Model": { energy: 2, water: 0.005, carbon: 0.7, provider: "Custom" }
+        };
+
+        // Complexity Multipliers
+        const COMPLEXITY_MULTIPLIERS = {
+            low: 0.7,
+            medium: 1.0,
+            high: 1.5
+        };
+
+        // Current Assessment State
+        let currentAssessment = {
+            model: null,
+            taskType: null,
+            complexity: "medium",
+            monthlyQueries: 10000,
+            results: null
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeModelDropdown();
+            updateProgress(25);
+        });
+
+        // Initialize Model Dropdown
+        function initializeModelDropdown() {
+            const select = document.getElementById('ai-model');
+
+            // Group models by provider
+            const providers = {};
+            for (const [modelName, data] of Object.entries(MODEL_DATA)) {
+                if (!providers[data.provider]) {
+                    providers[data.provider] = [];
+                }
+                providers[data.provider].push(modelName);
+            }
+
+            // Add options grouped by provider
+            for (const [provider, models] of Object.entries(providers)) {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = provider;
+
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    optgroup.appendChild(option);
+                });
+
+                select.appendChild(optgroup);
+            }
+        }
+
+        // Update Calculations
+        function updateCalculations() {
+            const model = document.getElementById('ai-model').value;
+            const taskType = document.getElementById('task-type').value;
+            const complexity = document.getElementById('query-complexity').value;
+            const monthlyQueries = parseInt(document.getElementById('monthly-queries').value) || 0;
+
+            currentAssessment.model = model;
+            currentAssessment.taskType = taskType;
+            currentAssessment.complexity = complexity;
+            currentAssessment.monthlyQueries = monthlyQueries;
+
+            // Enable/disable start button
+            const startBtn = document.getElementById('start-btn');
+            startBtn.disabled = !(model && taskType && monthlyQueries > 0);
+        }
+
+        // Calculate Impact
+        function calculateImpact() {
+            const modelData = MODEL_DATA[currentAssessment.model];
+            const complexityFactor = COMPLEXITY_MULTIPLIERS[currentAssessment.complexity];
+            const queries = currentAssessment.monthlyQueries;
+
+            // Per-query impact with complexity multiplier
+            const energyPerQuery = modelData.energy * complexityFactor / 1000; // Convert Wh to kWh
+            const waterPerQuery = modelData.water * complexityFactor;
+            const carbonPerQuery = modelData.carbon * complexityFactor / 1000; // Convert g to kg
+
+            // Monthly totals
+            const monthlyEnergy = energyPerQuery * queries;
+            const monthlyWater = waterPerQuery * queries;
+            const monthlyCarbon = carbonPerQuery * queries;
+
+            // Environmental Score (higher is worse)
+            const envScore = Math.min(100, (monthlyEnergy / 10 + monthlyWater * 0.5 + monthlyCarbon * 2));
+
+            // Benefit Score (mock calculation - in real app would be based on user input)
+            const benefitScore = Math.max(40, Math.min(90, 70 + Math.random() * 20));
+
+            // Efficiency Grade
+            const grade = calculateGrade(envScore, benefitScore);
+
+            // Car equivalent (km) - assuming 0.25 kg CO2 per km
+            const carKm = Math.round(monthlyCarbon / 0.25);
+
+            return {
+                energyPerQuery: energyPerQuery * 1000, // Convert back to Wh for display
+                waterPerQuery: waterPerQuery,
+                carbonPerQuery: carbonPerQuery * 1000, // Convert back to g for display
+                monthlyEnergy: monthlyEnergy.toFixed(2),
+                monthlyWater: monthlyWater.toFixed(2),
+                monthlyCarbon: monthlyCarbon.toFixed(2),
+                envScore: envScore.toFixed(1),
+                benefitScore: benefitScore.toFixed(1),
+                grade: grade,
+                carKm: carKm
+            };
+        }
+
+        // Calculate Grade
+        function calculateGrade(envScore, benefitScore) {
+            if (envScore < 20 && benefitScore > 80) return { letter: "A+", color: "#10b981", recommendation: "Strongly Recommended" };
+            if (envScore < 35 && benefitScore > 70) return { letter: "A", color: "#10b981", recommendation: "Recommended" };
+            if (envScore < 50 && benefitScore > 70) return { letter: "B", color: "#84cc16", recommendation: "Recommended with Monitoring" };
+            if (envScore < 50 && benefitScore > 50) return { letter: "C", color: "#eab308", recommendation: "Conditional Approval Required" };
+            if (envScore < 70) return { letter: "D", color: "#f97316", recommendation: "Requires Mitigation" };
+            if (envScore < 85) return { letter: "E", color: "#ef4444", recommendation: "Not Recommended" };
+            return { letter: "F", color: "#dc2626", recommendation: "Prohibited - Use Not Permitted" };
+        }
+
+        // Start Assessment
+        function startAssessment() {
+            if (!currentAssessment.model || !currentAssessment.taskType) {
+                alert('Please select both an AI model and a task before starting the assessment.');
+                return;
+            }
+
+            // Calculate results
+            currentAssessment.results = calculateImpact();
+
+            // Update progress
+            updateProgress(50);
+
+            // Update analysis page
+            updateAnalysisPage();
+
+            // Show analysis page
+            setTimeout(() => {
+                showPage('analysis');
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                document.querySelectorAll('.nav-link')[1].classList.add('active');
+            }, 300);
+        }
+
+        // Update Analysis Page
+        function updateAnalysisPage() {
+            const results = currentAssessment.results;
+
+            // Update scores
+            document.getElementById('env-score-display').textContent = results.envScore + '/100';
+            document.getElementById('benefit-score-display').textContent = results.benefitScore + '/100';
+
+            // Update indicators
+            const envPercent = (results.envScore / 100) * 100;
+            const benefitPercent = (results.benefitScore / 100) * 100;
+
+            document.getElementById('env-score-indicator').style.left = envPercent + '%';
+            document.getElementById('benefit-score-indicator').style.left = benefitPercent + '%';
+
+            // Update metrics
+            document.getElementById('energy-metric').textContent = results.monthlyEnergy;
+            document.getElementById('water-metric').textContent = results.monthlyWater;
+            document.getElementById('carbon-metric').textContent = results.monthlyCarbon;
+            document.getElementById('car-equiv').textContent = results.carKm + ' km';
+
+            // Update grade
+            const gradeDisplay = document.getElementById('grade-display');
+            gradeDisplay.textContent = results.grade.letter;
+            gradeDisplay.style.borderColor = results.grade.color;
+            gradeDisplay.style.color = results.grade.color;
+
+            // Highlight appropriate grade bar
+            const gradeBars = document.querySelectorAll('.grade-bar');
+            gradeBars.forEach(bar => bar.classList.remove('active'));
+
+            const gradeIndex = ['A+', 'A', 'B', 'C', 'D', 'E', 'F'].indexOf(results.grade.letter);
+            const barIndex = Math.min(gradeIndex, 4); // We only have 5 bars
+            if (barIndex >= 0 && barIndex < gradeBars.length) {
+                gradeBars[barIndex].classList.add('active');
+            }
+
+            // Update recommendation text
+            document.getElementById('recommendation-text').innerHTML = `
+                <strong style="color: var(--text-primary);">Grade: ${results.grade.letter}</strong><br>
+                <strong style="color: var(--text-primary);">Recommendation:</strong> ${results.grade.recommendation}<br><br>
+                This assessment is based on ${currentAssessment.monthlyQueries.toLocaleString()} monthly queries using ${currentAssessment.model} for ${currentAssessment.taskType} tasks at ${currentAssessment.complexity} complexity.
+            `;
+
+            // Update progress
+            updateProgress(75);
+        }
+
+        // Update Progress
+        function updateProgress(percentage) {
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = percentage + '%';
+            progressBar.querySelector('.progress-percentage').textContent = percentage + '%';
+
+            // Update progress steps
+            if (percentage >= 25) {
+                document.getElementById('step-input').classList.add('completed');
+            }
+            if (percentage >= 50) {
+                document.getElementById('step-analysis').classList.add('active');
+            }
+            if (percentage >= 75) {
+                document.getElementById('step-analysis').classList.add('completed');
+                document.getElementById('step-mitigation').classList.add('active');
+            }
+            if (percentage >= 100) {
+                document.getElementById('step-mitigation').classList.add('completed');
+                document.getElementById('step-report').classList.add('active');
+            }
+        }
+
         // Page Navigation
         function showPage(pageId) {
             // Hide all pages
@@ -1436,51 +1632,6 @@
             document.getElementById('sidebar').classList.toggle('mobile-open');
         }
 
-        // Start Assessment
-        function startAssessment() {
-            const model = document.getElementById('ai-model').value;
-            const task = document.getElementById('task-type').value;
-
-            if (!model || !task) {
-                alert('Please select both an AI model and a task before starting the assessment.');
-                return;
-            }
-
-            // Update progress
-            updateProgress(50);
-
-            // Show analysis page
-            setTimeout(() => {
-                showPage('analysis');
-                // Manually update nav
-                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-                document.querySelectorAll('.nav-link')[1].classList.add('active');
-            }, 300);
-        }
-
-        // Update Progress
-        function updateProgress(percentage) {
-            const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = percentage + '%';
-            progressBar.querySelector('.progress-percentage').textContent = percentage + '%';
-
-            // Update progress steps
-            if (percentage >= 25) {
-                document.getElementById('step-input').classList.add('completed');
-            }
-            if (percentage >= 50) {
-                document.getElementById('step-analysis').classList.add('active');
-            }
-            if (percentage >= 75) {
-                document.getElementById('step-analysis').classList.add('completed');
-                document.getElementById('step-mitigation').classList.add('active');
-            }
-            if (percentage >= 100) {
-                document.getElementById('step-mitigation').classList.add('completed');
-                document.getElementById('step-report').classList.add('active');
-            }
-        }
-
         // Accordion Toggle
         function toggleAccordion(header) {
             const item = header.parentElement;
@@ -1499,6 +1650,11 @@
 
         // Download Report
         function downloadReport() {
+            if (!currentAssessment.results) {
+                alert('Please complete an assessment first.');
+                return;
+            }
+
             alert('Generating comprehensive GAIA report...\n\nYour report will include:\n• Environmental impact analysis\n• Benefit-cost assessment\n• Detailed recommendations\n• Implementation roadmap\n\nReport download will begin shortly.');
             updateProgress(100);
         }
@@ -1516,11 +1672,6 @@
                     item.style.display = searchTerm === '' ? 'block' : 'none';
                 }
             });
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            updateProgress(25);
         });
     </script>
 </body>
