@@ -36,7 +36,11 @@ Audit of every GAIA 1.0 component: **KEPT**, **REBUILT**, or **REMOVED**, with t
 | `SKILL.md` | Excel-to-webapp conversion instructions for an AI assistant — internal tooling notes, not framework content |
 | `extract_excel_data.py` + `workbook-data.json` pipeline | Inverted architecture: the Excel was hand-edited truth extracted into the app. v2 inverts it — data tables (CSV) are the truth; the workbook is **generated** by `build_workbook.py` |
 | `PULL_AND_TEST.md`, `MERGE_TO_MAIN.md`, `PULL_REQUEST.md`, `EXCEL_TO_APP_CHEATSHEET.md`, `COMPLETE_WORKFLOW.md`, `VERIFICATION_REPORT.md`, `INDEX.md`, `CLEAR_CACHE.html`, `test-assets-loading.html`, `test-calculation.html` | Session/process artifacts from earlier development, not framework deliverables. Preserved in git history |
-| `GAIA_Complete_Tool.xlsx` (v1 workbook) | Superseded by generated `GAIA_Assessment_Tool.xlsx`; v1 file moved to `legacy/` for reference |
+| `USER_GUIDE.md`, `DEPLOYMENT.md` | v1-UI walkthrough and Pages setup notes; superseded by the new README and the workbook's Start Here sheet |
+| `gaia-workbook-viewer.html` | v1 spreadsheet viewer built on the abolished extract pipeline |
+| `assets/` (`ai-models-database.csv`, `workbook-data.json`, `README.md`) and `List of models.csv` | v1 model data without sources, uncertainty, or vintage; superseded by `data/models.csv` (every row sourced and tiered) |
+| `GAIA_Complete_Tool.xlsx` (v1 workbook) | Superseded by generated `GAIA_Assessment_Tool.xlsx`; v1 file moved to `legacy/GAIA_Complete_Tool_v1.xlsx` for reference |
+| `UI elements/` (v1 design mockups) | Moved to `legacy/ui-elements-v1/` — historical record of the v1 interface |
 | Weekly Monitor sheet (fabricated demo data) | A monitoring log with invented numbers teaches users to trust invented numbers. v2 ships a clean usage-log template instead |
 | "Support" contacts (`gaia-support@gov.example`, `learn.gov/gaia`) | Placeholder fiction |
 

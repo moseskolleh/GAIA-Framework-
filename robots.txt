@@ -1,12 +1,7 @@
-# robots.txt for GAIA Framework
+# robots.txt for GAIA Framework 2.0
 
 User-agent: *
 Allow: /
 
 # Sitemap location
 Sitemap: https://moseskolleh.github.io/GAIA-Framework-/sitemap.xml
-
-# Disallow specific files
-Disallow: /*.xlsx
-Disallow: /src/
-Disallow: /extract_excel_data.py

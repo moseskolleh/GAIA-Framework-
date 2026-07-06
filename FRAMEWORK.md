@@ -54,7 +54,7 @@ The **use phase of AI inference**, from the perspective of an AI-consuming organ
 | Embodied emissions of serving hardware (manufacturing, amortized) | Embodied adder (§4.6) |
 | Amortized training footprint | Optional adder, off by default (§4.7) |
 
-Out of scope (documented, per ISO 14044 cut-off rules): end-user devices, network transmission (typically <5% of a generative-AI request's footprint), data-center construction, and end-of-life — acknowledged as a truncation that understates the true total by an estimated 5–15%.
+Out of scope (documented, per ISO 14044 cut-off rules): end-user devices, network transmission, data-center construction, and end-of-life. Published LCAs that include these stages find them to be minor contributors for generative-AI serving (Mistral's audited LCA attributes ~85% of emissions and ~91% of water to training + inference alone); the omission is nonetheless a boundary truncation that understates the true total, and conforming reports must state it.
 
 ### 2.2 Functional units
 
@@ -90,24 +90,24 @@ Select mitigation levers from the evidence-ranked catalogue (§6); set reduction
 ### 4.1 Energy per request
 
 ```
-E_request = E_IT × S × PUE                                     [Wh]
+E_request = E_IT × PUE                                          [Wh]
 
-E_IT  = accelerator (GPU/TPU) energy for the request
-S     = serving-stack multiplier (host CPU + DRAM + idle capacity)
+E_IT  = IT-boundary energy for the request
+        (accelerator + host CPU/DRAM + idle serving capacity)
 PUE   = power usage effectiveness of the facility
 ```
 
-`E_IT` is obtained by tier (§4.5). When modeled from tokens:
+`E_IT` is obtained by tier (§4.5). **The GAIA model database stores per-token energies already normalized to the IT boundary** — the serving-stack multiplier S (below) is applied during normalization, not by the user. When computed from tokens:
 
 ```
 E_IT = (T_out × e_out) + (T_in × e_in)                          [Wh]
 ```
 
-where `e_out` is model-specific energy per output token and `e_in ≈ e_out / k` with k ≈ 10 (input processing is batched/parallel; empirically 5–20× cheaper per token than generation).
+where `e_out` is the model's IT-boundary energy per output token and `e_in ≈ e_out / k` with k ≈ 10 (input processing is batched/parallel; empirically 5–20× cheaper per token than generation).
 
-**Serving-stack multiplier S.** Google's production measurement of the full Gemini serving stack found the accelerator to be only ~58% of per-prompt energy (host 25%, idle capacity 10%, with overhead applied separately) — implying S ≈ 1.7 on GPU-only figures. Benchmark data measured GPU-only (AI Energy Score) must be multiplied by S; provider-disclosed full-stack figures (Google, Mistral) must not. Default S = 1.7 (range 1.4–2.0). *(Source: Elsworth et al., "Measuring the environmental impact of delivering AI at Google" [arXiv:2508.15734], Aug 2025.)*
+**Serving-stack multiplier S (normalization step).** Google's production measurement of the full Gemini serving stack found the accelerator to be only ~58% of per-prompt energy (host 25%, idle capacity 10%, with facility overhead applied separately) — implying S ≈ 1.7 on GPU-only figures. Sources measured GPU-only (AI Energy Score) are multiplied by S when entered into the database; provider-disclosed full-stack figures (Google, Mistral) are not (their facility overhead is instead backed out). Default S = 1.7 (range 1.4–2.0). *(Source: Elsworth et al., "Measuring the environmental impact of delivering AI at Google" [arXiv:2508.15734], Aug 2025.)*
 
-**PUE.** Defaults: hyperscale cloud 1.12 (range 1.06–1.3; Google fleet trailing-twelve-month ≈ 1.09–1.10), typical enterprise/colo 1.54 (Uptime Institute Global Survey 2025 industry average), unknown 1.3. User-overridable.
+**PUE.** Profile defaults (see `data/facilities.csv`, which the tools use verbatim): hyperscale best-in-class 1.09 (range 1.06–1.15; Google fleet trailing-twelve-month ≈ 1.09–1.10), hyperscale cloud typical 1.15 (1.10–1.30), colocation/enterprise 1.54 (Uptime Institute Global Survey 2025 industry average), on-premises legacy 1.80, unknown/API default 1.20. User-overridable.
 
 ### 4.2 Total and monthly energy
 
@@ -118,9 +118,11 @@ E_month = E_request × Q_month / 1000                            [kWh]
 ### 4.3 Carbon
 
 ```
-C_op(location) = E_month × CI_location                          [kg CO2e]
-C_op(market)   = E_month × CI_market                            [kg CO2e]
+C_op(location) = E_month × CI_location / 1000                   [kg CO2e]
+C_op(market)   = E_month × CI_market / 1000                     [kg CO2e]
 C_total        = C_op + C_embodied (+ C_training, optional)
+
+(E_month in kWh; CI in g CO2e/kWh; /1000 converts g → kg)
 ```
 
 `CI_location` comes from the hosting region's annual average grid intensity (Ember / IEA, latest year; the workbook ships a sourced regional table with vintage labels). If the hosting region is unknown — common for API use — use the provider's reported fleet average if disclosed, else the global average (473 g CO2e/kWh, Ember 2024) with widened bounds. `CI_market` uses provider-disclosed market-based factors where available (several providers procure 90–100% clean energy on paper); GAIA reports it beside, never instead of, the location-based figure (P6).
@@ -131,7 +133,7 @@ C_total        = C_op + C_embodied (+ C_training, optional)
 W_month = (E_IT_month × WUE_site) + (E_month × EWIF_region)     [L]
 ```
 
-- **Path 1 — on-site:** cooling water at the facility, proportional to IT energy. Defaults: hyperscale best ≈ 0.2 L/kWh, hyperscale typical ≈ 1.0, industry legacy ≈ 1.8. *(Sources: operator sustainability reports; Google 2024 fleet WUE ≈ 1.0 L/kWh.)*
+- **Path 1 — on-site:** cooling water at the facility, proportional to IT energy. Profile defaults (per `data/facilities.csv`): hyperscale best-in-class ≈ 0.25 L/kWh, hyperscale typical ≈ 1.0, colocation/legacy ≈ 1.8. *(Sources: operator sustainability reports; Google 2024 fleet WUE ≈ 1.0 L/kWh.)*
 - **Path 2 — off-site:** water consumed generating the electricity (EWIF). Defaults: ≈ 2.0 L/kWh central (range 1.0–4.0), region-specific values in the workbook table. *(Sources: Li, Yang, Islam & Ren, "Making AI Less Thirsty" [arXiv:2304.03271]; Macknick et al. 2012 operational water-consumption factors.)*
 
 GAIA 1.0 stored a single per-model water number — this conflated the model with the facility and region and is abolished (P3).
@@ -147,7 +149,9 @@ Every `E_IT` estimate is labeled with the tier it came from. Tiering follows the
 | **T3 Benchmarked** | Independent standardized benchmark (GPU-only, needs S) | 2 | AI Energy Score; Jegham et al. API benchmarks |
 | **T4 Modeled** | Parameter-count physics model (FLOPs → J via hardware efficiency) | 3 | EcoLogits-style estimate for an undisclosed model |
 
-Low = central ÷ band; High = central × band. When quantities multiply, GAIA propagates bounds multiplicatively (worst-case interval), which is conservative and spreadsheet-tractable.
+The tier band is the **default minimum width**: Low = central ÷ band; High = central × band. A database row may carry *wider* bounds than its tier default when independent sources disagree (several T2/T3 rows do — e.g. provider disclosures with unstated boundaries, or benchmark results that conflict with first-principles estimates); the widening is documented in that row's `basis` field, and the row's stored `wh_low`/`wh_high` are authoritative.
+
+Bound propagation is **energy-dominated**: downstream results (carbon, water, totals) scale by the energy bounds (`wh_low/central`, `wh_high/central`). Factor uncertainty (CI, PUE, WUE, EWIF — whose own low/high columns ship in the factor tables) adds *beyond* the displayed band and is disclosed as such rather than compounded, which keeps the interval interpretable and spreadsheet-tractable.
 
 **Tier-4 model (for models with no measurement):**
 
@@ -224,7 +228,7 @@ The result is a frugality flag: **F0** (all three pass), **F1** (one failure), *
 |---|---|
 | A–B, F0 | Proceed; monitor quarterly |
 | A–B, F1+ | Efficient but wasteful by design — fix necessity/right-sizing first |
-| C–D, F0 | Justified heavy use — apply §6 levers; set an intensity-reduction target |
+| C–D, F0 | Justified heavy use — apply mitigation levers; set an intensity-reduction target |
 | C–D, F1+ | Priority for intervention |
 | E, any | Re-architect: reasoning budgets, model routing, or task redesign before scale-up |
 
@@ -310,6 +314,7 @@ Benchmarks: Jegham et al., *How Hungry is AI?*, arXiv:2505.09598 (2025) · Lucci
 Water: Li, Yang, Islam & Ren, *Making AI Less "Thirsty"*, arXiv:2304.03271 (2023; CACM 2025) · Macknick et al., operational water factors (2012).
 Lifecycle & embodied: Luccioni, Viguier & Ligozat, *BLOOM LCA*, arXiv:2211.02001 (2022) · Faiz et al., *LLMCarbon*, ICLR (2024) · Boavizta server-impact database · NVIDIA HGX embodied-carbon disclosures.
 Standards: ISO/IEC 21031:2024 (SCI) · GSF *SCI for AI* (2025) · ISO 14040/14044 · ITU-T L.1410 · AFNOR SPEC 2314 (2024) · GHG Protocol Scope 2 Guidance · EU AI Act Art. 40/51/95, Annex XI.
+Accounting methodology: *Accounting for AI Inference in Corporate GHG Inventories: A Four-Tier Methodology for Scope 3 Category 1 Reporting*, arXiv:2606.10660 (2026).
 Context data: Ember *Global Electricity Review* (2025, 2024 data) · IEA *Electricity 2025* / *Energy & AI* (2025) · Uptime Institute *Global Data Center Survey* (2025) · operator sustainability reports (Google, Microsoft, Meta, AWS).
 
 ---
