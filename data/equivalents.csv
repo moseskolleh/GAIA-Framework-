@@ -1,0 +1,7 @@
+quantity,per_unit,equivalent,factor,source
+Energy,1 kWh,hours of LED bulb (10 W),100,"Arithmetic: 1000 Wh / 10 W"
+Energy,1 kWh,km driven in an average EV,5.9,"~0.17 kWh/km typical EV consumption (EPA/WLTP averages)"
+Energy,1 kWh,smartphone full charges,80,"EPA GHG Equivalencies Calculator (~0.012 kWh/charge)"
+Carbon,1 kg CO2e,km driven in an average petrol car,4.0,"EPA GHG Equivalencies Calculator (~400 g CO2e/mile = ~250 g/km)"
+Water,1 L,drinking glasses (250 mL),4,"Arithmetic"
+Water,1000 L,8-minute showers,15,"EPA WaterSense (~2.1 gpm showerhead = ~64 L/shower)"

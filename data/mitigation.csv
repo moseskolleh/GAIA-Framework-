@@ -1,0 +1,9 @@
+rank,lever,who_controls,measured_effect,evidence
+1,Right-size the model (route each task to the smallest adequate model),User,"10-70x energy difference between frontier-reasoning and small efficient models on identical prompts","Jegham et al. arXiv:2505.09598 (o3 vs GPT-4.1 nano >70x); AI Energy Score leaderboard spreads"
+2,Cap reasoning/thinking budgets on bounded tasks,User,"Reasoning modes average ~30x the energy of standard generation; explicit budgets recover most of it","AI Energy Score v2 (Dec 2025)"
+3,Choose low-carbon hosting regions,User/Provider,"Grid carbon intensity spans ~20x (30-40 gCO2e/kWh hydro/nuclear grids vs 600-750 coal-heavy)","Ember Global Electricity Review (2024 data)"
+4,Bound output length; prompt and token discipline,User,"Per-request energy is approximately linear in output tokens; halving median output roughly halves energy","Physics of autoregressive decoding; Luccioni et al. FAccT 2024"
+5,Cache repeated context and responses,User,"Eliminates recomputation of repeated prefixes; effect equals your cache hit rate","Provider prompt-caching documentation"
+6,Batch requests / schedule flexible jobs off-peak,User,"Improves serving utilization; single-digit to low-double-digit % energy; larger carbon effect via diurnal grid variation","Serving-systems literature; grid CI diurnal data"
+7,Prefer providers that disclose measured footprints,User,"Converts Tier-3/4 guesses into Tier-2 data (halves uncertainty); creates market pressure for transparency","GAIA principle P1; Google arXiv:2508.15734; Mistral LCA 2025"
+8,Adopt newer accelerator generations,Provider,"~24% lower embodied carbon per FLOP (B200 vs H100); higher FLOPs/J in serving","NVIDIA HGX embodied-carbon disclosures"
