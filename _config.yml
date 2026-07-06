@@ -1,14 +1,14 @@
-# GitHub Pages Configuration for GAIA Framework
-# This file configures Jekyll settings for GitHub Pages
+# GitHub Pages Configuration for GAIA Framework 2.0
+# (Inert while .nojekyll is present; kept accurate for tooling that reads it.)
 
-title: "GAIA Framework"
-description: "Green AI Impact Assessment & Optimization Framework - Measure and reduce AI environmental impact"
-author: "GAIA Framework Team"
+title: "GAIA Framework 2.0"
+description: "Green AI Assessment - a science-based framework for measuring, judging, and reducing the environmental footprint of AI use"
+author: "GAIA Framework"
 baseurl: "" # Leave empty for root deployment
 url: "https://moseskolleh.github.io/GAIA-Framework-"
 
 # Theme settings
-theme: null # Using custom HTML, no Jekyll theme needed
+theme: null # Custom single-file HTML, no Jekyll theme
 
 # Build settings
 markdown: kramdown
@@ -18,31 +18,17 @@ exclude:
   - README.md
   - LICENSE
   - .gitignore
-  - extract_excel_data.py
-  - "*.xlsx"
-  - src/
+  - build_workbook.py
+  - data/
+  - legacy/
 
 # Include specific files
 include:
-  - _*
   - .nojekyll
-
-# Plugins (GitHub Pages supported)
-plugins:
-  - jekyll-feed
-  - jekyll-seo-tag
 
 # SEO settings
 lang: en_US
 logo: null
-
-# Social media
-social:
-  name: GAIA Framework
-  links: []
-
-# Google Analytics (optional - add your GA ID if needed)
-# google_analytics: UA-XXXXXXXXX-X
 
 # Default front matter
 defaults:

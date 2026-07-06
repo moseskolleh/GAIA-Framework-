@@ -1,875 +1,708 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GAIA Framework - Green AI Impact Assessment & Optimization Tool for measuring and reducing AI environmental impact">
-    <meta name="keywords" content="Green AI, AI sustainability, carbon footprint, environmental impact, AI assessment">
-    <meta name="author" content="GAIA Framework">
-    <title>GAIA Framework - Green AI Impact Assessment Tool</title>
-    <style>
-        :root {
-            --bg-gradient-start: #667eea;
-            --bg-gradient-end: #764ba2;
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --text-primary: #333;
-            --text-secondary: #666;
-            --text-muted: #999;
-            --border-color: #e5e7eb;
-            --hover-bg: #f9fafb;
-            --label-bg: #f3f4f6;
-            --section-header-bg: #ede9fe;
-            --section-header-text: #7c3aed;
-            --success-color: #10b981;
-            --chart-bg: white;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-        }
-
-        body.dark-mode {
-            --bg-gradient-start: #1a1a2e;
-            --bg-gradient-end: #16213e;
-            --glass-bg: rgba(30, 30, 46, 0.95);
-            --text-primary: #e5e7eb;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
-            --border-color: #374151;
-            --hover-bg: #374151;
-            --label-bg: #1f2937;
-            --section-header-bg: #312e81;
-            --section-header-text: #c4b5fd;
-            --success-color: #34d399;
-            --chart-bg: #1f2937;
-            --shadow-color: rgba(0, 0, 0, 0.6);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-            min-height: 100vh;
-            padding: 20px;
-            transition: background 0.3s ease;
-        }
-
-        .container { max-width: 1400px; margin: 0 auto; }
-
-        .glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px var(--shadow-color);
-            margin-bottom: 20px;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .header-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .header-content { flex: 1; min-width: 300px; }
-
-        h1 { font-size: 2.5em; margin-bottom: 10px; color: var(--text-primary); }
-
-        .logo {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle { color: var(--text-secondary); font-size: 1.1em; margin-bottom: 15px; }
-
-        .theme-toggle {
-            padding: 12px 24px;
-            font-size: 1.1em;
-            background: var(--glass-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .theme-toggle:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px var(--shadow-color);
-        }
-
-        .stat-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            font-weight: bold;
-            margin: 10px 10px 0 0;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 12px 24px;
-            background: var(--label-bg);
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-        }
-
-        .tab:hover { background: var(--hover-bg); }
-
-        .tab.active {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-        }
-
-        .view-content { display: none; }
-        .view-content.active { display: block; }
-
-        select {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 1.1em;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            background: var(--glass-bg);
-            color: var(--text-primary);
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: var(--success-color);
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-            padding: 12px 20px;
-            font-size: 1em;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            outline: none;
-            background: var(--glass-bg);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-        }
-
-        .search-box:focus { border-color: var(--success-color); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
-
-        .btn {
-            padding: 12px 24px;
-            font-size: 1em;
-            font-weight: 600;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-secondary {
-            background: var(--label-bg);
-            color: var(--text-primary);
-        }
-
-        .btn-secondary:hover { background: var(--hover-bg); }
-
-        .sheet-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .sheet-header h2 { font-size: 2em; color: var(--text-primary); }
-
-        .row-count { color: var(--success-color); font-weight: 600; }
-
-        .table-container {
-            overflow-x: auto;
-            max-height: 600px;
-            overflow-y: auto;
-            border-radius: 12px;
-        }
-
-        .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
-        .table-container::-webkit-scrollbar-track { background: var(--label-bg); border-radius: 10px; }
-        .table-container::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; }
-
-        table { width: 100%; border-collapse: collapse; background: var(--chart-bg); }
-
-        td {
-            padding: 12px 16px;
-            border: 1px solid var(--border-color);
-            font-size: 0.95em;
-            color: var(--text-primary);
-            transition: background 0.2s ease;
-        }
-
-        tr:hover td { background: var(--hover-bg); }
-
-        .main-header {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            font-size: 1.1em;
-        }
-
-        .label-cell { background: var(--label-bg); font-weight: 600; }
-
-        .section-header {
-            background: var(--section-header-bg);
-            color: var(--section-header-text);
-            font-weight: 700;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-secondary);
-            font-size: 1.1em;
-            display: none;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .chart-card {
-            background: var(--chart-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px var(--shadow-color);
-            transition: all 0.3s ease;
-        }
-
-        .chart-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px var(--shadow-color); }
-
-        .chart-card h3 {
-            color: var(--text-primary);
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-
-        canvas { max-width: 100%; height: auto !important; }
-
-        .footer {
-            text-align: center;
-            color: white;
-            margin-top: 30px;
-            opacity: 0.9;
-        }
-
-        .success-message {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            display: none;
-            animation: slideIn 0.3s ease;
-            z-index: 1000;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 1.8em; }
-            .glass { padding: 20px; }
-            .controls { flex-direction: column; }
-            .search-box { width: 100%; }
-            .charts-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GAIA Framework 2.0 — Green AI Assessment</title>
+<meta name="description" content="GAIA 2.0 is a science-based framework for measuring, judging, and reducing the environmental footprint of AI use — energy, carbon, and water, with uncertainty bounds and data provenance.">
+<link rel="canonical" href="https://moseskolleh.github.io/GAIA-Framework-/">
+<meta property="og:title" content="GAIA Framework 2.0 — Green AI Assessment">
+<meta property="og:description" content="A science-based framework for measuring, judging, and reducing the environmental footprint of AI use.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://moseskolleh.github.io/GAIA-Framework-/">
+<style>
+:root{
+  --bg:#f7f8f6;
+  --bg-card:#ffffff;
+  --bg-inset:#eef1ec;
+  --text:#1c2420;
+  --text-soft:#4c5a52;
+  --text-faint:#5d6a62;
+  --border:#d8ded9;
+  --accent:#177245;
+  --accent-strong:#0f5c37;
+  --accent-soft:#e3efe7;
+  --link:#0f5c37;
+  --badge-a:#0f6f3f;
+  --badge-b:#3d8b28;
+  --badge-c:#a97f00;
+  --badge-d:#bb5a00;
+  --badge-e:#b3261e;
+  --shadow:0 1px 3px rgba(20,30,25,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#141915;
+    --bg-card:#1c231e;
+    --bg-inset:#232b25;
+    --text:#e6ebe7;
+    --text-soft:#b4c0b8;
+    --text-faint:#8d998f;
+    --border:#37413a;
+    --accent:#3c9c6c;
+    --accent-strong:#5fc490;
+    --accent-soft:#22352a;
+    --link:#6fcf9b;
+    --shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+a{color:var(--link)}
+a:hover{text-decoration-thickness:2px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--bg-inset);padding:.1em .35em;border-radius:4px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 1rem}
+header.site{border-bottom:1px solid var(--border);background:var(--bg-card)}
+nav.top{display:flex;flex-wrap:wrap;gap:.25rem 1.1rem;align-items:center;padding:.65rem 0;font-size:.88rem}
+nav.top .brand{font-weight:700;letter-spacing:.04em;color:var(--text);text-decoration:none;margin-right:auto}
+nav.top a{color:var(--text-soft);text-decoration:none}
+nav.top a:hover{color:var(--accent-strong);text-decoration:underline}
+.hero{padding:3.2rem 0 2.8rem}
+.hero .badge{
+  display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent-strong);background:var(--accent-soft);border:1px solid var(--accent);
+  border-radius:999px;padding:.2rem .7rem;margin-bottom:1rem;
+}
+.hero h1{font-size:clamp(1.7rem,4.5vw,2.7rem);line-height:1.15;margin:.2rem 0 .8rem;letter-spacing:-.01em}
+.hero h1 .sub{color:var(--accent-strong)}
+.hero p.tagline{font-size:clamp(1rem,2.4vw,1.2rem);color:var(--text-soft);max-width:46em;margin:0 0 1.6rem}
+.cta{display:flex;flex-wrap:wrap;gap:.75rem}
+.btn{display:inline-block;text-decoration:none;font-weight:600;font-size:1rem;padding:.7rem 1.3rem;border-radius:8px;border:1px solid transparent}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent-strong);box-shadow:var(--shadow)}
+.btn.primary:hover{background:var(--accent-strong)}
+.btn.secondary{background:var(--bg-card);color:var(--text);border-color:var(--border)}
+.btn.secondary:hover{border-color:var(--accent);color:var(--accent-strong)}
+.hero .fineprint{font-size:.8rem;color:var(--text-faint);margin-top:.9rem}
+section{padding:2.6rem 0}
+section h2{font-size:clamp(1.3rem,3vw,1.7rem);margin:0 0 .4rem;letter-spacing:-.01em}
+section p.lead{color:var(--text-soft);max-width:52em;margin:.2rem 0 1.4rem}
+.modules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}
+.module{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.2rem;box-shadow:var(--shadow)}
+.module .letter{
+  display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:6px;
+  background:var(--accent-soft);color:var(--accent-strong);font-weight:700;margin-bottom:.5rem;border:1px solid var(--accent);
+}
+.module h3{margin:.1rem 0 .4rem;font-size:1.05rem}
+.module p{margin:0;font-size:.92rem;color:var(--text-soft)}
+/* Estimator */
+.estimator{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);
+  padding:1.4rem;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:1.6rem;
+}
+@media (max-width:860px){.estimator{grid-template-columns:1fr}}
+.estimator h3{margin:0 0 1rem;font-size:1.02rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint)}
+.field{margin-bottom:.95rem}
+.field label{display:block;font-size:.86rem;font-weight:600;margin-bottom:.28rem}
+.field .hint{font-weight:400;color:var(--text-faint)}
+.field select,.field input[type=number]{
+  width:100%;padding:.5rem .6rem;font-size:.95rem;border:1px solid var(--border);
+  border-radius:7px;background:var(--bg);color:var(--text);
+}
+.field select:focus,.field input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media (max-width:380px){.row2{grid-template-columns:1fr}}
+.field input[type=range]{width:100%;accent-color:var(--accent)}
+fieldset.frugal{border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem;margin:0 0 .95rem}
+fieldset.frugal legend{font-size:.86rem;font-weight:600;padding:0 .3rem}
+fieldset.frugal .check{display:flex;gap:.55rem;align-items:flex-start;margin:.45rem 0;font-size:.86rem}
+fieldset.frugal input[type=checkbox]{margin-top:.2rem;accent-color:var(--accent);width:1rem;height:1rem;flex:none}
+fieldset.frugal .check b{font-weight:600}
+fieldset.frugal .check span{color:var(--text-soft)}
+/* Results */
+.results{border-left:1px solid var(--border);padding-left:1.6rem}
+@media (max-width:860px){.results{border-left:none;padding-left:0;border-top:1px solid var(--border);padding-top:1.3rem}}
+.verdict{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+.grade-badge{
+  width:4.4rem;height:4.4rem;border-radius:12px;color:#fff;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;font-weight:800;letter-spacing:-.02em;box-shadow:var(--shadow);
+}
+.grade-a{background:var(--badge-a)} .grade-b{background:var(--badge-b)}
+.grade-c{background:var(--badge-c)} .grade-d{background:var(--badge-d)}
+.grade-e{background:var(--badge-e)}
+.verdict .meta{min-width:12rem;flex:1}
+.flag-chip{
+  display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.04em;
+  border:1px solid var(--border);border-radius:999px;padding:.12rem .6rem;background:var(--bg-inset);
+}
+.verdict .gradeword{font-weight:700;font-size:1.02rem;margin-right:.5rem}
+.guidance{margin:.35rem 0 0;font-size:.93rem;color:var(--text-soft)}
+.tierline{font-size:.82rem;color:var(--text-faint);margin:.35rem 0 1rem}
+.numbers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;margin-bottom:1rem}
+.stat{background:var(--bg-inset);border:1px solid var(--border);border-radius:9px;padding:.6rem .75rem}
+.stat .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint)}
+.stat .v{font-size:1.18rem;font-weight:700;font-variant-numeric:tabular-nums;margin:.1rem 0 0}
+.stat .r{font-size:.78rem;color:var(--text-soft);font-variant-numeric:tabular-nums}
+.stat.wide{grid-column:1/-1}
+.equiv{margin:.2rem 0 1rem;padding:0;list-style:none}
+.equiv li{font-size:.88rem;color:var(--text-soft);padding:.18rem 0;border-bottom:1px dashed var(--border)}
+.equiv li:last-child{border-bottom:none}
+.equiv .ev{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.smallprint{font-size:.78rem;color:var(--text-faint);border-top:1px solid var(--border);padding-top:.7rem;margin-top:.4rem}
+details.eqns{margin-top:1.2rem;font-size:.85rem}
+details.eqns summary{cursor:pointer;font-weight:600;color:var(--text-soft)}
+details.eqns pre{
+  background:var(--bg-inset);border:1px solid var(--border);border-radius:8px;
+  padding:.8rem 1rem;overflow-x:auto;font-size:.8rem;line-height:1.5;
+}
+/* Science section */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.9rem;margin:1.2rem 0 1.8rem}
+.tier{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;box-shadow:var(--shadow)}
+.tier .tn{font-weight:700;color:var(--accent-strong);font-size:.95rem}
+.tier .band{float:right;font-size:.78rem;color:var(--text-faint);font-variant-numeric:tabular-nums}
+.tier p{margin:.35rem 0 0;font-size:.86rem;color:var(--text-soft)}
+ul.standards{list-style:none;margin:0;padding:0}
+ul.standards li{padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.92rem}
+ul.standards li:last-child{border-bottom:none}
+ul.standards b{color:var(--text)}
+ul.standards span{color:var(--text-soft)}
+/* Tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;background:var(--bg-card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.87rem}
+th,td{text-align:left;vertical-align:top;padding:.55rem .75rem;border-bottom:1px solid var(--border)}
+tbody tr:last-child td{border-bottom:none}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);background:var(--bg-inset)}
+td.rank{font-weight:700;color:var(--accent-strong);white-space:nowrap}
+td .src{display:block;font-size:.78rem;color:var(--text-faint);margin-top:.15rem}
+/* Limitations */
+.limits{
+  background:var(--bg-card);border:1px solid var(--border);border-left:4px solid var(--badge-c);
+  border-radius:10px;padding:1.1rem 1.3rem;box-shadow:var(--shadow);
+}
+.limits h2{margin-top:0}
+.limits ul{margin:.6rem 0 0;padding-left:1.2rem}
+.limits li{margin:.45rem 0;font-size:.92rem;color:var(--text-soft)}
+footer.site{
+  border-top:1px solid var(--border);margin-top:2rem;padding:1.6rem 0 2.2rem;
+  font-size:.85rem;color:var(--text-faint);background:var(--bg-card);
+}
+footer.site p{margin:.3rem 0}
+@media (max-width:480px){
+  .hero{padding:2.2rem 0 2rem}
+  .estimator{padding:1rem}
+  section{padding:2rem 0}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="glass">
-            <div class="header-controls">
-                <div class="header-content">
-                    <h1><span class="logo">GAIA</span> <span>Framework</span></h1>
-                    <p class="subtitle">Green AI Impact Assessment & Optimization Framework</p>
-                    <span class="stat-badge" id="sheet-count">📊 8 Sheets</span>
-                    <span class="stat-badge" id="total-rows">📋 0 Total Rows</span>
-                </div>
-                <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Dark Mode</button>
-            </div>
-        </div>
 
-        <div class="glass">
-            <div class="tabs">
-                <button class="tab active" onclick="switchView('data')">📊 Data View</button>
-                <button class="tab" onclick="switchView('charts')">📈 Charts & Analytics</button>
-            </div>
+<header class="site">
+  <div class="wrap">
+    <nav class="top" aria-label="Site">
+      <a class="brand" href="#top">GAIA 2.0</a>
+      <a href="#estimator">Estimator</a>
+      <a href="#modules">Method</a>
+      <a href="#science">Science</a>
+      <a href="#compare">Comparison</a>
+      <a href="#levers">Levers</a>
+      <a href="#limitations">Limitations</a>
+    </nav>
+  </div>
+</header>
 
-            <div id="data-view" class="view-content active">
-                <label for="sheet-select" style="font-weight: 600; font-size: 1.1em; color: var(--text-primary);">📋 Select Sheet:</label>
-                <select id="sheet-select" onchange="changeSheet()"></select>
+<main id="top">
+  <div class="wrap">
 
-                <div style="margin-top: 20px;">
-                    <div class="controls">
-                        <input type="text" class="search-box" id="search-box" placeholder="🔍 Search current sheet..." onkeyup="performSearch()">
-                        <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
-                        <button class="btn btn-primary" onclick="exportToCSV()">📥 Download CSV</button>
-                    </div>
-
-                    <div class="sheet-header">
-                        <h2 id="current-sheet-name">Dashboard</h2>
-                        <span class="row-count"><span id="row-count">0</span> rows</span>
-                    </div>
-
-                    <div class="no-results" id="no-results">
-                        <p>🔍 No results found</p>
-                        <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 10px;">Try different search terms</p>
-                    </div>
-
-                    <div class="table-container" id="table-container"></div>
-                </div>
-            </div>
-
-            <div id="charts-view" class="view-content">
-                <h2 style="color: var(--text-primary); margin-bottom: 20px;">📈 Environmental Impact Analytics</h2>
-
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <h3>⚡ Top AI Models by Energy Consumption</h3>
-                        <canvas id="energyChart" width="400" height="300"></canvas>
-                    </div>
-
-                    <div class="chart-card">
-                        <h3>💧 Top AI Models by Water Usage</h3>
-                        <canvas id="waterChart" width="400" height="300"></canvas>
-                    </div>
-
-                    <div class="chart-card">
-                        <h3>🌍 Top AI Models by Carbon Emissions</h3>
-                        <canvas id="carbonChart" width="400" height="300"></canvas>
-                    </div>
-
-                    <div class="chart-card">
-                        <h3>📊 Weekly Usage Trends</h3>
-                        <canvas id="weeklyChart" width="400" height="300"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card" style="margin-top: 20px;">
-                    <h3>📈 Model Comparison - Environmental Impact</h3>
-                    <canvas id="comparisonChart" width="800" height="400"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            🌱 Powered by GAIA Framework | Green AI for a Sustainable Future
-        </div>
+    <div class="hero">
+      <span class="badge">Version 2.0.0 · Specification · MIT</span>
+      <h1>GAIA Framework 2.0<br><span class="sub">Green AI Assessment</span></h1>
+      <p class="tagline">A science-based framework for measuring, judging, and reducing the environmental footprint of AI use.</p>
+      <div class="cta">
+        <a class="btn primary" href="GAIA_Assessment_Tool.xlsx" download>Download the Excel tool</a>
+        <a class="btn secondary" href="https://github.com/moseskolleh/GAIA-Framework-/blob/main/FRAMEWORK.md">Read the specification</a>
+      </div>
+      <p class="fineprint">Every number carries a source, a vintage, and a data-quality tier. Every result is reported as low / central / high. No composite scores.</p>
     </div>
 
-    <div class="success-message" id="success-message"></div>
-
-    <script>
-        const workbookData = {"sheets":[{"name":"Dashboard","data":[["GREEN AI IMPACT ASSESSMENT DASHBOARD","","","","","",""],["","","","","","",""],["Current Assessment Summary","","","","","","Model Efficiency Comparison"],["","","","","","",""],["Active Model:","o3","","Efficiency Grade:","F","",""],["Monthly Queries:",10000,"","Monthly Carbon (kg):",75.55,"",""],["Environmental Score:",100,"","Monthly Water (L):",760,"",""],["Benefit Score:",71,"","Monthly Energy (kWh):",214.14,"",""],["","","","","","",""],["","","","","","",""],["Quick Actions & Alerts","","","","","",""],["","","","","","",""],["Alert Level:","⚠️ HIGH","","","","",""],["Recommended Action:","Switch to efficient model immediately","","","","",""],["Potential Savings:","30-50% reduction achievable","","","","",""],["","","","","","",""],["","","","","","",""],["Monthly Usage Trends","","","","","",""]],"rows":18,"columns":7},{"name":"AI Impact Assessment","data":[["GREEN AI IMPACT ASSESSMENT","","","","","",""],["","","","","","",""],["STEP 1: MODEL SELECTION","","","","STEP 3: BENEFIT ASSESSMENT","",""],["","","","","","",""],["Select AI Model:","o3","","","Time Saved (hrs/month):","",200],["Custom Model Name:","","","","Quality Improvement (%):","",30],["","","","","Strategic Value (1-10):","",8],["STEP 2: TASK DEFINITION","","","","Error Reduction (%):","",25],["","","","","User Satisfaction (1-10):","",7],["Task Type:","Document Analysis","","","","",""],["Query Complexity:","Medium","","","","",""],["Expected Monthly Queries:",10000,"","","","",""],["Task Criticality:","High","","","","",""],["Average Prompt Length:",1000,"","","","",""],["","","","","","",""],["ASSESSMENT RESULTS","","","","","",""],["","","","","","",""],["Environmental Impact","","","","Benefit Assessment","",""],["Energy per Query (Wh):","",21.414,"","Efficiency Score:","",80],["Water per Query (L):","",0.076,"","Quality Score:","",55],["Carbon per Query (gCO2e):","",7.555,"","Strategic Score:","",75],["","","","","","",""],["Monthly Total Impact","","","","","",""],["Total Energy (kWh):","",214.14,"≈ 1285 hours of LED lighting","","",""],["Total Water (kL):","",0.76,"≈ 3040 cups of drinking water","","",""],["Total Carbon (kgCO2e):","",75.55,"≈ Driving 302 km in a car","","",""],["","","","","","",""],["","","","","","",""],["FINAL ASSESSMENT","","","","","",""],["","","","","","",""],["Environmental Impact Score:","",100,"","ECO-EFFICIENCY GRADE:","","F"],["Benefit Score:","",71,"","Recommendation:","","Prohibited"]],"rows":32,"columns":7},{"name":"Calculation Engine","data":[["CALCULATION ENGINE","","","","","","","",""],["","","","","","","","",""],["Input Parameters","","","Per-Query Calculations","","","","Benefit Calculations",""],["","","","","","","","",""],["Selected Model:","o3","",21.414,"Wh","","",80,"Efficiency"],["Monthly Queries:",10000,"",0.076,"L","","",55,"Quality"],["Query Complexity:","Medium","",7.555,"gCO2e","","",75,"Strategic"],["Prompt Length:",1000,"","","","","","",""],["","","","Monthly Totals","","","","",""],["","","",214.14,"≈ 1285 hours of LED lighting","","","",""],["","","",0.76,"≈ 3040 cups of drinking water","","","",""],["","","",75.55,"≈ Driving 302 km in a car","","","",""],["","","","","","","","",""],["","","","Final Scores","","","","Total Benefit",""],["","","",100,"Environmental Impact Score","","",71,"Benefit Score"]],"rows":15,"columns":9},{"name":"Decision Matrix","data":[["DECISION MATRIX","","","","",""],["","","","","",""],["Grading Criteria","","","","",""],["Grade","Env Impact","Benefit Score","Color","Recommendation","Action Required"],["A+","<20",">80","Dark Green","Strongly Recommended","Implement immediately"],["A","20-35","70-80","Green","Recommended","Proceed with standard monitoring"],["B","35-50","70-80","Light Green","Recommended with monitoring","Weekly impact review"],["C","35-50","50-70","Yellow","Conditional approval","Mitigation plan required"],["D","50-70","50-70","Orange","Requires mitigation","Immediate mitigation needed"],["Current Assessment:",100,71,"Red","F","Prohibited"],["F",">70","Any","Dark Red","Prohibited","Use not permitted"]],"rows":11,"columns":6},{"name":"Reference Data","data":[["MODEL REFERENCE DATA","","","","","","","","ENVIRONMENTAL MULTIPLIERS","","",""],["Model","Energy_Wh","Water_L","Carbon_gCO2e","Provider","Hardware","Model_Size","","","","",""],["GPT-4.1 nano",0.271,0.002,0.096,"OpenAI","H200","Small","","Provider","PUE","WUE","CIF"],["GPT-4o mini",1.418,0.005,0.5,"OpenAI","A100","Medium","","OpenAI/Azure",1.12,0.3,0.353],["GPT-4o",1.214,0.004,0.428,"OpenAI","H100","Large","","Anthropic/AWS",1.14,0.18,0.385],["GPT-4 Turbo",6.758,0.024,2.382,"OpenAI","A100","Large","","Meta/AWS",1.14,0.18,0.385],["o1-mini",1.598,0.006,0.564,"OpenAI","H100","Medium","","DeepSeek",1.27,1.2,0.6],["o1",12.1,0.043,4.269,"OpenAI","H100","Large","","","","",""],["o3-mini",2.447,0.009,0.863,"OpenAI","H100","Medium","","","","",""],["o3",21.414,0.076,7.555,"OpenAI","H100","Large","","","","",""],["Claude-3.5 Haiku",0.5,0.001,0.193,"Anthropic","H100","Small","","","","",""],["Claude-3.5 Sonnet",2,0.004,0.77,"Anthropic","H100","Medium","","","","",""],["Claude-3.7 Sonnet",2.781,0.006,1.072,"Anthropic","H200","Large","","","","",""],["LLaMA-3.1-8B",0.329,0.001,0.127,"Meta","H100","Small","","","","",""],["LLaMA-3.1-70B",3.558,0.007,1.37,"Meta","H100","Medium","","","","",""],["LLaMA-3.1-405B",6.911,0.014,2.661,"Meta","H100","Large","","","","",""],["DeepSeek-V3",9.129,0.155,5.477,"DeepSeek","H800","Large","","","","",""],["DeepSeek-R1",29,0.493,17.4,"DeepSeek","H800","Large","","","","",""],["Custom",2,0.005,0.7,"Custom","Unknown","Unknown","","","","",""]],"rows":19,"columns":12},{"name":"Weekly Monitor","data":[["WEEKLY MONITORING DASHBOARD","","","","","","","",""],["","","","","","","","",""],["Week of:","2025-10-28","","Department:","IT Services","","","",""],["","","","","","","","",""],["Weekly Metrics","","","","","","","Performance Indicators",""],["Day","Queries","Energy (kWh)","Water (L)","Carbon (kg)","Cost ($)","","",""],["Monday",1500,1.821,6,0.642,0.21852,"","Weekly Target:",10000],["Tuesday",1800,2.1852,7.2,0.7704,0.262224,"","Actual Usage:",9000],["Wednesday",2000,2.428,8,0.856,0.29136,"","Variance:",-0.1],["Thursday",1700,2.0638,6.8,0.7276,0.247656,"","",""],["Friday",1200,1.4568,4.8,0.5136,0.174816,"","Status:","👍 On Track"],["Saturday",500,0.607,2,0.214,0.07284,"","",""],["Sunday",300,0.3642,1.2,0.1284,0.043704,"","",""],["TOTAL",9000,10.926,36,3.852,1.31112,"","",""],["","","","","","","","",""],["Weekly Alerts & Actions","","","","","","","",""],["","","","","","","","",""],["Alert Level:","MEDIUM","","","","","","",""],["Recommended Actions:","Continue monitoring","","","","","","",""]],"rows":19,"columns":9},{"name":"Mitigation Strategies","data":[["MITIGATION STRATEGIES","","","","","",""],["Level","Strategy","Impact Reduction","Effort","Cost","Timeline","Priority"],["Organization","Switch to efficient models","40-60%","Medium","Low","1 month","High"],["Organization","Choose renewable cloud regions","30-50%","Low","None","Immediate","High"],["Organization","Implement query limits","20-30%","Low","None","1 week","Medium"],["Organization","Schedule batch processing","15-25%","Medium","None","2 weeks","Medium"],["Team","Batch similar requests","15-25%","Low","None","Immediate","High"],["Team","Use caching for common queries","10-20%","Medium","Low","2 weeks","Medium"],["Team","Optimize prompts","10-15%","Low","None","1 week","High"],["Team","Implement review workflow","5-10%","Medium","Low","2 weeks","Low"],["Individual","Personal carbon budget","5-10%","Low","None","Immediate","Medium"],["Individual","Query during off-peak hours","5-10%","Low","None","Immediate","Low"],["Individual","Use simpler models for routine","20-30%","Low","None","Immediate","High"],["Individual","Prompt engineering training","10-20%","Medium","Medium","1 month","Medium"]],"rows":14,"columns":7},{"name":"Documentation","data":[["GAIA FRAMEWORK DOCUMENTATION","","","","",""],["","","","","",""],["Quick Reference Guide","","","","",""],["","","","","",""],["How to Use This Tool:","","","Formulas & Calculations:","",""],["1. Go to 'AI Impact Assessment' sheet","","","Environmental Score = (Energy/10 + Water*50 + Carbon*2)","",""],["2. Select your AI model from dropdown or enter custom model","","","Benefit Score = Efficiency*0.4 + Quality*0.3 + Strategic*0.3","",""],["3. Define task parameters (type, complexity, volume)","","","Query Impact = Base Impact × Complexity Factor × Length Factor","",""],["4. Enter benefit estimates (time saved, quality improvement)","","","","",""],["5. Review results in Dashboard and Decision Matrix","","","Decision Rules:","",""],["6. Check Weekly Monitor for ongoing tracking","","","If Environmental < 20 AND Benefit > 80 → A+","",""],["7. Implement strategies from Mitigation sheet","","","If Environmental < 35 AND Benefit > 70 → A","",""],["","","","If Environmental < 50 AND Benefit > 50 → B or C","",""],["Key Metrics Explained:","","","If Environmental > 70 → F (Prohibited)","",""],["• Wh (Watt-hour): Energy unit, 1 Wh ≈ LED bulb for 6 minutes","","","","",""],["• L (Liter): Water consumption, 1 L ≈ 4 cups of water","","","Support & Resources:","",""],["• gCO2e: Carbon emissions, 1 kg CO2 ≈ driving 4 km","","","Framework Version: 1.0","",""],["• PUE: Power Usage Effectiveness (data center efficiency)","","","Last Updated: October 2025","",""],["• WUE: Water Usage Effectiveness (cooling efficiency)","","","Support Email: gaia-support@gov.example","",""],["• CIF: Carbon Intensity Factor (grid emissions)","","","Documentation: /sustainability/gaia","",""],["","","","Training: learn.gov/gaia","",""],["Efficiency Grades:","","","","",""],["• A+: Excellent - Strongly recommended","","","","",""],["• A: Very Good - Recommended","","","","",""],["• B: Good - Recommended with monitoring","","","","",""],["• C: Fair - Conditional approval required","","","","",""],["• D: Poor - Mitigation required","","","","",""],["• E: Very Poor - Not recommended","","","","",""],["• F: Unacceptable - Prohibited","","","","",""]],"rows":29,"columns":6}],"summary":{"total_sheets":8,"sheet_info":[{"name":"Dashboard","rows":18,"columns":7},{"name":"AI Impact Assessment","rows":32,"columns":7},{"name":"Calculation Engine","rows":15,"columns":9},{"name":"Decision Matrix","rows":11,"columns":6},{"name":"Reference Data","rows":19,"columns":12},{"name":"Weekly Monitor","rows":19,"columns":9},{"name":"Mitigation Strategies","rows":14,"columns":7},{"name":"Documentation","rows":29,"columns":6}]}};
-
-        let currentSheet = 'Dashboard';
-        let currentData = [];
-        let searchTimeout = null;
-
-        // Theme management
-        function toggleTheme() {
-            const body = document.body;
-            const btn = document.getElementById('theme-btn');
-
-            if (body.classList.contains('dark-mode')) {
-                body.classList.remove('dark-mode');
-                btn.textContent = '🌙 Dark Mode';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.classList.add('dark-mode');
-                btn.textContent = '☀️ Light Mode';
-                localStorage.setItem('theme', 'dark');
-            }
-
-            // Redraw charts with new colors
-            if (document.getElementById('charts-view').classList.contains('active')) {
-                drawAllCharts();
-            }
-        }
-
-        // Load saved theme
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-            if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
-                document.body.classList.add('dark-mode');
-                document.getElementById('theme-btn').textContent = '☀️ Light Mode';
-            }
-        }
-
-        // View switching
-        function switchView(view) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
-
-            if (view === 'data') {
-                document.querySelectorAll('.tab')[0].classList.add('active');
-                document.getElementById('data-view').classList.add('active');
-            } else {
-                document.querySelectorAll('.tab')[1].classList.add('active');
-                document.getElementById('charts-view').classList.add('active');
-                drawAllCharts();
-            }
-        }
-
-        // Initialize
-        function init() {
-            loadTheme();
-
-            const select = document.getElementById('sheet-select');
-            let totalRows = 0;
-
-            workbookData.sheets.forEach(sheet => {
-                const option = document.createElement('option');
-                option.value = sheet.name;
-                option.textContent = `${sheet.name} (${sheet.rows} rows)`;
-                select.appendChild(option);
-                totalRows += sheet.rows;
-            });
-
-            document.getElementById('sheet-count').textContent = `📊 ${workbookData.summary.total_sheets} Sheets`;
-            document.getElementById('total-rows').textContent = `📋 ${totalRows} Total Rows`;
-
-            renderSheet(currentSheet);
-        }
-
-        function changeSheet() {
-            const select = document.getElementById('sheet-select');
-            currentSheet = select.value;
-            clearSearch();
-            renderSheet(currentSheet);
-        }
-
-        function renderSheet(sheetName) {
-            const sheet = workbookData.sheets.find(s => s.name === sheetName);
-            if (!sheet) return;
-
-            currentData = sheet.data;
-            const container = document.getElementById('table-container');
-            const rowCount = document.getElementById('row-count');
-            const sheetNameEl = document.getElementById('current-sheet-name');
-
-            sheetNameEl.textContent = sheetName;
-            rowCount.textContent = sheet.rows;
-
-            renderTable(currentData, container);
-            document.getElementById('no-results').style.display = 'none';
-        }
-
-        function renderTable(data, container) {
-            container.innerHTML = '';
-            const table = document.createElement('table');
-            const tbody = document.createElement('tbody');
-
-            data.forEach((row, rowIndex) => {
-                const tr = document.createElement('tr');
-                const isEmptyRow = row.every(cell => cell === '');
-
-                if (isEmptyRow) {
-                    const td = document.createElement('td');
-                    td.colSpan = row.length;
-                    td.style.height = '10px';
-                    td.style.border = 'none';
-                    tr.appendChild(td);
-                } else {
-                    row.forEach((cell, cellIndex) => {
-                        const td = document.createElement('td');
-                        td.textContent = cell;
-
-                        const cellStr = String(cell).toUpperCase();
-                        const isMainHeader = cellStr.includes('DASHBOARD') || cellStr.includes('ASSESSMENT') ||
-                                           cellStr.includes('ENGINE') || cellStr.includes('MATRIX') ||
-                                           cellStr.includes('REFERENCE DATA') || cellStr.includes('MONITORING') ||
-                                           cellStr.includes('STRATEGIES') || cellStr.includes('DOCUMENTATION');
-
-                        const isSectionHeader = cellStr.includes('STEP') || cellStr.includes('SUMMARY') ||
-                                              cellStr.includes('STATISTICS') || cellStr.includes('METRICS') ||
-                                              cellStr.includes('BREAKDOWN') || cellStr.includes('TOTALS') ||
-                                              cellStr.includes('PARAMETERS') || cellStr.includes('CALCULATIONS') ||
-                                              cellStr.includes('QUICK REFERENCE');
-
-                        const isLabel = cellIndex === 0 && cell !== '';
-
-                        if (isMainHeader) td.className = 'main-header';
-                        else if (isSectionHeader) td.className = 'section-header';
-                        else if (isLabel) td.className = 'label-cell';
-
-                        tr.appendChild(td);
-                    });
-                }
-                tbody.appendChild(tr);
-            });
-
-            table.appendChild(tbody);
-            container.appendChild(table);
-        }
-
-        function performSearch() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                const query = document.getElementById('search-box').value.toLowerCase().trim();
-
-                if (query === '') {
-                    renderSheet(currentSheet);
-                    return;
-                }
-
-                const filteredData = currentData.filter(row => {
-                    return row.some(cell => String(cell).toLowerCase().includes(query));
-                });
-
-                const container = document.getElementById('table-container');
-                const noResults = document.getElementById('no-results');
-
-                if (filteredData.length === 0) {
-                    container.innerHTML = '';
-                    noResults.style.display = 'block';
-                } else {
-                    noResults.style.display = 'none';
-                    renderTable(filteredData, container);
-                }
-
-                document.getElementById('row-count').textContent = filteredData.length;
-            }, 300);
-        }
-
-        function clearSearch() {
-            document.getElementById('search-box').value = '';
-            renderSheet(currentSheet);
-        }
-
-        function exportToCSV() {
-            const sheet = workbookData.sheets.find(s => s.name === currentSheet);
-            if (!sheet) return;
-
-            let csv = '';
-            sheet.data.forEach(row => {
-                const csvRow = row.map(cell => {
-                    const cellStr = String(cell);
-                    if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
-                        return `"${cellStr.replace(/"/g, '""')}"`;
-                    }
-                    return cellStr;
-                });
-                csv += csvRow.join(',') + '\n';
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-
-            link.setAttribute('href', url);
-            link.setAttribute('download', `${currentSheet}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            showMessage('✓ CSV file downloaded successfully!');
-        }
-
-        function showMessage(text) {
-            const msg = document.getElementById('success-message');
-            msg.textContent = text;
-            msg.style.display = 'block';
-            setTimeout(() => { msg.style.display = 'none'; }, 3000);
-        }
-
-        // Chart drawing functions
-        function drawAllCharts() {
-            drawEnergyChart();
-            drawWaterChart();
-            drawCarbonChart();
-            drawWeeklyChart();
-            drawComparisonChart();
-        }
-
-        function getChartColors() {
-            const isDark = document.body.classList.contains('dark-mode');
-            return {
-                text: isDark ? '#e5e7eb' : '#333',
-                grid: isDark ? '#374151' : '#e5e7eb',
-                bars: ['#10b981', '#059669', '#34d399', '#6ee7b7', '#a7f3d0']
-            };
-        }
-
-        function drawBarChart(canvasId, data, title, unit) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return;
-
-            const ctx = canvas.getContext('2d');
-            const colors = getChartColors();
-            const width = canvas.width;
-            const height = canvas.height;
-            const padding = 60;
-            const barWidth = (width - padding * 2) / data.length - 10;
-            const maxValue = Math.max(...data.map(d => d.value));
-
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = colors.text;
-            ctx.font = '12px sans-serif';
-
-            // Draw bars
-            data.forEach((item, i) => {
-                const barHeight = ((item.value / maxValue) * (height - padding * 2));
-                const x = padding + (i * (barWidth + 10));
-                const y = height - padding - barHeight;
-
-                // Gradient bar
-                const gradient = ctx.createLinearGradient(x, y, x, height - padding);
-                gradient.addColorStop(0, colors.bars[i % colors.bars.length]);
-                gradient.addColorStop(1, colors.bars[(i + 1) % colors.bars.length]);
-
-                ctx.fillStyle = gradient;
-                ctx.fillRect(x, y, barWidth, barHeight);
-
-                // Value label
-                ctx.fillStyle = colors.text;
-                ctx.textAlign = 'center';
-                ctx.fillText(item.value.toFixed(2), x + barWidth / 2, y - 5);
-
-                // Name label
-                ctx.save();
-                ctx.translate(x + barWidth / 2, height - padding + 15);
-                ctx.rotate(-Math.PI / 4);
-                ctx.textAlign = 'right';
-                ctx.fillText(item.name, 0, 0);
-                ctx.restore();
-            });
-
-            // Y-axis
-            ctx.strokeStyle = colors.grid;
-            ctx.beginPath();
-            ctx.moveTo(padding, padding);
-            ctx.lineTo(padding, height - padding);
-            ctx.lineTo(width - padding, height - padding);
-            ctx.stroke();
-        }
-
-        function drawEnergyChart() {
-            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
-            if (!refData) return;
-
-            const models = refData.data.slice(2, 10).map(row => ({
-                name: row[0],
-                value: parseFloat(row[1]) || 0
-            })).filter(m => m.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
-
-            drawBarChart('energyChart', models, 'Energy (Wh)', 'Wh');
-        }
-
-        function drawWaterChart() {
-            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
-            if (!refData) return;
-
-            const models = refData.data.slice(2, 10).map(row => ({
-                name: row[0],
-                value: parseFloat(row[2]) || 0
-            })).filter(m => m.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
-
-            drawBarChart('waterChart', models, 'Water (L)', 'L');
-        }
-
-        function drawCarbonChart() {
-            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
-            if (!refData) return;
-
-            const models = refData.data.slice(2, 10).map(row => ({
-                name: row[0],
-                value: parseFloat(row[3]) || 0
-            })).filter(m => m.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
-
-            drawBarChart('carbonChart', models, 'Carbon (gCO2e)', 'gCO2e');
-        }
-
-        function drawWeeklyChart() {
-            const weeklyData = workbookData.sheets.find(s => s.name === 'Weekly Monitor');
-            if (!weeklyData) return;
-
-            const canvas = document.getElementById('weeklyChart');
-            const ctx = canvas.getContext('2d');
-            const colors = getChartColors();
-            const width = canvas.width;
-            const height = canvas.height;
-            const padding = 60;
-
-            ctx.clearRect(0, 0, width, height);
-
-            const days = weeklyData.data.slice(6, 13);
-            const queries = days.map(d => parseFloat(d[1]) || 0);
-            const maxQueries = Math.max(...queries);
-
-            const stepX = (width - padding * 2) / (queries.length - 1);
-            const stepY = (height - padding * 2) / maxQueries;
-
-            // Draw line
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            queries.forEach((q, i) => {
-                const x = padding + (i * stepX);
-                const y = height - padding - (q * stepY);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-
-            // Draw points
-            ctx.fillStyle = '#059669';
-            queries.forEach((q, i) => {
-                const x = padding + (i * stepX);
-                const y = height - padding - (q * stepY);
-                ctx.beginPath();
-                ctx.arc(x, y, 5, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Labels
-                ctx.fillStyle = colors.text;
-                ctx.textAlign = 'center';
-                ctx.font = '11px sans-serif';
-                ctx.fillText(days[i][0], x, height - padding + 20);
-                ctx.fillText(q, x, y - 10);
-            });
-
-            // Axes
-            ctx.strokeStyle = colors.grid;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(padding, padding);
-            ctx.lineTo(padding, height - padding);
-            ctx.lineTo(width - padding, height - padding);
-            ctx.stroke();
-        }
-
-        function drawComparisonChart() {
-            const refData = workbookData.sheets.find(s => s.name === 'Reference Data');
-            if (!refData) return;
-
-            const canvas = document.getElementById('comparisonChart');
-            const ctx = canvas.getContext('2d');
-            const colors = getChartColors();
-            const width = canvas.width;
-            const height = canvas.height;
-            const padding = 100;
-
-            ctx.clearRect(0, 0, width, height);
-
-            const models = refData.data.slice(2, 8).map(row => ({
-                name: row[0],
-                energy: parseFloat(row[1]) || 0,
-                water: (parseFloat(row[2]) || 0) * 100, // Scale up for visibility
-                carbon: parseFloat(row[3]) || 0
-            }));
-
-            const categories = ['Energy (Wh)', 'Water (L×100)', 'Carbon (gCO2e)'];
-            const barGroupWidth = (width - padding * 2) / models.length;
-            const barWidth = barGroupWidth / 4;
-
-            models.forEach((model, i) => {
-                const x = padding + (i * barGroupWidth);
-                const maxHeight = height - padding * 2;
-
-                // Normalize values
-                const energyH = (model.energy / 30) * maxHeight;
-                const waterH = (model.water / 10) * maxHeight;
-                const carbonH = (model.carbon / 20) * maxHeight;
-
-                // Draw bars
-                [energyH, waterH, carbonH].forEach((h, j) => {
-                    const barX = x + (j * barWidth);
-                    const barY = height - padding - h;
-
-                    ctx.fillStyle = colors.bars[j];
-                    ctx.fillRect(barX, barY, barWidth - 2, h);
-                });
-
-                // Model name
-                ctx.fillStyle = colors.text;
-                ctx.save();
-                ctx.translate(x + barGroupWidth / 2, height - padding + 30);
-                ctx.rotate(-Math.PI / 6);
-                ctx.textAlign = 'right';
-                ctx.font = '10px sans-serif';
-                ctx.fillText(model.name, 0, 0);
-                ctx.restore();
-            });
-
-            // Legend
-            ctx.font = '12px sans-serif';
-            categories.forEach((cat, i) => {
-                const x = width - padding - 150;
-                const y = padding + (i * 25);
-                ctx.fillStyle = colors.bars[i];
-                ctx.fillRect(x, y - 10, 15, 15);
-                ctx.fillStyle = colors.text;
-                ctx.fillText(cat, x + 20, y + 2);
-            });
-
-            // Axes
-            ctx.strokeStyle = colors.grid;
-            ctx.beginPath();
-            ctx.moveTo(padding, padding);
-            ctx.lineTo(padding, height - padding);
-            ctx.lineTo(width - padding, height - padding);
-            ctx.stroke();
-        }
-
-        init();
-    </script>
+    <section id="modules" aria-labelledby="modules-h">
+      <h2 id="modules-h">The method is the name: Ground → Assess → Interpret → Act</h2>
+      <p class="lead">Four modules take an organization from "we use AI somewhere" to a sourced, uncertainty-bounded footprint with a ranked plan to reduce it.</p>
+      <div class="modules">
+        <article class="module">
+          <span class="letter" aria-hidden="true">G</span>
+          <h3>Ground</h3>
+          <p>Enumerate your AI use cases. For each, record the model(s) used, the deployment path (API, cloud-hosted, on-prem), hosting region if known, monthly request volume, and token profile — output tokens dominate inference energy. Choose functional units and declare the system boundary and any deviations.</p>
+        </article>
+        <article class="module">
+          <span class="letter" aria-hidden="true">A</span>
+          <h3>Assess</h3>
+          <p>Compute energy, carbon (dual location- and market-based), and water per functional unit and in total, with low/central/high bounds, using the framework's equations and the best available data-quality tier for each quantity.</p>
+        </article>
+        <article class="module">
+          <span class="letter" aria-hidden="true">I</span>
+          <h3>Interpret</h3>
+          <p>Assign each use case an efficiency grade A–E conditioned on its task class; run the fit-for-purpose frugality check; place totals in context — share of organizational footprint and real-world equivalents with sourced conversion factors.</p>
+        </article>
+        <article class="module">
+          <span class="letter" aria-hidden="true">A</span>
+          <h3>Act</h3>
+          <p>Select mitigation levers from the evidence-ranked catalogue; set reduction targets on intensity, not totals; report with the GAIA disclosure template, which is SCI-compatible and EU-AI-Act-aligned.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="estimator" aria-labelledby="estimator-h">
+      <h2 id="estimator-h">Quick estimator</h2>
+      <p class="lead">A browser implementation of the Module A equations, running on the same data tables that generate the Excel workbook. For a full assessment — inventory, dual carbon reporting, disclosure template — use the Excel tool.</p>
+
+      <div class="estimator">
+        <div class="inputs">
+          <h3>Inputs</h3>
+          <form id="est-form">
+            <div class="field">
+              <label for="model">Model</label>
+              <select id="model"></select>
+            </div>
+            <div class="field">
+              <label for="taskclass">Task class <span class="hint">(sets default token profile)</span></label>
+              <select id="taskclass"></select>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="tokens-in">Input tokens / request</label>
+                <input type="number" id="tokens-in" min="0" step="1" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="tokens-out">Output tokens / request</label>
+                <input type="number" id="tokens-out" min="0" step="1" inputmode="numeric">
+              </div>
+            </div>
+            <div class="field">
+              <label for="queries">Requests per month</label>
+              <input type="number" id="queries" min="0" step="1" value="10000" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label for="facility">Facility profile <span class="hint">(sets PUE and on-site WUE)</span></label>
+              <select id="facility"></select>
+            </div>
+            <div class="field">
+              <label for="region">Hosting region <span class="hint">(sets grid CI and off-site EWIF)</span></label>
+              <select id="region"></select>
+            </div>
+            <div class="field">
+              <label for="market-ci">Market-based carbon intensity <span class="hint">(g CO2e/kWh, optional — contractual instruments)</span></label>
+              <input type="number" id="market-ci" min="0" step="1" placeholder="leave blank if unknown" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label for="adder">Embodied-carbon adder: <output id="adder-out" for="adder">25%</output> of location-based operational carbon</label>
+              <input type="range" id="adder" min="10" max="50" step="1" value="25" aria-describedby="adder-note">
+              <span class="hint" id="adder-note" style="font-size:.78rem">Default 25% (range 10–50%) when the serving fleet is unknown — anchored to the BLOOM LCA, Google's per-prompt disclosure, and Mistral's LCA.</span>
+            </div>
+            <fieldset class="frugal">
+              <legend>Fit-for-purpose check (frugality)</legend>
+              <label class="check" for="frugal-1">
+                <input type="checkbox" id="frugal-1" checked>
+                <span><b>Necessity</b> — the task genuinely needs generative AI (vs. search, a template, rules, or a human).</span>
+              </label>
+              <label class="check" for="frugal-2">
+                <input type="checkbox" id="frugal-2" checked>
+                <span><b>Right-sizing</b> — a model at least one capability class smaller has been evaluated on this task, with documented quality results.</span>
+              </label>
+              <label class="check" for="frugal-3">
+                <input type="checkbox" id="frugal-3" checked>
+                <span><b>Token discipline</b> — prompts, retrieval payloads, and reasoning budgets are bounded (max-token limits, thinking caps, caching).</span>
+              </label>
+            </fieldset>
+          </form>
+        </div>
+
+        <div class="results" aria-live="polite">
+          <h3>Result</h3>
+          <div class="verdict">
+            <div class="grade-badge grade-b" id="grade-badge" role="img" aria-label="Efficiency grade">B</div>
+            <div class="meta">
+              <span class="gradeword" id="grade-word">Grade B</span>
+              <span class="flag-chip" id="flag-chip">F0</span>
+              <p class="guidance" id="guidance">Proceed; monitor quarterly</p>
+            </div>
+          </div>
+          <p class="tierline" id="tier-line"></p>
+          <div class="numbers">
+            <div class="stat wide">
+              <div class="k">Energy per request (full-stack, incl. PUE)</div>
+              <div class="v" id="out-request">—</div>
+              <div class="r" id="out-request-range">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Monthly energy</div>
+              <div class="v" id="out-energy">—</div>
+              <div class="r" id="out-energy-range">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Monthly carbon (location-based)</div>
+              <div class="v" id="out-carbon">—</div>
+              <div class="r" id="out-carbon-range">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Monthly water</div>
+              <div class="v" id="out-water">—</div>
+              <div class="r" id="out-water-range">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Embodied carbon (adder)</div>
+              <div class="v" id="out-embodied">—</div>
+              <div class="r">amortized hardware share</div>
+            </div>
+            <div class="stat wide">
+              <div class="k">Monthly carbon (market-based)</div>
+              <div class="v" id="out-carbon-market">not provided</div>
+              <div class="r">reported beside, never blended with, the location-based figure (GHG Protocol Scope 2)</div>
+            </div>
+          </div>
+          <ul class="equiv" id="equiv-list"></ul>
+          <p class="smallprint">Estimates carry the uncertainty of their data tier (×1.15 to ×3); ranges shown are energy-driven bounds. Factor uncertainty (grid CI, PUE, WUE, EWIF) adds beyond the ranges displayed. Equivalents are communication aids with sourced conversion factors, not results.</p>
+        </div>
+      </div>
+
+      <details class="eqns">
+        <summary>How the estimate is computed (Module A equations)</summary>
+        <pre>E_IT_request [Wh]  = e_out × (T_out + T_in / 10) / 1000      e_out: model Wh per 1k output tokens (IT boundary,
+                                                               serving-stack multiplier included); input tokens
+                                                               cost ≈ 1/10 of output tokens
+E_request  [Wh]    = E_IT_request × PUE                        PUE from the facility profile
+E_month    [kWh]   = E_request × Q_month / 1000
+Carbon     [kg]    = E_month × CI_location / 1000              CI: regional grid intensity, g CO2e/kWh (Ember, 2024 data)
+Embodied   [kg]    = Carbon_location × adder                   default 0.25, range 0.10–0.50
+Water      [L]     = E_IT_month × WUE + E_month × EWIF         on-site cooling + off-site generation (Li et al.)
+Low / high bounds  = all outputs scaled by wh_low/e_out and wh_high/e_out (energy-dominated uncertainty)
+Grade              = central E_request vs. fixed logarithmic bands per task class (A ≤ … ≤ D, else E)</pre>
+      </details>
+    </section>
+
+    <section id="science" aria-labelledby="science-h">
+      <h2 id="science-h">Built on real science</h2>
+      <p class="lead">GAIA does not replace measurement standards — it builds on them. Every energy figure is labeled with the tier of evidence it came from, and the tier sets the width of the uncertainty interval.</p>
+
+      <div class="tiers">
+        <article class="tier">
+          <span class="band">central ×/÷ 1.15</span>
+          <span class="tn">T1 — Measured</span>
+          <p>Direct metering of your own deployment (CodeCarbon, nvidia-smi plus host power). The gold standard; recommended for any self-hosted workload.</p>
+        </article>
+        <article class="tier">
+          <span class="band">central ×/÷ 1.5</span>
+          <span class="tn">T2 — Disclosed</span>
+          <p>Provider-published full-stack measurement with a stated boundary — e.g. Google's Gemini per-prompt disclosure, Mistral's audited LCA.</p>
+        </article>
+        <article class="tier">
+          <span class="band">central ×/÷ 2</span>
+          <span class="tn">T3 — Benchmarked</span>
+          <p>Independent standardized benchmarks (AI Energy Score; Jegham et al. API measurements). GPU-only figures are corrected with a serving-stack multiplier.</p>
+        </article>
+        <article class="tier">
+          <span class="band">central ×/÷ 3</span>
+          <span class="tn">T4 — Modeled</span>
+          <p>Parameter-count physics (FLOPs → joules via hardware efficiency) for models with no measurement — the estimation logic of EcoLogits and Epoch AI.</p>
+        </article>
+      </div>
+
+      <h3 style="font-size:1.05rem;margin:0 0 .6rem">Standards GAIA implements or maps onto</h3>
+      <ul class="standards">
+        <li><b>ISO/IEC 21031:2024 — Software Carbon Intensity (SCI)</b> · <span>the carbon-rate-per-functional-unit specification; every GAIA result restates as an SCI score (E, I, M, R map one-to-one).</span></li>
+        <li><b>SCI for AI (Green Software Foundation, 2025)</b> · <span>the ratified AI extension of SCI; GAIA's Assess module is an implementation of it.</span></li>
+        <li><b>ISO 14040/14044</b> · <span>life-cycle assessment principles governing GAIA's system boundary and cut-off declarations.</span></li>
+        <li><b>ITU-T L.1410</b> · <span>ICT-sector LCA boundary and allocation rules that GAIA's scope declarations follow.</span></li>
+        <li><b>AFNOR SPEC 2314 — Frugal AI (2024)</b> · <span>source of the necessity / right-sizing / token-discipline frugality check ("question the need").</span></li>
+        <li><b>GHG Protocol (Scope 2 Guidance)</b> · <span>dual location- and market-based carbon reporting, never blended; GAIA totals feed Scope 2/3 inventory line items.</span></li>
+      </ul>
+    </section>
+
+    <section id="compare" aria-labelledby="compare-h">
+      <h2 id="compare-h">Where GAIA sits among frameworks</h2>
+      <p class="lead">GAIA is designed to be restatable in the other instruments' terms — the crosswalk is the point. What none of them provides together: uncertainty-tiered estimates without provider cooperation, water alongside carbon, task-conditioned grading, an explicit frugality check, and an Excel artifact a non-programmer can run.</p>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Framework</th><th scope="col">Type</th><th scope="col">What it does</th><th scope="col">Relation to GAIA</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>SCI — ISO/IEC 21031:2024</b> (Green Software Foundation)</td><td>Standard (rate)</td><td><code>SCI = (E×I + M)/R</code> per functional unit</td><td>GAIA computes exactly E, I, M, R; any GAIA result restates as an SCI score</td></tr>
+            <tr><td><b>SCI for AI</b> (GSF, ratified 2025)</td><td>Standard extension</td><td>SCI adapted to the AI lifecycle incl. training/inference split</td><td>GAIA's Assess module implements it, adding water, grading, frugality, and the decision layer</td></tr>
+            <tr><td><b>AI Energy Score</b> (Hugging Face/Salesforce/Cohere/CMU, 2025–)</td><td>Benchmark + rating</td><td>Standardized GPU-energy benchmark on H100; star ratings per task</td><td>Consumed as T3 data; GAIA grades <em>your deployment</em>, not the bare model</td></tr>
+            <tr><td><b>EcoLogits</b> (GenAI Impact)</td><td>Software library</td><td>ISO-14044-based per-request estimates for API models</td><td>Peer methodology for GAIA's T4 model; GAIA adds the organizational workflow</td></tr>
+            <tr><td><b>CodeCarbon / Green Algorithms</b></td><td>Measurement tools</td><td>Meter or estimate compute energy/carbon</td><td>GAIA's T1 data source</td></tr>
+            <tr><td><b>AFNOR SPEC 2314 — Frugal AI</b> (2024)</td><td>Reference framework</td><td>Lifecycle methodology + 31 best practices + "question the need"</td><td>GAIA's frugality check descends from it; GAIA adds quantitative grading and uncertainty tiers</td></tr>
+            <tr><td><b>ITU-T L.1410 / ISO 14040/44</b></td><td>LCA standards</td><td>Boundary and allocation rules for ICT LCA</td><td>Govern GAIA's boundary declarations</td></tr>
+            <tr><td><b>GHG Protocol</b> (Scope 2 guidance, ICT sector)</td><td>Accounting standard</td><td>Corporate inventories, dual reporting</td><td>GAIA totals feed Scope 2/3 line items; dual reporting is inherited from it</td></tr>
+            <tr><td><b>LLMCarbon</b> (ICLR 2024)</td><td>Academic model</td><td>End-to-end (training + inference + embodied) carbon prediction</td><td>Basis for GAIA's optional training-attribution adder</td></tr>
+            <tr><td><b>EU AI Act</b> (Art. 40/51, Annex XI)</td><td>Regulation</td><td>Energy documentation duties for GPAI providers</td><td>GAIA's disclosure template is structured so provider-side answers slot in</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="levers" aria-labelledby="levers-h">
+      <h2 id="levers-h">Top mitigation levers — evidence-ranked</h2>
+      <p class="lead">Each lever ships with a measured effect size and a citation; "up to" marketing numbers are banned. Provider-side levers appear in reports as disclosure asks, not user actions.</p>
+      <div class="tablewrap">
+        <table id="levers-table">
+          <thead>
+            <tr><th scope="col">#</th><th scope="col">Lever</th><th scope="col">Measured effect</th><th scope="col">Source</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="limitations" aria-labelledby="limitations-h">
+      <div class="limits">
+        <h2 id="limitations-h">Known limitations, stated plainly</h2>
+        <ul>
+          <li><b>Provider opacity.</b> Closed providers do not disclose per-model serving data; most model rows are T3/T4 with wide bounds. That is a property of the industry, not the framework — the tier column makes the opacity itself visible.</li>
+          <li><b>Benchmark ≠ production.</b> Benchmarks measure specific hardware and serving configurations; production fleets differ — batching, quantization, and speculative decoding can shift per-token energy several-fold in either direction.</li>
+          <li><b>Annual-average carbon.</b> Grid intensity averages ignore hourly variation; marginal-emissions accounting is out of scope for v2.0.</li>
+          <li><b>Water is the weakest data.</b> EWIF varies by basin and season, and water-stress context — where a litre is drawn — matters as much as volume. GAIA reports volume and flags stress-region hosting qualitatively.</li>
+          <li><b>Rebound effects</b> (efficiency → more usage) are real and unmodeled; the frugality flag is the partial control.</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p><b>GAIA Framework 2.0</b> · version 2.0.0 · MIT license · <a href="https://github.com/moseskolleh/GAIA-Framework-">GitHub repository</a></p>
+    <p>The Excel workbook is generated from <code>build_workbook.py</code> — the spreadsheet is a build artifact, never hand-edited. Data tables (models, regions, facilities, grading, mitigation, equivalents) live in <code>data/*.csv</code> with source and vintage columns.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ==== Data tables — generated verbatim from data/*.csv (do not hand-edit; see data/ for sources) ==== */
+const MODELS = [{"model":"GPT-5","provider":"OpenAI","cls":"Frontier","reasoning":"optional","e_out":1.0,"lo":0.33,"hi":3.0,"tier":"T4","vintage":"2026-06","source":"Class-based estimate per FRAMEWORK.md §4.5; anchors: OpenAI 0.34 Wh/query disclosure (2025); Epoch AI GPT-4o analysis (2025)"},{"model":"GPT-5 mini","provider":"OpenAI","cls":"Mid","reasoning":"optional","e_out":0.25,"lo":0.08,"hi":0.75,"tier":"T4","vintage":"2026-06","source":"Class-based estimate per FRAMEWORK.md §4.5"},{"model":"GPT-4o","provider":"OpenAI","cls":"Frontier","reasoning":"no","e_out":0.8,"lo":0.3,"hi":2.4,"tier":"T3","vintage":"2025-05","source":"arXiv:2505.09598; Epoch AI 'How much energy does ChatGPT use?' (2025)"},{"model":"GPT-4o mini","provider":"OpenAI","cls":"Small","reasoning":"no","e_out":0.3,"lo":0.1,"hi":0.9,"tier":"T3","vintage":"2025-05","source":"arXiv:2505.09598"},{"model":"GPT-4.1 nano","provider":"OpenAI","cls":"Small","reasoning":"no","e_out":0.08,"lo":0.03,"hi":0.24,"tier":"T3","vintage":"2025-05","source":"arXiv:2505.09598"},{"model":"o3","provider":"OpenAI","cls":"Frontier","reasoning":"always","e_out":5.0,"lo":2.5,"hi":10.0,"tier":"T3","vintage":"2025-05","source":"arXiv:2505.09598"},{"model":"o4-mini","provider":"OpenAI","cls":"Mid","reasoning":"always","e_out":1.2,"lo":0.4,"hi":3.6,"tier":"T4","vintage":"2026-06","source":"arXiv:2505.09598 (o3-mini anchor); class-based scaling"},{"model":"ChatGPT (fleet average)","provider":"OpenAI","cls":"Frontier","reasoning":"mixed","e_out":1.0,"lo":0.5,"hi":2.0,"tier":"T2","vintage":"2025-06","source":"OpenAI (S. Altman) disclosure, June 2025"},{"model":"Claude Sonnet 4.5","provider":"Anthropic","cls":"Frontier","reasoning":"optional","e_out":0.6,"lo":0.2,"hi":1.8,"tier":"T4","vintage":"2026-06","source":"Class-based estimate; anchor: arXiv:2505.09598 (Claude 3.7 Sonnet)"},{"model":"Claude Haiku 4.5","provider":"Anthropic","cls":"Small","reasoning":"optional","e_out":0.15,"lo":0.05,"hi":0.45,"tier":"T4","vintage":"2026-06","source":"Class-based estimate per FRAMEWORK.md §4.5"},{"model":"Claude Opus 4.5","provider":"Anthropic","cls":"Frontier","reasoning":"optional","e_out":1.2,"lo":0.4,"hi":3.6,"tier":"T4","vintage":"2026-06","source":"Class-based estimate per FRAMEWORK.md §4.5"},{"model":"Claude 3.7 Sonnet","provider":"Anthropic","cls":"Frontier","reasoning":"optional","e_out":1.4,"lo":0.7,"hi":2.8,"tier":"T3","vintage":"2025-05","source":"arXiv:2505.09598"},{"model":"Gemini (app median)","provider":"Google","cls":"Frontier","reasoning":"mixed","e_out":0.65,"lo":0.33,"hi":1.3,"tier":"T2","vintage":"2025-05","source":"arXiv:2508.15734 (Elsworth et al., Google, 2025)"},{"model":"Gemini 2.5 Pro","provider":"Google","cls":"Frontier","reasoning":"optional","e_out":0.8,"lo":0.27,"hi":2.4,"tier":"T4","vintage":"2026-06","source":"Class-based estimate; anchor: arXiv:2508.15734"},{"model":"Gemini 2.5 Flash","provider":"Google","cls":"Mid","reasoning":"optional","e_out":0.2,"lo":0.07,"hi":0.6,"tier":"T4","vintage":"2026-06","source":"Class-based estimate; anchor: arXiv:2508.15734"},{"model":"Mistral Large 2","provider":"Mistral AI","cls":"Frontier","reasoning":"no","e_out":0.28,"lo":0.14,"hi":0.56,"tier":"T2","vintage":"2025-01","source":"Mistral AI environmental report (July 2025); ISO 14040/44 + ITU-T L.1410 compliant"},{"model":"Mistral Small 3","provider":"Mistral AI","cls":"Small","reasoning":"no","e_out":0.055,"lo":0.018,"hi":0.17,"tier":"T4","vintage":"2025-01","source":"FRAMEWORK.md §4.5 Tier-4 model; EcoLogits methodology"},{"model":"Llama 3.1 8B","provider":"Meta","cls":"Small","reasoning":"no","e_out":0.02,"lo":0.01,"hi":0.04,"tier":"T3","vintage":"2025-02","source":"AI Energy Score leaderboard (2025); arXiv:2505.09598"},{"model":"Llama 3.3 70B","provider":"Meta","cls":"Mid","reasoning":"no","e_out":0.15,"lo":0.07,"hi":0.3,"tier":"T3","vintage":"2025-02","source":"AI Energy Score leaderboard (2025)"},{"model":"Llama 3.1 405B","provider":"Meta","cls":"Frontier","reasoning":"no","e_out":0.9,"lo":0.3,"hi":2.7,"tier":"T4","vintage":"2025-02","source":"FRAMEWORK.md §4.5 Tier-4 model"},{"model":"Llama 4 Maverick","provider":"Meta","cls":"Mid","reasoning":"no","e_out":0.05,"lo":0.017,"hi":0.15,"tier":"T4","vintage":"2025-04","source":"FRAMEWORK.md §4.5 Tier-4 model"},{"model":"DeepSeek-V3.2","provider":"DeepSeek","cls":"Frontier","reasoning":"optional","e_out":0.3,"lo":0.1,"hi":0.9,"tier":"T4","vintage":"2026-03","source":"arXiv:2505.09598 (V3 anchor); Tier-4 model"},{"model":"DeepSeek-R1","provider":"DeepSeek","cls":"Frontier","reasoning":"always","e_out":3.0,"lo":1.5,"hi":6.0,"tier":"T3","vintage":"2025-05","source":"arXiv:2505.09598"},{"model":"Qwen3 32B","provider":"Alibaba","cls":"Mid","reasoning":"optional","e_out":0.075,"lo":0.025,"hi":0.23,"tier":"T4","vintage":"2025-05","source":"FRAMEWORK.md §4.5 Tier-4 model"},{"model":"Qwen3 235B-A22B","provider":"Alibaba","cls":"Frontier","reasoning":"optional","e_out":0.06,"lo":0.02,"hi":0.18,"tier":"T4","vintage":"2025-05","source":"FRAMEWORK.md §4.5 Tier-4 model"},{"model":"Custom / my own model","provider":"(user)","cls":"Mid","reasoning":"no","e_out":0.15,"lo":0.05,"hi":0.45,"tier":"T4","vintage":"2026-07","source":"User-supplied"}];
+const REGIONS = [{"region":"Global average","ci":473.0,"ci_lo":425.0,"ci_hi":520.0,"ewif":2.0,"ewif_lo":1.0,"ewif_hi":4.0,"vintage":"2024"},{"region":"United States","ci":384.0,"ci_lo":350.0,"ci_hi":420.0,"ewif":1.8,"ewif_lo":1.0,"ewif_hi":3.1,"vintage":"2024"},{"region":"EU average","ci":213.0,"ci_lo":190.0,"ci_hi":240.0,"ewif":1.9,"ewif_lo":1.0,"ewif_hi":3.0,"vintage":"2024"},{"region":"France","ci":40.0,"ci_lo":20.0,"ci_hi":60.0,"ewif":2.4,"ewif_lo":1.2,"ewif_hi":3.6,"vintage":"2024"},{"region":"Germany","ci":344.0,"ci_lo":300.0,"ci_hi":390.0,"ewif":1.6,"ewif_lo":0.8,"ewif_hi":2.4,"vintage":"2024"},{"region":"United Kingdom","ci":124.0,"ci_lo":100.0,"ci_hi":150.0,"ewif":1.4,"ewif_lo":0.7,"ewif_hi":2.1,"vintage":"2024"},{"region":"Ireland","ci":280.0,"ci_lo":240.0,"ci_hi":330.0,"ewif":1.3,"ewif_lo":0.7,"ewif_hi":2.0,"vintage":"2024"},{"region":"Netherlands","ci":240.0,"ci_lo":200.0,"ci_hi":290.0,"ewif":1.4,"ewif_lo":0.7,"ewif_hi":2.1,"vintage":"2024"},{"region":"Poland","ci":620.0,"ci_lo":560.0,"ci_hi":680.0,"ewif":1.6,"ewif_lo":0.8,"ewif_hi":2.4,"vintage":"2024"},{"region":"Sweden","ci":30.0,"ci_lo":15.0,"ci_hi":45.0,"ewif":1.2,"ewif_lo":0.6,"ewif_hi":1.8,"vintage":"2024"},{"region":"Norway","ci":30.0,"ci_lo":15.0,"ci_hi":45.0,"ewif":1.1,"ewif_lo":0.5,"ewif_hi":1.7,"vintage":"2024"},{"region":"Canada","ci":170.0,"ci_lo":130.0,"ci_hi":210.0,"ewif":1.5,"ewif_lo":0.8,"ewif_hi":2.3,"vintage":"2024"},{"region":"Brazil","ci":96.0,"ci_lo":70.0,"ci_hi":130.0,"ewif":2.5,"ewif_lo":1.2,"ewif_hi":4.0,"vintage":"2024"},{"region":"China","ci":534.0,"ci_lo":480.0,"ci_hi":590.0,"ewif":2.2,"ewif_lo":1.1,"ewif_hi":3.3,"vintage":"2024"},{"region":"India","ci":708.0,"ci_lo":640.0,"ci_hi":780.0,"ewif":2.6,"ewif_lo":1.3,"ewif_hi":3.9,"vintage":"2024"},{"region":"Japan","ci":485.0,"ci_lo":440.0,"ci_hi":530.0,"ewif":1.9,"ewif_lo":1.0,"ewif_hi":2.9,"vintage":"2024"},{"region":"South Korea","ci":415.0,"ci_lo":370.0,"ci_hi":460.0,"ewif":1.9,"ewif_lo":1.0,"ewif_hi":2.9,"vintage":"2024"},{"region":"Singapore","ci":470.0,"ci_lo":420.0,"ci_hi":520.0,"ewif":1.7,"ewif_lo":0.9,"ewif_hi":2.6,"vintage":"2024"},{"region":"Australia","ci":549.0,"ci_lo":490.0,"ci_hi":610.0,"ewif":2.3,"ewif_lo":1.2,"ewif_hi":3.5,"vintage":"2024"},{"region":"United Arab Emirates","ci":430.0,"ci_lo":380.0,"ci_hi":490.0,"ewif":1.5,"ewif_lo":0.8,"ewif_hi":2.3,"vintage":"2024"}];
+const FACILITIES = [{"profile":"Hyperscale (best-in-class)","pue":1.09,"pue_lo":1.06,"pue_hi":1.15,"wue":0.25,"wue_lo":0.1,"wue_hi":0.5},{"profile":"Hyperscale cloud (typical)","pue":1.15,"pue_lo":1.1,"pue_hi":1.3,"wue":1.0,"wue_lo":0.4,"wue_hi":1.8},{"profile":"Colocation / enterprise (typical)","pue":1.54,"pue_lo":1.35,"pue_hi":1.8,"wue":1.8,"wue_lo":0.5,"wue_hi":2.5},{"profile":"On-premises (legacy)","pue":1.8,"pue_lo":1.5,"pue_hi":2.5,"wue":1.8,"wue_lo":0.5,"wue_hi":3.0},{"profile":"Unknown (API default)","pue":1.2,"pue_lo":1.09,"pue_hi":1.54,"wue":1.0,"wue_lo":0.2,"wue_hi":1.8}];
+const GRADING = [{"name":"Light","code":"L","tin":300,"tout":80,"a":0.1,"b":0.3,"c":1.0,"d":3.0,"desc":"Classification, extraction, short chat, autocomplete"},{"name":"Standard","code":"S","tin":500,"tout":300,"a":0.3,"b":1.0,"c":3.0,"d":10.0,"desc":"General assistant use, summarization, translation"},{"name":"Heavy","code":"H","tin":2000,"tout":1000,"a":1.0,"b":3.0,"c":10.0,"d":30.0,"desc":"Long-form generation, RAG over large contexts, code generation"},{"name":"Reasoning/agentic","code":"R","tin":2000,"tout":4000,"a":3.0,"b":10.0,"c":30.0,"d":100.0,"desc":"Extended thinking, multi-step agents, deep research (incl. hidden reasoning tokens)"}];
+const EQUIVALENTS = [{"quantity":"Energy","per_unit":"1 kWh","equivalent":"hours of LED bulb (10 W)","factor":100.0,"source":"Arithmetic: 1000 Wh / 10 W"},{"quantity":"Energy","per_unit":"1 kWh","equivalent":"km driven in an average EV","factor":5.9,"source":"~0.17 kWh/km typical EV consumption (EPA/WLTP averages)"},{"quantity":"Energy","per_unit":"1 kWh","equivalent":"smartphone full charges","factor":80.0,"source":"EPA GHG Equivalencies Calculator (~0.012 kWh/charge)"},{"quantity":"Carbon","per_unit":"1 kg CO2e","equivalent":"km driven in an average petrol car","factor":4.0,"source":"EPA GHG Equivalencies Calculator (~400 g CO2e/mile = ~250 g/km)"},{"quantity":"Water","per_unit":"1 L","equivalent":"drinking glasses (250 mL)","factor":4.0,"source":"Arithmetic"},{"quantity":"Water","per_unit":"1000 L","equivalent":"8-minute showers","factor":15.0,"source":"EPA WaterSense (~2.1 gpm showerhead = ~64 L/shower)"}];
+const MITIGATION = [{"rank":1,"lever":"Right-size the model (route each task to the smallest adequate model)","who":"User","effect":"10-70x energy difference between frontier-reasoning and small efficient models on identical prompts","evidence":"Jegham et al. arXiv:2505.09598 (o3 vs GPT-4.1 nano >70x); AI Energy Score leaderboard spreads"},{"rank":2,"lever":"Cap reasoning/thinking budgets on bounded tasks","who":"User","effect":"Reasoning modes average ~30x the energy of standard generation; explicit budgets recover most of it","evidence":"AI Energy Score v2 (Dec 2025)"},{"rank":3,"lever":"Choose low-carbon hosting regions","who":"User/Provider","effect":"Grid carbon intensity spans ~20x (30-40 gCO2e/kWh hydro/nuclear grids vs 600-750 coal-heavy)","evidence":"Ember Global Electricity Review (2024 data)"},{"rank":4,"lever":"Bound output length; prompt and token discipline","who":"User","effect":"Per-request energy is approximately linear in output tokens; halving median output roughly halves energy","evidence":"Physics of autoregressive decoding; Luccioni et al. FAccT 2024"},{"rank":5,"lever":"Cache repeated context and responses","who":"User","effect":"Eliminates recomputation of repeated prefixes; effect equals your cache hit rate","evidence":"Provider prompt-caching documentation"},{"rank":6,"lever":"Batch requests / schedule flexible jobs off-peak","who":"User","effect":"Improves serving utilization; single-digit to low-double-digit % energy; larger carbon effect via diurnal grid variation","evidence":"Serving-systems literature; grid CI diurnal data"},{"rank":7,"lever":"Prefer providers that disclose measured footprints","who":"User","effect":"Converts Tier-3/4 guesses into Tier-2 data (halves uncertainty); creates market pressure for transparency","evidence":"GAIA principle P1; Google arXiv:2508.15734; Mistral LCA 2025"},{"rank":8,"lever":"Adopt newer accelerator generations","who":"Provider","effect":"~24% lower embodied carbon per FLOP (B200 vs H100); higher FLOPs/J in serving","evidence":"NVIDIA HGX embodied-carbon disclosures"}];
+/* ==== End generated data ==== */
+
+const TIER_NAMES = { T1: "measured", T2: "disclosed", T3: "benchmarked", T4: "modeled" };
+
+const $ = (id) => document.getElementById(id);
+
+/* --- Populate controls --- */
+(function populate() {
+  const modelSel = $("model");
+  const providers = [];
+  for (const m of MODELS) if (!providers.includes(m.provider)) providers.push(m.provider);
+  for (const p of providers) {
+    const og = document.createElement("optgroup");
+    og.label = p;
+    MODELS.forEach((m, i) => {
+      if (m.provider !== p) return;
+      const o = document.createElement("option");
+      o.value = String(i);
+      o.textContent = m.model + " (" + m.tier + ")";
+      og.appendChild(o);
+    });
+    modelSel.appendChild(og);
+  }
+  modelSel.value = String(MODELS.findIndex(m => m.model === "GPT-4o"));
+
+  const taskSel = $("taskclass");
+  GRADING.forEach((g, i) => {
+    const o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = g.code + " — " + g.name + " (" + g.desc + ")";
+    taskSel.appendChild(o);
+  });
+  taskSel.value = String(GRADING.findIndex(g => g.code === "S"));
+
+  const facSel = $("facility");
+  FACILITIES.forEach((f, i) => {
+    const o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = f.profile + " — PUE " + f.pue.toFixed(2) + ", WUE " + f.wue.toFixed(2) + " L/kWh";
+    facSel.appendChild(o);
+  });
+  facSel.value = String(FACILITIES.findIndex(f => f.profile === "Unknown (API default)"));
+
+  const regSel = $("region");
+  REGIONS.forEach((r, i) => {
+    const o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = r.region + " — " + r.ci + " g CO2e/kWh (" + r.vintage + ")";
+    regSel.appendChild(o);
+  });
+  regSel.value = String(REGIONS.findIndex(r => r.region === "Global average"));
+
+  // token defaults from the selected task class
+  const g = GRADING[Number(taskSel.value)];
+  $("tokens-in").value = g.tin;
+  $("tokens-out").value = g.tout;
+
+  // mitigation table
+  const tbody = document.querySelector("#levers-table tbody");
+  for (const l of MITIGATION) {
+    const tr = document.createElement("tr");
+    const tdRank = document.createElement("td"); tdRank.className = "rank"; tdRank.textContent = String(l.rank);
+    const tdLever = document.createElement("td");
+    const bold = document.createElement("b"); bold.textContent = l.lever;
+    const who = document.createElement("span"); who.className = "src"; who.textContent = "Controlled by: " + l.who;
+    tdLever.append(bold, who);
+    const tdEffect = document.createElement("td"); tdEffect.textContent = l.effect;
+    const tdSrc = document.createElement("td"); tdSrc.textContent = l.evidence;
+    tr.append(tdRank, tdLever, tdEffect, tdSrc);
+    tbody.appendChild(tr);
+  }
+})();
+
+/* --- Formatting: 3 significant figures, locale grouping --- */
+function sig(x) {
+  if (!isFinite(x)) return "–";
+  if (x === 0) return "0";
+  const mag = Math.floor(Math.log10(Math.abs(x)));
+  if (mag >= 3) {
+    // 3 significant figures above 1000 too — more digits than the uncertainty
+    // band supports would be pseudo-precision (P2).
+    return Number(x.toPrecision(3)).toLocaleString("en-US");
+  }
+  const digits = Math.max(0, 3 - 1 - mag);
+  return x.toLocaleString("en-US", { maximumFractionDigits: Math.min(digits, 6) });
+}
+function rangeStr(lo, hi, unit) {
+  return sig(lo) + " – " + sig(hi) + (unit ? " " + unit : "");
+}
+
+/* --- The engine (Module A equations; must match build_workbook.py and the Excel tool) --- */
+function compute() {
+  const m = MODELS[Number($("model").value)];
+  const g = GRADING[Number($("taskclass").value)];
+  const f = FACILITIES[Number($("facility").value)];
+  const r = REGIONS[Number($("region").value)];
+  const tIn = Math.max(0, Number($("tokens-in").value) || 0);
+  const tOut = Math.max(0, Number($("tokens-out").value) || 0);
+  const q = Math.max(0, Number($("queries").value) || 0);
+  const adder = Number($("adder").value) / 100;              // 0.10-0.50, default 0.25
+  const marketRaw = $("market-ci").value.trim();
+  const marketCI = marketRaw === "" ? null : Math.max(0, Number(marketRaw) || 0);
+
+  // E_IT_request [Wh] = e_out * (T_out + T_in/10) / 1000
+  const eIT = m.e_out * (tOut + tIn / 10) / 1000;
+  // E_request [Wh] = E_IT_request * PUE
+  const eReq = eIT * f.pue;
+  // Monthly [kWh]
+  const eMonth = eReq * q / 1000;
+  const eITMonth = eIT * q / 1000;
+  // Carbon, location-based [kg CO2e/month]
+  const carbon = eMonth * r.ci / 1000;
+  // Carbon, market-based (only if user supplies a market CI)
+  const carbonMarket = marketCI === null ? null : eMonth * marketCI / 1000;
+  // Embodied [kg/month]
+  const embodied = carbon * adder;
+  // Water [L/month] = E_IT_month * WUE + E_month * EWIF
+  const water = eITMonth * f.wue + eMonth * r.ewif;
+  // Energy-driven bounds: scale all outputs by wh_low/e_out and wh_high/e_out
+  const kLo = m.lo / m.e_out, kHi = m.hi / m.e_out;
+  // Grade on CENTRAL E_request vs task-class bands
+  const grade = eReq <= g.a ? "A" : eReq <= g.b ? "B" : eReq <= g.c ? "C" : eReq <= g.d ? "D" : "E";
+  // Frugality flag: count "No" answers
+  const fails = [$("frugal-1"), $("frugal-2"), $("frugal-3")].filter(c => !c.checked).length;
+  const flag = fails === 0 ? "F0" : fails === 1 ? "F1" : "F2+";
+
+  return { m, g, f, r, q, eIT, eReq, eMonth, eITMonth, carbon, carbonMarket, embodied, water, kLo, kHi, grade, flag, fails };
+}
+
+function guidanceFor(grade, fails) {
+  if (grade === "E") return "Re-architect: reasoning budgets, model routing, or task redesign before scale-up";
+  if (grade === "A" || grade === "B") {
+    return fails === 0 ? "Proceed; monitor quarterly"
+      : "Efficient but wasteful by design — fix necessity/right-sizing first";
+  }
+  // C or D
+  return fails === 0 ? "Justified heavy use — apply mitigation levers; set an intensity-reduction target"
+    : "Priority for intervention";
+}
+
+function equivalentsFor(eMonth, carbon, water) {
+  const eq = (q, name) => EQUIVALENTS.find(e => e.quantity === q && e.equivalent === name);
+  const out = [];
+  const led = eq("Energy", "hours of LED bulb (10 W)");
+  out.push({ v: eMonth * led.factor, text: "hours of a 10 W LED bulb", src: led.source });
+  const car = eq("Carbon", "km driven in an average petrol car");
+  out.push({ v: carbon * car.factor, text: "km driven in an average petrol car", src: car.source });
+  if (water >= 1000) {
+    const sh = eq("Water", "8-minute showers");
+    out.push({ v: water / 1000 * sh.factor, text: "8-minute showers", src: sh.source });
+  } else {
+    const gl = eq("Water", "drinking glasses (250 mL)");
+    out.push({ v: water * gl.factor, text: "drinking glasses of water (250 mL)", src: gl.source });
+  }
+  return out;
+}
+
+function render() {
+  const x = compute();
+
+  $("out-request").textContent = sig(x.eReq) + " Wh";
+  $("out-request-range").textContent = rangeStr(x.eReq * x.kLo, x.eReq * x.kHi, "Wh");
+
+  $("out-energy").textContent = sig(x.eMonth) + " kWh";
+  $("out-energy-range").textContent = rangeStr(x.eMonth * x.kLo, x.eMonth * x.kHi, "kWh");
+
+  $("out-carbon").textContent = sig(x.carbon) + " kg CO2e";
+  $("out-carbon-range").textContent = rangeStr(x.carbon * x.kLo, x.carbon * x.kHi, "kg");
+
+  $("out-water").textContent = sig(x.water) + " L";
+  $("out-water-range").textContent = rangeStr(x.water * x.kLo, x.water * x.kHi, "L");
+
+  $("out-embodied").textContent = sig(x.embodied) + " kg CO2e";
+
+  $("out-carbon-market").textContent =
+    x.carbonMarket === null ? "not provided" : sig(x.carbonMarket) + " kg CO2e";
+
+  const badge = $("grade-badge");
+  badge.textContent = x.grade;
+  badge.className = "grade-badge grade-" + x.grade.toLowerCase();
+  badge.setAttribute("aria-label", "Efficiency grade " + x.grade);
+  $("grade-word").textContent = "Grade " + x.grade + " · class " + x.g.code;
+  $("flag-chip").textContent = x.flag;
+  $("guidance").textContent = guidanceFor(x.grade, x.fails);
+
+  $("tier-line").textContent =
+    "Data quality: " + x.m.tier + " — " + TIER_NAMES[x.m.tier] +
+    " · " + x.m.model + " (" + x.m.provider + "), " +
+    sig(x.m.e_out) + " Wh/1k output tokens (" + sig(x.m.lo) + " – " + sig(x.m.hi) + "), vintage " + x.m.vintage +
+    " · grid CI " + x.r.ci + " g/kWh (" + x.r.vintage + ")";
+
+  const list = $("equiv-list");
+  list.textContent = "";
+  for (const e of equivalentsFor(x.eMonth, x.carbon, x.water)) {
+    const li = document.createElement("li");
+    const b = document.createElement("span");
+    b.className = "ev";
+    b.textContent = "≈ " + sig(e.v);
+    li.appendChild(b);
+    li.appendChild(document.createTextNode(" " + e.text + " per month"));
+    li.title = e.src;
+    list.appendChild(li);
+  }
+}
+
+/* --- Wiring --- */
+$("taskclass").addEventListener("change", () => {
+  const g = GRADING[Number($("taskclass").value)];
+  $("tokens-in").value = g.tin;
+  $("tokens-out").value = g.tout;
+  render();
+});
+$("adder").addEventListener("input", () => { $("adder-out").textContent = $("adder").value + "%"; });
+for (const id of ["model", "tokens-in", "tokens-out", "queries", "facility", "region", "market-ci", "adder", "frugal-1", "frugal-2", "frugal-3"]) {
+  $(id).addEventListener("input", render);
+  $(id).addEventListener("change", render);
+}
+render();
+</script>
 </body>
 </html>

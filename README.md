@@ -1,300 +1,125 @@
-# 🌱 GAIA Framework
+# GAIA Framework 2.0
 
-## Green Artificial Intelligence Assessment Framework
+**Green AI Assessment — a science-based framework for measuring, judging, and reducing the environmental footprint of AI use.**
 
-A comprehensive tool for measuring, assessing, and optimizing the environmental impact of AI systems. Track energy consumption, water usage, and carbon emissions across different AI models and make data-driven decisions for sustainable AI deployment.
+GAIA is a decision-oriented assessment framework for organizations that *use* AI systems — via APIs, hosted deployments, or self-hosted models. It answers three questions no single existing instrument answers together: (1) how large is the environmental footprint of our AI use — energy, carbon, and water — stated honestly, with uncertainty bounds and data provenance; (2) is that footprint reasonable for the task being performed, compared against measured benchmarks rather than arbitrary thresholds; and (3) what should we change, ranked by evidence of effectiveness. GAIA does not replace measurement standards — it builds on them (SCI / ISO/IEC 21031:2024, ISO 14040/44, ITU-T L.1410, GHG Protocol) and contributes the organizational decision layer that connects them into a workflow anyone can run — in a spreadsheet.
 
----
+It is written for sustainability and ESG teams, engineering and platform leads, and procurement — anyone who has to decide whether, where, and how to deploy AI, and to report on it afterwards.
 
-## ✨ Features
-
-- **📊 Multi-Sheet Data Dashboard** - 8 comprehensive sheets covering all aspects of AI impact assessment
-- **🔍 Real-time Search** - Instantly filter data across any sheet with live search
-- **📥 CSV Export** - Download any sheet as CSV for further analysis
-- **🎨 Beautiful UI** - Modern glass-morphism design with smooth animations
-- **📱 Fully Responsive** - Works perfectly on desktop, tablet, and mobile devices
-- **⚡ Lightning Fast** - Single-page application with no external dependencies
-- **♻️ Sustainable Focus** - Built to help reduce AI's environmental footprint
+- **Specification:** [FRAMEWORK.md](FRAMEWORK.md) (authoritative)
+- **Rebuild rationale:** [DECISIONS.md](DECISIONS.md) — what was kept, rebuilt, or removed from v1, and why
 
 ---
 
-## 🚀 Deployment Status
+## Get the tool
 
-> **⚠️ Not Yet Deployed** - The live site will be available after:
-> 1. Merging the pull request to `main` branch
-> 2. Enabling GitHub Pages in repository settings
->
-> **Future URL:** `https://moseskolleh.github.io/GAIA-Framework-/`
->
-> 📖 See [DEPLOYMENT.md](./DEPLOYMENT.md) for step-by-step deployment instructions.
+| | |
+|---|---|
+| **Excel workbook** | [Download GAIA_Assessment_Tool.xlsx](https://github.com/moseskolleh/GAIA-Framework-/raw/main/GAIA_Assessment_Tool.xlsx) |
+| **Web estimator** | [moseskolleh.github.io/GAIA-Framework-](https://moseskolleh.github.io/GAIA-Framework-/) |
 
----
-
-## 📋 What's Inside
-
-### 1. Dashboard
-Quick overview of current AI model assessment with key metrics:
-- Active model information
-- Monthly environmental impact (energy, water, carbon)
-- Efficiency grade and recommendations
-- Quick action alerts
-
-### 2. AI Impact Assessment
-Complete assessment workflow:
-- Model selection and configuration
-- Task definition and parameters
-- Environmental impact calculations
-- Benefit assessment
-- Final eco-efficiency grade
-
-### 3. Calculation Engine
-Behind-the-scenes calculations:
-- Per-query impact metrics
-- Monthly totals
-- Comparative analysis
-- Real-world equivalents
-
-### 4. Decision Matrix
-Clear grading criteria from A+ to F:
-- Environmental impact thresholds
-- Benefit score requirements
-- Color-coded recommendations
-- Action guidelines
-
-### 5. Reference Data
-Comprehensive model database:
-- 18+ AI models (OpenAI, Anthropic, Meta, DeepSeek)
-- Energy, water, and carbon metrics per model
-- Hardware specifications
-- Environmental multipliers (PUE, WUE, CIF)
-
-### 6. Weekly Monitor
-Track usage over time:
-- Daily metrics breakdown
-- Weekly performance indicators
-- Variance tracking
-- Alert system
-
-### 7. Mitigation Strategies
-Actionable reduction strategies:
-- Organization-level initiatives (40-60% reduction)
-- Team-level optimizations (10-25% reduction)
-- Individual actions (5-30% reduction)
-- Implementation timelines and priorities
-
-### 8. Documentation
-Complete user guide:
-- How to use the tool
-- Metrics explanations
-- Formula references
-- Decision rules
-- Support resources
+There is always a downloadable Excel version. The workbook and the web estimator implement the same equations from the same data tables; the spreadsheet is generated from code (`build_workbook.py` + `data/*.csv`), so it can never drift from the methodology, and every formula is auditable in the sheet itself.
 
 ---
 
-## 💻 How to Use
+## The four modules
 
-### Online (Recommended)
-Simply visit the **[live demo](https://moseskolleh.github.io/GAIA-Framework-)** - no installation required!
+The framework's name is its method: **G**round → **A**ssess → **I**nterpret → **A**ct.
 
-### Local Usage
-1. **Download** the repository:
-   ```bash
-   git clone https://github.com/moseskolleh/GAIA-Framework-.git
-   cd GAIA-Framework-
-   ```
-
-2. **Open** `index.html` in your web browser:
-   ```bash
-   # On macOS
-   open index.html
-
-   # On Linux
-   xdg-open index.html
-
-   # On Windows
-   start index.html
-   ```
-
-3. **That's it!** No build process, no dependencies, no configuration needed.
+1. **Ground** — inventory your AI use cases: model, deployment path, hosting region, monthly request volume, token profile. Choose functional units and declare the system boundary.
+2. **Assess** — compute energy, carbon (location- and market-based), and water per functional unit and in total, with low/central/high bounds, using the equations of FRAMEWORK.md §4 and the best available data tier for each quantity.
+3. **Interpret** — assign each use case an efficiency grade (A–E) conditioned on its task class; run the fit-for-purpose check (frugality flag F0/F1/F2+); place totals in context with sourced equivalents.
+4. **Act** — select mitigation levers from the evidence-ranked catalogue, set reduction targets on *intensity*, and report using the SCI-compatible disclosure template.
 
 ---
 
-## 🎯 How It Works
+## What makes it scientific
 
-1. **Select a Sheet** - Choose from 8 different data sheets using the dropdown
-2. **Search Data** - Type in the search box to filter rows in real-time
-3. **View Details** - Browse through professionally formatted tables
-4. **Export Data** - Download any sheet as CSV for external analysis
-5. **Make Decisions** - Use the insights to optimize your AI deployments
-
----
-
-## 🛠️ Technology Stack
-
-- **Vanilla JavaScript** - No frameworks, pure performance
-- **HTML5** - Modern semantic markup
-- **CSS3** - Beautiful gradients, glass-morphism, and animations
-- **No Dependencies** - 100% self-contained single file
-- **GitHub Pages** - Free, fast, and reliable hosting
+- **Traceable or absent.** Every factor in `data/` carries a source, a vintage (when it was measured), and a data-quality tier. A value that cannot be sourced is not published.
+- **Data-quality tiers with uncertainty bands.** Every energy estimate is labeled T1 (measured) / T2 (provider-disclosed) / T3 (benchmarked) / T4 (modeled), with interval widths of ×1.15 / ×1.5 / ×2 / ×3 respectively.
+- **Low/central/high reporting.** Every result is an interval, not a point estimate. Bounds propagate through the calculation; factor uncertainty is documented as adding beyond the energy-dominated band.
+- **Separation of what varies independently (P3).** The model determines energy per token; the facility determines overhead (PUE) and on-site water (WUE); the regional grid determines carbon (CI) and off-site water (EWIF); the hardware supply chain determines embodied emissions. No region's carbon is ever baked into a model's row — that was the central methodological error of GAIA 1.0.
+- **Dual carbon reporting.** Location-based and market-based carbon answer different questions and are reported side by side, never blended — per GHG Protocol Scope 2 guidance.
+- **Task-conditioned grading.** Energy per request is graded A–E within its task class (Light / Standard / Heavy / Reasoning) on fixed logarithmic bands anchored to published measurements — a reasoning-agent workload is never compared to autocomplete.
+- **Frugality flag, not a composite score.** Three auditable yes/no questions (necessity, right-sizing, token discipline) yield F0/F1/F2+, reported *beside* the grade. No dimensionless composite score exists anywhere in GAIA 2.0.
 
 ---
 
-## 📊 Data Source
+## Where GAIA sits among existing instruments
 
-All data is extracted from `GAIA_Complete_Tool.xlsx` using automated scripts. The assessment framework is based on:
+Condensed from the full crosswalk in [FRAMEWORK.md §7](FRAMEWORK.md#7-comparability-where-gaia-sits-among-frameworks):
 
-- Real-world AI model specifications
-- Industry-standard environmental metrics
-- Data center efficiency multipliers (PUE, WUE, CIF)
-- Peer-reviewed research on AI sustainability
+| Framework | Type | Relation to GAIA |
+|---|---|---|
+| **SCI — ISO/IEC 21031:2024** | Standard (rate) | GAIA computes exactly E, I, M, R; any GAIA result restates as an SCI score |
+| **SCI for AI** (GSF, 2025) | Standard extension | GAIA's Assess module is an implementation; GAIA adds water, grading, frugality, and the decision layer |
+| **AI Energy Score** (2025–) | Benchmark + rating | GAIA consumes it as T3 data; GAIA grades *your deployment*, not the bare model |
+| **EcoLogits** (GenAI Impact) | Software library | Peer methodology for GAIA's T4 estimates; GAIA is spreadsheet-first and adds the organizational workflow |
+| **AFNOR SPEC 2314 — Frugal AI** (2024) | Reference framework | GAIA's fit-for-purpose check descends from it; GAIA adds quantitative grading and uncertainty tiers |
+| **GHG Protocol** (Scope 2 guidance) | Accounting standard | GAIA totals feed Scope 2/3 line items; dual reporting is inherited from it |
 
----
-
-## 🔄 Updating the Data
-
-To update with new Excel data:
-
-1. **Replace** the Excel file:
-   ```bash
-   cp /path/to/new-file.xlsx GAIA_Complete_Tool.xlsx
-   ```
-
-2. **Extract** the data:
-   ```bash
-   python3 extract_excel_data.py
-   ```
-
-3. **Rebuild** index.html with new data (follow the workflow guide)
-
-4. **Commit and push** to GitHub:
-   ```bash
-   git add .
-   git commit -m "Update: Refreshed data"
-   git push origin main
-   ```
+What none of these provides — and GAIA does — is the combination of uncertainty-tiered estimates usable without provider cooperation, water alongside carbon, task-conditioned grading of deployments, an explicit frugality check, and an Excel artifact a non-programmer can run.
 
 ---
 
-## 📁 Project Structure
+## Repository structure
 
 ```
-GAIA-Framework-/
-│
-├── index.html                      # Main web app (GitHub Pages)
-├── gaia-workbook-viewer.html      # Original viewer
-├── README.md                       # This file
-│
-├── GAIA_Complete_Tool.xlsx        # Source Excel data
-├── extract_excel_data.py          # Data extraction script
-│
-├── COMPLETE_WORKFLOW.md           # Detailed workflow guide
-├── EXCEL_TO_APP_CHEATSHEET.md     # Quick reference card
-├── SKILL.md                        # Framework methodology
-├── INDEX.md                        # Documentation index
-│
-└── src/
-    ├── index.html                  # Development version
-    └── workbook-data.json         # Extracted JSON data
+FRAMEWORK.md                  Authoritative GAIA 2.0 specification
+DECISIONS.md                  Rebuild ledger: kept / rebuilt / removed, with rationale
+data/                         Sourced factor tables — the single source of truth
+  models.csv                  Per-model energy intensity (Wh/1k output tokens), tier, bounds, vintage
+  regions.csv                 Grid carbon intensity and EWIF by region
+  facilities.csv              PUE / WUE facility profiles
+  grading.csv                 Task classes, default token profiles, grade bands
+  mitigation.csv              Evidence-ranked mitigation levers with measured effects
+  equivalents.csv             Sourced conversion factors for communication equivalents
+build_workbook.py             Generates the Excel tool from the CSV tables
+GAIA_Assessment_Tool.xlsx     Generated workbook (build artifact — never hand-edited)
+index.html                    Zero-dependency web estimator (GitHub Pages)
+legacy/                       GAIA 1.0 artifacts retained for reference
+LICENSE                       MIT
 ```
 
 ---
 
-## 🎨 Customization
+## Regenerate the workbook
 
-### Change Colors
-Edit the CSS gradient values in `index.html`:
-```css
-/* Primary gradient (purple/blue) */
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-/* Accent color (green) */
-background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+```bash
+pip install openpyxl
+python3 build_workbook.py
 ```
 
-### Add More Features
-The codebase is well-commented and easy to extend:
-- Search functionality: `performSearch()` function
-- Export feature: `exportToCSV()` function
-- Rendering logic: `renderTable()` function
+**Data update workflow:** edit the relevant table in `data/*.csv` (with source and vintage), regenerate the workbook, and bump the minor version. The spreadsheet is a build artifact and is never edited by hand.
 
 ---
 
-## 🤝 Contributing
+## Governance and versioning
 
-Contributions are welcome! Here's how you can help:
+- **Semantic versioning.** Factor-table refreshes (grid CI vintages, new models) bump the minor version; methodology changes bump the major version and require a documented rationale against principles P1–P7.
+- **Reproducibility.** The Excel tool is generated from `build_workbook.py` and the CSV tables; anyone can audit the formulas in the script or in the sheet.
+- **Update cadence.** Model database and grid factors are reviewed at least twice yearly.
+- **Corrections.** An error in any published number is fixed in the data table with a changelog entry, never silently.
 
-1. **Report Bugs** - Open an issue with details
-2. **Suggest Features** - Share your ideas for improvements
-3. **Submit PRs** - Fork, create a branch, make changes, submit PR
-4. **Improve Docs** - Help make the documentation better
-5. **Share** - Tell others about GAIA Framework
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file for details.
-
-You are free to:
-- ✅ Use commercially
-- ✅ Modify and distribute
-- ✅ Use privately
-- ✅ Sublicense
+**Roadmap:** marginal/hourly emissions accounting, water-stress weighting for hosting regions, and expanded guides for moving deployments to T1 (metered) data.
 
 ---
 
-## 🌍 Impact
+## Key sources
 
-By using GAIA Framework, organizations can:
+- Elsworth et al. (Google), *Measuring the environmental impact of delivering AI at Google*, arXiv:2508.15734 (2025)
+- Mistral AI × ADEME/Carbone 4, *Life-cycle assessment of Mistral Large 2* (2025)
+- Jegham et al., *How Hungry is AI?*, arXiv:2505.09598 (2025)
+- Luccioni et al., *AI Energy Score* v1–v2 (2025)
+- Li, Yang, Islam & Ren, *Making AI Less "Thirsty"*, arXiv:2304.03271 (2023; CACM 2025)
+- ISO/IEC 21031:2024 (Software Carbon Intensity) and GSF *SCI for AI* (2025)
+- AFNOR SPEC 2314, *Frugal AI* (2024)
+- Ember, *Global Electricity Review* (2025, 2024 data)
 
-- **Reduce AI carbon footprint by 30-60%** through informed model selection
-- **Save costs** on energy and compute resources
-- **Meet sustainability goals** with data-driven decisions
-- **Demonstrate environmental responsibility** to stakeholders
-- **Contribute to a greener AI future** 🌱
-
----
-
-## 📞 Support & Resources
-
-- **Framework Version**: 1.0
-- **Last Updated**: November 2025
-- **Documentation**: See included .md files
-- **Issues**: [GitHub Issues](https://github.com/moseskolleh/GAIA-Framework-/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/moseskolleh/GAIA-Framework-/discussions)
+The full source list, with vintages, is in [FRAMEWORK.md §11](FRAMEWORK.md#11-foundational-sources) and in the `source` column of every data table.
 
 ---
 
-## 🙏 Acknowledgments
+## License
 
-- Built with guidance from the Excel-to-Web-App Quick Reference Card
-- Environmental data based on industry research and real-world measurements
-- Inspired by the global movement toward sustainable AI
-
----
-
-## 📈 Roadmap
-
-Future enhancements planned:
-
-- [ ] Dark/Light mode toggle
-- [ ] Advanced filtering and sorting
-- [ ] Data visualization charts
-- [ ] Multi-sheet comparison view
-- [ ] PDF export functionality
-- [ ] Custom model calculator
-- [ ] API integration
-- [ ] Mobile app version
-
----
-
-## ⭐ Star This Project
-
-If you find GAIA Framework useful, please give it a star on GitHub! It helps others discover the tool.
-
----
-
-**Made with 💚 for a sustainable AI future**
-
-🌱 **GAIA Framework** - *Green AI for a Sustainable Tomorrow*
+MIT — see [LICENSE](LICENSE).

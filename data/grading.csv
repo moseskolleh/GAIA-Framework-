@@ -1,0 +1,5 @@
+task_class,class_code,tokens_in_default,tokens_out_default,grade_a_max_wh,grade_b_max_wh,grade_c_max_wh,grade_d_max_wh,description
+Light,L,300,80,0.1,0.3,1.0,3.0,"Classification, extraction, short chat, autocomplete"
+Standard,S,500,300,0.3,1.0,3.0,10,"General assistant use, summarization, translation"
+Heavy,H,2000,1000,1.0,3.0,10,30,"Long-form generation, RAG over large contexts, code generation"
+Reasoning/agentic,R,2000,4000,3.0,10,30,100,"Extended thinking, multi-step agents, deep research (incl. hidden reasoning tokens)"
