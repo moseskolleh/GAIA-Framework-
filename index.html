@@ -82,8 +82,9 @@ nav.top a:hover{color:var(--accent-strong);text-decoration:underline}
 .btn.secondary{background:var(--bg-card);color:var(--text);border-color:var(--border)}
 .btn.secondary:hover{border-color:var(--accent);color:var(--accent-strong)}
 .hero .fineprint{font-size:.8rem;color:var(--text-faint);margin-top:.9rem}
-section{padding:2.6rem 0}
+section{padding:2.6rem 0;scroll-margin-top:.5rem}
 section h2{font-size:clamp(1.3rem,3vw,1.7rem);margin:0 0 .4rem;letter-spacing:-.01em}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 section p.lead{color:var(--text-soft);max-width:52em;margin:.2rem 0 1.4rem}
 .modules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}
 .module{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.2rem;box-shadow:var(--shadow)}
@@ -97,34 +98,36 @@ section p.lead{color:var(--text-soft);max-width:52em;margin:.2rem 0 1.4rem}
 .estimator{
   background:var(--bg-card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);
   padding:1.4rem;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:1.6rem;
+  align-items:start;
 }
 @media (max-width:860px){.estimator{grid-template-columns:1fr}}
-.estimator h3{margin:0 0 1rem;font-size:1.02rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint)}
-.field{margin-bottom:.95rem}
-.field label{display:block;font-size:.86rem;font-weight:600;margin-bottom:.28rem}
+.estimator h3{margin:0 0 .9rem;font-size:1.02rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint)}
+#est-form{display:grid;grid-template-columns:1fr 1fr;gap:0 .9rem}
+#est-form .full{grid-column:1/-1}
+@media (max-width:420px){#est-form{grid-template-columns:1fr}}
+.field{margin-bottom:.7rem;min-width:0}
+.field label{display:block;font-size:.86rem;font-weight:600;margin-bottom:.24rem}
 .field .hint{font-weight:400;color:var(--text-faint)}
 .field select,.field input[type=number]{
   width:100%;padding:.5rem .6rem;font-size:.95rem;border:1px solid var(--border);
   border-radius:7px;background:var(--bg);color:var(--text);
 }
 .field select:focus,.field input:focus{outline:2px solid var(--accent);outline-offset:1px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
-@media (max-width:380px){.row2{grid-template-columns:1fr}}
 .field input[type=range]{width:100%;accent-color:var(--accent)}
-fieldset.frugal{border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem;margin:0 0 .95rem}
+fieldset.frugal{border:1px solid var(--border);border-radius:8px;padding:.55rem .9rem .7rem;margin:0}
 fieldset.frugal legend{font-size:.86rem;font-weight:600;padding:0 .3rem}
-fieldset.frugal .check{display:flex;gap:.55rem;align-items:flex-start;margin:.45rem 0;font-size:.86rem}
+fieldset.frugal .check{display:flex;gap:.55rem;align-items:flex-start;margin:.4rem 0;font-size:.85rem}
 fieldset.frugal input[type=checkbox]{margin-top:.2rem;accent-color:var(--accent);width:1rem;height:1rem;flex:none}
 fieldset.frugal .check b{font-weight:600}
 fieldset.frugal .check span{color:var(--text-soft)}
 /* Results */
-.results{border-left:1px solid var(--border);padding-left:1.6rem}
-@media (max-width:860px){.results{border-left:none;padding-left:0;border-top:1px solid var(--border);padding-top:1.3rem}}
-.verdict{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+.results{border-left:1px solid var(--border);padding-left:1.6rem;position:sticky;top:1rem}
+@media (max-width:860px){.results{border-left:none;padding-left:0;border-top:1px solid var(--border);padding-top:1.3rem;position:static}}
+.verdict{display:flex;gap:.9rem;align-items:center;flex-wrap:wrap;margin-bottom:.9rem}
 .grade-badge{
-  width:4.4rem;height:4.4rem;border-radius:12px;color:#fff;flex:none;
+  width:3.6rem;height:3.6rem;border-radius:11px;color:#fff;flex:none;
   display:flex;align-items:center;justify-content:center;
-  font-size:2.5rem;font-weight:800;letter-spacing:-.02em;box-shadow:var(--shadow);
+  font-size:2rem;font-weight:800;letter-spacing:-.02em;box-shadow:var(--shadow);
 }
 .grade-a{background:var(--badge-a)} .grade-b{background:var(--badge-b)}
 .grade-c{background:var(--badge-c)} .grade-d{background:var(--badge-d)}
@@ -135,19 +138,46 @@ fieldset.frugal .check span{color:var(--text-soft)}
   border:1px solid var(--border);border-radius:999px;padding:.12rem .6rem;background:var(--bg-inset);
 }
 .verdict .gradeword{font-weight:700;font-size:1.02rem;margin-right:.5rem}
-.guidance{margin:.35rem 0 0;font-size:.93rem;color:var(--text-soft)}
-.tierline{font-size:.82rem;color:var(--text-faint);margin:.35rem 0 1rem}
-.numbers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;margin-bottom:1rem}
-.stat{background:var(--bg-inset);border:1px solid var(--border);border-radius:9px;padding:.6rem .75rem}
-.stat .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint)}
-.stat .v{font-size:1.18rem;font-weight:700;font-variant-numeric:tabular-nums;margin:.1rem 0 0}
-.stat .r{font-size:.78rem;color:var(--text-soft);font-variant-numeric:tabular-nums}
-.stat.wide{grid-column:1/-1}
-.equiv{margin:.2rem 0 1rem;padding:0;list-style:none}
-.equiv li{font-size:.88rem;color:var(--text-soft);padding:.18rem 0;border-bottom:1px dashed var(--border)}
-.equiv li:last-child{border-bottom:none}
-.equiv .ev{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
-.smallprint{font-size:.78rem;color:var(--text-faint);border-top:1px solid var(--border);padding-top:.7rem;margin-top:.4rem}
+.guidance{margin:.3rem 0 0;font-size:.9rem;color:var(--text-soft)}
+.tierline{font-size:.8rem;color:var(--text-faint);margin:.8rem 0 0}
+.herostat{margin:0 0 .9rem;padding:.75rem .9rem;background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px}
+.herostat .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent-strong);font-weight:600}
+.herostat .v{font-size:2.4rem;font-weight:700;line-height:1.1;letter-spacing:-.01em;margin:.05rem 0 0}
+.herostat .r{font-size:.82rem;color:var(--text-soft)}
+.numbers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin-bottom:.8rem}
+@media (max-width:380px){.numbers{grid-template-columns:1fr}}
+.stat{background:var(--bg-inset);border:1px solid var(--border);border-radius:9px;padding:.55rem .7rem}
+.stat .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint)}
+.stat .v{font-size:1.12rem;font-weight:700;margin:.1rem 0 0}
+.stat .r{font-size:.76rem;color:var(--text-soft)}
+.marketline{
+  display:flex;flex-wrap:wrap;gap:.25rem .6rem;align-items:baseline;font-size:.86rem;
+  margin:0 0 .9rem;padding:.5rem .7rem;border:1px dashed var(--border);border-radius:9px;color:var(--text-soft);
+}
+.marketline b{color:var(--text)}
+.marketline .note{font-size:.76rem;color:var(--text-faint)}
+.equiv{margin:0 0 .9rem;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.4rem}
+.equiv li{
+  font-size:.8rem;color:var(--text-soft);padding:.18rem .65rem;
+  border:1px solid var(--border);border-radius:999px;background:var(--bg-inset);
+}
+.equiv .ev{font-weight:700;color:var(--text)}
+.smallprint{font-size:.76rem;color:var(--text-faint);border-top:1px solid var(--border);padding-top:.6rem;margin:0}
+/* Mobile live-result bar */
+.minibar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;display:none;
+  background:var(--bg-card);border-top:1px solid var(--border);
+  box-shadow:0 -2px 12px rgba(0,0,0,.12);padding:.5rem .9rem;
+}
+.minibar .inner{display:flex;align-items:center;gap:.65rem;max-width:1080px;margin:0 auto}
+.minibar .mg{
+  width:2.1rem;height:2.1rem;border-radius:7px;color:#fff;flex:none;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;
+}
+.minibar .mv{font-size:.85rem;line-height:1.3;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.minibar a{margin-left:auto;font-size:.82rem;white-space:nowrap}
+.minibar.show{display:block}
+body.has-minibar{padding-bottom:3.4rem}
 details.eqns{margin-top:1.2rem;font-size:.85rem}
 details.eqns summary{cursor:pointer;font-weight:600;color:var(--text-soft)}
 details.eqns pre{
@@ -230,22 +260,22 @@ footer.site p{margin:.3rem 0}
         <article class="module">
           <span class="letter" aria-hidden="true">G</span>
           <h3>Ground</h3>
-          <p>Enumerate your AI use cases. For each, record the model(s) used, the deployment path (API, cloud-hosted, on-prem), hosting region if known, monthly request volume, and token profile — output tokens dominate inference energy. Choose functional units and declare the system boundary and any deviations.</p>
+          <p>Inventory your AI use: models, deployment path, hosting region, monthly volume, and token profile. Declare functional units and the system boundary.</p>
         </article>
         <article class="module">
           <span class="letter" aria-hidden="true">A</span>
           <h3>Assess</h3>
-          <p>Compute energy, carbon (dual location- and market-based), and water per functional unit and in total, with low/central/high bounds, using the framework's equations and the best available data-quality tier for each quantity.</p>
+          <p>Compute energy, dual-reported carbon, and water per functional unit — always as low / central / high, at the best available data-quality tier.</p>
         </article>
         <article class="module">
           <span class="letter" aria-hidden="true">I</span>
           <h3>Interpret</h3>
-          <p>Assign each use case an efficiency grade A–E conditioned on its task class; run the fit-for-purpose frugality check; place totals in context — share of organizational footprint and real-world equivalents with sourced conversion factors.</p>
+          <p>Grade each use case A–E within its task class, run the three-question frugality check, and place totals in real-world context.</p>
         </article>
         <article class="module">
           <span class="letter" aria-hidden="true">A</span>
           <h3>Act</h3>
-          <p>Select mitigation levers from the evidence-ranked catalogue; set reduction targets on intensity, not totals; report with the GAIA disclosure template, which is SCI-compatible and EU-AI-Act-aligned.</p>
+          <p>Pick evidence-ranked mitigation levers, set intensity targets — not totals — and report with the SCI-compatible disclosure template.</p>
         </article>
       </div>
     </section>
@@ -258,65 +288,64 @@ footer.site p{margin:.3rem 0}
         <div class="inputs">
           <h3>Inputs</h3>
           <form id="est-form">
-            <div class="field">
+            <div class="field full">
               <label for="model">Model</label>
               <select id="model"></select>
             </div>
-            <div class="field">
+            <div class="field full">
               <label for="taskclass">Task class <span class="hint">(sets default token profile)</span></label>
               <select id="taskclass"></select>
             </div>
-            <div class="row2">
-              <div class="field">
-                <label for="tokens-in">Input tokens / request</label>
-                <input type="number" id="tokens-in" min="0" step="1" inputmode="numeric">
-              </div>
-              <div class="field">
-                <label for="tokens-out">Output tokens / request</label>
-                <input type="number" id="tokens-out" min="0" step="1" inputmode="numeric">
-              </div>
+            <div class="field">
+              <label for="tokens-in">Input tokens / request</label>
+              <input type="number" id="tokens-in" min="0" step="1" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label for="tokens-out">Output tokens / request</label>
+              <input type="number" id="tokens-out" min="0" step="1" inputmode="numeric">
             </div>
             <div class="field">
               <label for="queries">Requests per month</label>
               <input type="number" id="queries" min="0" step="1" value="10000" inputmode="numeric">
             </div>
             <div class="field">
+              <label for="market-ci">Market-based CI <span class="hint">(g CO2e/kWh, optional)</span></label>
+              <input type="number" id="market-ci" min="0" step="1" placeholder="blank if unknown" inputmode="numeric">
+            </div>
+            <div class="field full">
               <label for="facility">Facility profile <span class="hint">(sets PUE and on-site WUE)</span></label>
               <select id="facility"></select>
             </div>
-            <div class="field">
+            <div class="field full">
               <label for="region">Hosting region <span class="hint">(sets grid CI and off-site EWIF)</span></label>
               <select id="region"></select>
             </div>
-            <div class="field">
-              <label for="market-ci">Market-based carbon intensity <span class="hint">(g CO2e/kWh, optional — contractual instruments)</span></label>
-              <input type="number" id="market-ci" min="0" step="1" placeholder="leave blank if unknown" inputmode="numeric">
-            </div>
-            <div class="field">
+            <div class="field full">
               <label for="adder">Embodied-carbon adder: <output id="adder-out" for="adder">25%</output> of location-based operational carbon</label>
               <input type="range" id="adder" min="10" max="50" step="1" value="25" aria-describedby="adder-note">
-              <span class="hint" id="adder-note" style="font-size:.78rem">Default 25% (range 10–50%) when the serving fleet is unknown — anchored to the BLOOM LCA, Google's per-prompt disclosure, and Mistral's LCA.</span>
+              <span class="hint" id="adder-note" style="font-size:.78rem">Default 25% (10–50%) when the serving fleet is unknown — anchored to the BLOOM, Google, and Mistral LCAs.</span>
             </div>
-            <fieldset class="frugal">
+            <fieldset class="frugal full">
               <legend>Fit-for-purpose check (frugality)</legend>
               <label class="check" for="frugal-1">
                 <input type="checkbox" id="frugal-1" checked>
-                <span><b>Necessity</b> — the task genuinely needs generative AI (vs. search, a template, rules, or a human).</span>
+                <span><b>Necessity</b> — generative AI is genuinely needed (vs. search, a template, rules, or a human).</span>
               </label>
               <label class="check" for="frugal-2">
                 <input type="checkbox" id="frugal-2" checked>
-                <span><b>Right-sizing</b> — a model at least one capability class smaller has been evaluated on this task, with documented quality results.</span>
+                <span><b>Right-sizing</b> — a smaller model class has been evaluated on this task, with documented results.</span>
               </label>
               <label class="check" for="frugal-3">
                 <input type="checkbox" id="frugal-3" checked>
-                <span><b>Token discipline</b> — prompts, retrieval payloads, and reasoning budgets are bounded (max-token limits, thinking caps, caching).</span>
+                <span><b>Token discipline</b> — prompts, payloads, and reasoning budgets are bounded (max-token caps, caching).</span>
               </label>
             </fieldset>
           </form>
         </div>
 
-        <div class="results" aria-live="polite">
+        <div class="results" id="est-results">
           <h3>Result</h3>
+          <p class="sr-only" role="status" id="sr-status"></p>
           <div class="verdict">
             <div class="grade-badge grade-b" id="grade-badge" role="img" aria-label="Efficiency grade">B</div>
             <div class="meta">
@@ -325,20 +354,19 @@ footer.site p{margin:.3rem 0}
               <p class="guidance" id="guidance">Proceed; monitor quarterly</p>
             </div>
           </div>
-          <p class="tierline" id="tier-line"></p>
+          <div class="herostat" id="hero-stat">
+            <div class="k">Energy per request (full-stack, incl. PUE)</div>
+            <div class="v" id="out-request">—</div>
+            <div class="r"><span id="out-request-range">—</span> · energy-driven uncertainty band</div>
+          </div>
           <div class="numbers">
-            <div class="stat wide">
-              <div class="k">Energy per request (full-stack, incl. PUE)</div>
-              <div class="v" id="out-request">—</div>
-              <div class="r" id="out-request-range">—</div>
-            </div>
             <div class="stat">
               <div class="k">Monthly energy</div>
               <div class="v" id="out-energy">—</div>
               <div class="r" id="out-energy-range">—</div>
             </div>
             <div class="stat">
-              <div class="k">Monthly carbon (location-based)</div>
+              <div class="k">Monthly carbon · location</div>
               <div class="v" id="out-carbon">—</div>
               <div class="r" id="out-carbon-range">—</div>
             </div>
@@ -348,18 +376,18 @@ footer.site p{margin:.3rem 0}
               <div class="r" id="out-water-range">—</div>
             </div>
             <div class="stat">
-              <div class="k">Embodied carbon (adder)</div>
+              <div class="k">Embodied carbon</div>
               <div class="v" id="out-embodied">—</div>
               <div class="r">amortized hardware share</div>
             </div>
-            <div class="stat wide">
-              <div class="k">Monthly carbon (market-based)</div>
-              <div class="v" id="out-carbon-market">not provided</div>
-              <div class="r">reported beside, never blended with, the location-based figure (GHG Protocol Scope 2)</div>
-            </div>
           </div>
+          <p class="marketline">
+            <span>Market-based carbon:</span> <b id="out-carbon-market">not provided</b>
+            <span class="note">reported beside, never blended with, the location-based figure (GHG Protocol Scope 2)</span>
+          </p>
           <ul class="equiv" id="equiv-list"></ul>
-          <p class="smallprint">Estimates carry the uncertainty of their data tier (×1.15 to ×3); ranges shown are energy-driven bounds. Factor uncertainty (grid CI, PUE, WUE, EWIF) adds beyond the ranges displayed. Equivalents are communication aids with sourced conversion factors, not results.</p>
+          <p class="tierline" id="tier-line"></p>
+          <p class="smallprint">Ranges are energy-driven bounds from the model's data tier (×1.15–×3). Factor uncertainty (grid CI, PUE, WUE, EWIF) adds beyond them. Equivalents are communication aids, not results.</p>
         </div>
       </div>
 
@@ -475,6 +503,14 @@ Grade              = central E_request vs. fixed logarithmic bands per task clas
     <p>The Excel workbook is generated from <code>build_workbook.py</code> — the spreadsheet is a build artifact, never hand-edited. Data tables (models, regions, facilities, grading, mitigation, equivalents) live in <code>data/*.csv</code> with source and vintage columns.</p>
   </div>
 </footer>
+
+<div class="minibar" id="minibar" aria-hidden="true">
+  <div class="inner">
+    <span class="mg grade-b" id="mini-grade">B</span>
+    <span class="mv"><b id="mini-energy">—</b> · <span id="mini-carbon">—</span>/mo</span>
+    <a href="#est-results">See result</a>
+  </div>
+</div>
 
 <script>
 "use strict";
@@ -688,6 +724,19 @@ function render() {
     li.title = e.src;
     list.appendChild(li);
   }
+
+  // Mobile live-result bar mirrors the headline outputs
+  const mg = $("mini-grade");
+  mg.textContent = x.grade;
+  mg.className = "mg grade-" + x.grade.toLowerCase();
+  $("mini-energy").textContent = sig(x.eReq) + " Wh/req";
+  $("mini-carbon").textContent = sig(x.carbon) + " kg CO2e";
+
+  // Single concise announcement for screen readers (the visual panel is not aria-live)
+  $("sr-status").textContent =
+    "Grade " + x.grade + ", flag " + x.flag + ". " +
+    sig(x.eReq) + " watt-hours per request; " +
+    sig(x.carbon) + " kilograms CO2e per month.";
 }
 
 /* --- Wiring --- */
@@ -701,6 +750,19 @@ $("adder").addEventListener("input", () => { $("adder-out").textContent = $("add
 for (const id of ["model", "tokens-in", "tokens-out", "queries", "facility", "region", "market-ci", "adder", "frugal-1", "frugal-2", "frugal-3"]) {
   $(id).addEventListener("input", render);
   $(id).addEventListener("change", render);
+}
+
+/* Live-result bar: visible while the inputs are on screen but the headline result is not */
+if ("IntersectionObserver" in window) {
+  let formVis = false, heroVis = false;
+  const minibar = $("minibar");
+  const update = () => {
+    const show = formVis && !heroVis;
+    minibar.classList.toggle("show", show);
+    document.body.classList.toggle("has-minibar", show);
+  };
+  new IntersectionObserver(es => { formVis = es[0].isIntersecting; update(); }).observe($("est-form"));
+  new IntersectionObserver(es => { heroVis = es[0].isIntersecting; update(); }).observe($("hero-stat"));
 }
 render();
 </script>
