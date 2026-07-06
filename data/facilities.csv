@@ -1,0 +1,6 @@
+profile,pue,pue_low,pue_high,wue_l_kwh,wue_low,wue_high,source,notes
+Hyperscale (best-in-class),1.09,1.06,1.15,0.25,0.10,0.50,"Google fleet trailing-twelve-month PUE 1.09-1.10; Meta fleet PUE ~1.09 / WUE ~0.20; operator sustainability reports","Leading dedicated AI fleets; air/advanced cooling"
+Hyperscale cloud (typical),1.15,1.10,1.30,1.00,0.40,1.80,"Operator sustainability reports: Google fleet WUE ~1.0 L/kWh (2024); Microsoft design PUE 1.12 / WUE 0.49; AWS PUE ~1.15","Most commercial API serving lands here"
+Colocation / enterprise (typical),1.54,1.35,1.80,1.80,0.50,2.50,"Uptime Institute Global Data Center Survey 2025: industry average PUE 1.54 (stable six years)","Typical rented rack / mid-size DC"
+On-premises (legacy),1.80,1.50,2.50,1.80,0.50,3.00,"Uptime Institute survey distributions (older, smaller facilities)","Small server rooms often exceed PUE 2.0"
+Unknown (API default),1.20,1.09,1.54,1.00,0.20,1.80,"Weighted assumption: most commercial LLM serving runs in hyperscale facilities","Default when the facility is unknown"
