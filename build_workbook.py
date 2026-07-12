@@ -40,7 +40,7 @@ from openpyxl.formatting.rule import CellIsRule
 # ----------------------------------------------------------------------------
 # Constants
 # ----------------------------------------------------------------------------
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 VERSION_DATE = "2026-07-06"  # static build/version date — the only date used
 LICENSE = "MIT"
 
@@ -1141,6 +1141,16 @@ def build_comparison(wb):
          "Energy documentation duties for GPAI providers",
          "GAIA's disclosure template (§8) is structured so provider-side answers "
          "slot in when they become available"),
+        ("ISO/IEC TR 20226:2025", "Standard (technical report)",
+         "Overview of environmental sustainability aspects and metrics of AI "
+         "systems across their lifecycle (published July 2025)",
+         "GAIA is an executable companion: it implements the TR's metric "
+         "categories (energy, water, carbon, embodied) in runnable form; "
+         "conformance crosswalk on the roadmap (COMPARISON.md §4)"),
+        ("ITU-T L.1801 (02/2026)", "Standard (ITU-T Recommendation)",
+         "Guidelines for assessing the environmental impact of AI systems",
+         "Same relation: L.1801 gives the assessment guidelines, GAIA the "
+         "no-code instrument that executes them; tracked each revision cycle"),
     ]
     ws = data_sheet(wb, "Framework Comparison", headers, list(rows),
                     [42, 20, 50, 70])
@@ -1158,6 +1168,27 @@ def build_comparison(wb):
     return ws
 
 
+def build_alignment(wb):
+    """SDG & corporate-reporting alignment map from data/alignment.csv."""
+    rows = [(r["framework"], r["element"], r["requirement"], r["gaia_output"])
+            for r in load_csv("alignment.csv")]
+    ws = data_sheet(wb, "SDG & Reporting Map",
+                    ["Framework", "Element", "What it asks", "GAIA output that populates it"],
+                    rows, [34, 20, 42, 66])
+    n = len(rows) + 3
+    note = ws.cell(row=n, column=1,
+                   value="Boundary: GAIA measures the environmental COST of AI use; whether an AI "
+                         "application advances an SDG ('AI for Good') is out of scope — the same "
+                         "boundary ISO/IEC TR 20226:2025 draws. SDG claims in a conforming report "
+                         "must trace to the outputs listed here (P1: traceable or absent). Full "
+                         "capability matrix and gap analysis: COMPARISON.md in the repository.")
+    note.font = F_SMALL
+    note.alignment = WRAP
+    ws.merge_cells(start_row=n, start_column=1, end_row=n, end_column=4)
+    ws.row_dimensions[n].height = 45
+    return ws
+
+
 def build_changelog(wb):
     ws = wb.create_sheet("Changelog")
     set_widths(ws, [12, 12, 110])
@@ -1165,6 +1196,14 @@ def build_changelog(wb):
     header_row(ws, 1, ["Version", "Date", "Changes"])
     entries = [
         (VERSION, VERSION_DATE,
+         "GAIA 2.1 — comparability release. New 'SDG & Reporting Map' sheet maps "
+         "GAIA outputs onto UN SDG targets (6.4, 7.2/7.3, 8.4, 9.4, 12.2/12.6, "
+         "13.2/13.3), GRI 302/303/305, ESRS E1/E3, IFRS S2, CDP, SBTi, EU AI Act "
+         "Annex XI, and UN Global Compact Principles 7–9. Framework Comparison "
+         "extended with ISO/IEC TR 20226:2025 and ITU-T L.1801 (02/2026). Full "
+         "capability matrix and gap-analysis roadmap: COMPARISON.md. Methodology "
+         "unchanged (minor version per §9)."),
+        ("2.0.0", "2026-07-06",
          "GAIA 2.0 — full science-based rebuild. The v1 composite Environmental "
          "Score (dimensionally incoherent), Benefit Score (subjective weights) and "
          "'Prohibited' decision matrix are REMOVED; replaced by task-conditioned "
@@ -1184,7 +1223,7 @@ def build_changelog(wb):
         data_cell(ws, r, 1, v, font=F_BOLD)
         data_cell(ws, r, 2, d)
         data_cell(ws, r, 3, txt)
-        ws.row_dimensions[r].height = 150
+        ws.row_dimensions[r].height = 150 if len(txt) > 400 else 80
     note = ws.cell(row=len(entries) + 3, column=3,
                    value="Versioning is semantic (§9): factor-table refreshes bump "
                          "the minor version; methodology changes bump the major "
@@ -1214,16 +1253,17 @@ def main():
     build_usage_log(wb)
     build_methodology(wb)
     build_comparison(wb)
+    build_alignment(wb)
     build_changelog(wb)
 
     expected = ["Start Here", "Assessment", "Engine", "Model Database",
                 "Region Factors", "Facility Profiles", "Grading", "Mitigation",
                 "Usage Log", "Methodology & Sources", "Framework Comparison",
-                "Changelog"]
+                "SDG & Reporting Map", "Changelog"]
     assert wb.sheetnames == expected, wb.sheetnames
 
     wb.properties.creator = "GAIA build_workbook.py"
-    wb.properties.title = "GAIA 2.0 Assessment Tool"
+    wb.properties.title = "GAIA Assessment Tool"
     wb.properties.description = (f"Generated from data/*.csv by build_workbook.py "
                                  f"— version {VERSION} ({VERSION_DATE})")
     # Deterministic metadata: fixed document timestamps from VERSION_DATE.

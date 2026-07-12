@@ -8,6 +8,7 @@ It is written for sustainability and ESG teams, engineering and platform leads, 
 
 - **Specification:** [FRAMEWORK.md](FRAMEWORK.md) (authoritative)
 - **Rebuild rationale:** [DECISIONS.md](DECISIONS.md) — what was kept, rebuilt, or removed from v1, and why
+- **Comparison & alignment:** [COMPARISON.md](COMPARISON.md) — capability matrix against every framework in the field, alignment with the UN SDGs / GRI / ESRS / IFRS S2 / CDP / SBTi, and the gap-analysis roadmap
 
 ---
 
@@ -47,7 +48,7 @@ The framework's name is its method: **G**round → **A**ssess → **I**nterpret 
 
 ## Where GAIA sits among existing instruments
 
-Condensed from the full crosswalk in [FRAMEWORK.md §7](FRAMEWORK.md#7-comparability-where-gaia-sits-among-frameworks):
+Condensed from the full crosswalk in [FRAMEWORK.md §7](FRAMEWORK.md#7-comparability-where-gaia-sits-among-frameworks); the complete capability matrix — including ISO/IEC TR 20226:2025, ITU-T L.1801, and the macro frameworks (UN SDGs, GRI, ESRS, IFRS S2, CDP, SBTi) — is in [COMPARISON.md](COMPARISON.md):
 
 | Framework | Type | Relation to GAIA |
 |---|---|---|
@@ -67,6 +68,7 @@ What none of these provides — and GAIA does — is the combination of uncertai
 ```
 FRAMEWORK.md                  Authoritative GAIA 2.0 specification
 DECISIONS.md                  Rebuild ledger: kept / rebuilt / removed, with rationale
+COMPARISON.md                 Capability matrix, SDG/GRI/ESRS/IFRS alignment, gap-analysis roadmap
 data/                         Sourced factor tables — the single source of truth
   models.csv                  Per-model energy intensity (Wh/1k output tokens), tier, bounds, vintage
   regions.csv                 Grid carbon intensity and EWIF by region
@@ -74,6 +76,7 @@ data/                         Sourced factor tables — the single source of tru
   grading.csv                 Task classes, default token profiles, grade bands
   mitigation.csv              Evidence-ranked mitigation levers with measured effects
   equivalents.csv             Sourced conversion factors for communication equivalents
+  alignment.csv               SDG / GRI / ESRS / IFRS / CDP / SBTi mapping (workbook sheet source)
 build_workbook.py             Generates the Excel tool from the CSV tables
 GAIA_Assessment_Tool.xlsx     Generated workbook (build artifact — never hand-edited)
 index.html                    Zero-dependency web estimator (GitHub Pages)
