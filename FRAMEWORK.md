@@ -2,7 +2,7 @@
 
 ## Green AI Assessment — a science-based framework for measuring, judging, and reducing the environmental footprint of AI use
 
-**Version:** 2.0.0 · **Status:** Specification · **Date:** July 2026 · **License:** MIT
+**Version:** 2.1.0 · **Status:** Specification · **Date:** July 2026 · **License:** MIT
 
 ---
 
@@ -271,8 +271,14 @@ GAIA is designed to be *restatable* in the other instruments' terms — the cros
 | **GHG Protocol (Scope 2 guidance, ICT sector)** | Accounting standard | Corporate inventories, dual reporting | GAIA totals feed Scope 2/3 line items; P6 dual reporting is inherited from it |
 | **LLMCarbon** (ICLR 2024) | Academic model | End-to-end (training+inference+embodied) carbon prediction | Basis for GAIA's optional §4.7 training attribution |
 | **EU AI Act (Art. 40/51, Annex XI)** | Regulation | Energy documentation duties for GPAI providers | GAIA's disclosure template (§8) is structured so provider-side answers slot in when they become available |
+| **ISO/IEC TR 20226:2025** | Standard (technical report) | Overview of environmental sustainability aspects and metrics of AI systems (July 2025) | GAIA is an executable companion: it implements the TR's metric categories in runnable form; conformance crosswalk on the roadmap |
+| **ITU-T L.1801 (02/2026)** | Standard (Recommendation) | Guidelines for assessing the environmental impact of AI systems | Same relation — L.1801 gives the guidelines, GAIA the no-code instrument that executes them |
 
 What none of these provides — and GAIA does — is the combination of: (a) uncertainty-tiered estimates usable *without* provider cooperation, (b) water alongside carbon, (c) task-conditioned grading of deployments, (d) an explicit frugality check, and (e) an Excel artifact a non-programmer can run.
+
+### 7.1 Macro-framework alignment (UN SDGs and corporate reporting)
+
+Beyond the technical instruments above, GAIA's outputs are mapped element-by-element onto the frameworks organizations report against: **UN SDG targets** 6.4, 7.2/7.3, 8.4, 9.4, 12.2/12.6 and 13.2/13.3 (measurement hooks only — GAIA quantifies the environmental *cost* of AI; whether an application advances an SDG, "AI for Good", is out of scope, the same boundary ISO/IEC TR 20226 draws); **GRI** 302/303/305; **ESRS** E1/E3 under CSRD (GAIA's P6 dual Scope-2 reporting is required by ESRS natively); **IFRS S2**; **CDP**; **SBTi** baselines; and **UN Global Compact** Principles 7–9. The full mapping table, the capability matrix against every framework in this section, and the gap-analysis roadmap that falls out of it live in **COMPARISON.md**; the mapping also ships as the "SDG & Reporting Map" sheet in the Excel workbook. Two rules bound every such claim: SDG/report statements must trace to an actually produced GAIA output (P1), and goal-badging without numbers is non-conforming.
 
 ---
 
