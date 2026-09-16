@@ -10,7 +10,8 @@ timestamps; the only date is the static VERSION_DATE constant below).
 Engine math (FRAMEWORK.md §4, implemented identically in every sheet):
     e_out        = Wh per 1000 output tokens at IT boundary (models.csv;
                    serving-stack multiplier S already included)
-    E_IT_request = e_out * (T_out + T_in/10) / 1000                [Wh]
+    c            = cached share of input tokens (prefill skipped on a hit)
+    E_IT_request = e_out * (T_out + T_in*(1-c)/10) / 1000          [Wh]
     E_request    = E_IT_request * PUE                              [Wh]
     E_month      = E_request * Q_month / 1000                      [kWh]
     E_IT_month   = E_IT_request * Q_month / 1000                   [kWh]
@@ -40,8 +41,8 @@ from openpyxl.formatting.rule import CellIsRule
 # ----------------------------------------------------------------------------
 # Constants
 # ----------------------------------------------------------------------------
-VERSION = "2.1.0"
-VERSION_DATE = "2026-07-06"  # static build/version date — the only date used
+VERSION = "2.2.0"
+VERSION_DATE = "2026-09-16"  # static build/version date — the only date used
 LICENSE = "MIT"
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -107,6 +108,8 @@ FACILITIES = load_csv("facilities.csv")
 GRADING = load_csv("grading.csv")
 MITIGATION = load_csv("mitigation.csv")
 EQUIVALENTS = load_csv("equivalents.csv")
+FRAMEWORKS = load_csv("frameworks.csv")
+STANDARDS = load_csv("standards.csv")
 
 N_MODELS = len(MODELS)
 N_REGIONS = len(REGIONS)
@@ -214,11 +217,17 @@ def build_engine_registry():
     erow("market_ci", "Market-based CI (optional)",
          "=IF(Assessment!$C$12=\"\",\"\",Assessment!$C$12)",
          "g CO2e/kWh", "Assessment input 9; blank = not provided (P6)")
-    erow("q1", "Frugality Q1 — necessity", "=IF(Assessment!$C$14=\"\",\"\",Assessment!$C$14)",
+    erow("cache", "Cached input share",
+         "=IF(Assessment!$C$13=\"\",0,Assessment!$C$13)",
+         "fraction 0–1",
+         "Assessment input 10; share of input tokens served from a prompt cache. "
+         "Cache hits skip prefill recomputation, so those tokens carry no "
+         "generation energy. Output tokens are never cached (§4.1).")
+    erow("q1", "Frugality Q1 — necessity", "=IF(Assessment!$C$15=\"\",\"\",Assessment!$C$15)",
          "", "Yes/No")
-    erow("q2", "Frugality Q2 — right-sizing", "=IF(Assessment!$C$15=\"\",\"\",Assessment!$C$15)",
+    erow("q2", "Frugality Q2 — right-sizing", "=IF(Assessment!$C$16=\"\",\"\",Assessment!$C$16)",
          "", "Yes/No")
-    erow("q3", "Frugality Q3 — token discipline", "=IF(Assessment!$C$16=\"\",\"\",Assessment!$C$16)",
+    erow("q3", "Frugality Q3 — token discipline", "=IF(Assessment!$C$17=\"\",\"\",Assessment!$C$17)",
          "", "Yes/No")
     eblank()
 
@@ -244,17 +253,21 @@ def build_engine_registry():
                 f"MATCH({{task_class}},Grading!$A$2:$A${g_end},0)),\"\")")
 
     esec("2 · LOOKED-UP FACTORS (INDEX/MATCH against the data sheets)")
-    erow("e_out", "e_out — model energy, central", mdb("E"),
+    # Model Database columns: A model, B provider, C weights, D licence,
+    # E class, F architecture, G total params, H active params, I context,
+    # J released, K reasoning, L e_out, M low, N high, O tier, P vintage,
+    # Q basis, R source.
+    erow("e_out", "e_out — model energy, central", mdb("L"),
          "Wh / 1k output tokens",
          "models.csv wh_per_1k_output_tokens_it — IT boundary (accelerator + host); "
          "serving-stack multiplier S already included")
-    erow("wh_low", "e_out low bound", mdb("F"), "Wh / 1k output tokens",
+    erow("wh_low", "e_out low bound", mdb("M"), "Wh / 1k output tokens",
          "models.csv wh_low (tier band = default minimum width; some rows are "
          "wider with justification in their basis column)")
-    erow("wh_high", "e_out high bound", mdb("G"), "Wh / 1k output tokens",
+    erow("wh_high", "e_out high bound", mdb("N"), "Wh / 1k output tokens",
          "models.csv wh_high (tier band = default minimum width; some rows are "
          "wider with justification in their basis column)")
-    erow("tier", "Data-quality tier of model row", mdb("H"), "",
+    erow("tier", "Data-quality tier of model row", mdb("O"), "",
          "T1 measured / T2 disclosed / T3 benchmarked / T4 modeled (§4.5)")
     erow("f_low", "Low scale factor", "=IFERROR({wh_low}/{e_out},\"\")", "×",
          "wh_low / e_out — every output is scaled by this for the low bound")
@@ -282,9 +295,10 @@ def build_engine_registry():
 
     esec("3 · CENTRAL ESTIMATE (§4 equations)")
     erow("e_it_req", "E_IT_request — IT energy per request",
-         "=IFERROR({e_out}*({t_out}+{t_in}/10)/1000,\"\")", "Wh",
-         "E_IT = e_out × (T_out + T_in/10) / 1000 — input tokens cost ≈1/10 of "
-         "output tokens (§4.1, k=10)")
+         "=IFERROR({e_out}*({t_out}+{t_in}*(1-{cache})/10)/1000,\"\")", "Wh",
+         "E_IT = e_out × (T_out + T_in × (1 − c) / 10) / 1000 — input tokens cost "
+         "≈1/10 of output tokens (§4.1, k=10); c is the cached input share, whose "
+         "tokens skip prefill entirely")
     erow("e_req", "E_request — full energy per request",
          "=IFERROR({e_it_req}*{pue},\"\")", "Wh",
          "E_request = E_IT_request × PUE (§4.1; S is already inside e_out)")
@@ -460,13 +474,26 @@ def build_start_here(wb):
          "pseudo-precision.", ""),
         ("", ""),
         ("Where everything lives", "sub"),
-        ("Assessment = the one sheet you fill in.  Engine = every intermediate "
-         "calculation, documented.  Model Database / Region Factors / Facility "
-         "Profiles / Grading / Mitigation = the sourced data tables (from "
+        ("Assessment = the one sheet you fill in.  Scenario Compare = four "
+         "deployment options side by side on one workload.  Engine = every "
+         "intermediate calculation, documented.  Model Database / Region Factors / "
+         "Facility Profiles / Grading / Mitigation = the sourced data tables (from "
          "data/*.csv).  Usage Log = monthly tracking template.  Methodology & "
          "Sources = equations, tiers, boundary, limitations, full source list.  "
          "Framework Comparison = how GAIA maps to SCI, GHG Protocol, AI Energy "
-         "Score and others.  Changelog = version history.", ""),
+         "Score and others, plus the standards it implements.  SDG & Reporting Map "
+         "= where the answers land in GRI / ESRS / IFRS / CDP / SBTi.  Changelog = "
+         "version history.", ""),
+        ("", ""),
+        ("Reading the Model Database honestly", "sub"),
+        ("The Tier column is the provenance of the number, not the quality of the "
+         "model. Most rows are T4 (modelled): no closed provider publishes "
+         "per-model serving energy, and a user of a closed API cannot measure it. "
+         "Rows marked with a class anchor in their Basis share one placeholder "
+         "value across every closed model of that capability class — that is a "
+         "statement about missing disclosure, not a finding that the models are "
+         "equally efficient. Open-weight rows are the ones you can meter yourself, "
+         "which moves them to T1 and cuts the uncertainty band roughly fourfold.", ""),
     ]
     r = 5
     for text, kind in rows:
@@ -542,19 +569,23 @@ def build_assessment(wb):
     input_row(12, "9 · Market-based CI (g CO2e/kWh) — optional", None,
               "Leave blank unless your provider discloses a market-based factor; "
               "reported beside, never instead of, location-based (P6)", nf="0")
+    input_row(13, "10 · Cached input share (0–1) — optional", 0,
+              "Share of input tokens served from a prompt cache. Cache hits skip "
+              "prefill, so those tokens carry no energy. Output tokens are never "
+              "cached (§4.1).", nf="0.00")
 
-    section_banner(ws, 13, "FRUGALITY CHECK (§5.3) — three auditable Yes/No questions", 5)
-    input_row(14, "Q1 · Necessity — does the task need generative AI at all "
+    section_banner(ws, 14, "FRUGALITY CHECK (§5.3) — three auditable Yes/No questions", 5)
+    input_row(15, "Q1 · Necessity — does the task need generative AI at all "
                   "(vs. search, template, rules, or a human)?", "Yes", "")
-    input_row(15, "Q2 · Right-sizing — has a model ≥1 capability class smaller been "
+    input_row(16, "Q2 · Right-sizing — has a model ≥1 capability class smaller been "
                   "evaluated on this task, with documented quality results?", "Yes", "")
-    input_row(16, "Q3 · Token discipline — are prompts, retrieval payloads and "
+    input_row(17, "Q3 · Token discipline — are prompts, retrieval payloads and "
                   "reasoning budgets bounded (max-token / thinking caps, caching)?",
               "Yes", "")
 
     # --- Results ---
-    section_banner(ws, 18, "RESULTS — computed on the Engine sheet; do not edit", 5)
-    header_row(ws, 19, ["Metric", "Low", "Central", "High", "Unit / note"], start_col=2)
+    section_banner(ws, 19, "RESULTS — computed on the Engine sheet; do not edit", 5)
+    header_row(ws, 20, ["Metric", "Low", "Central", "High", "Unit / note"], start_col=2)
 
     def res_row(r, label, low, central, high, unit, nf):
         data_cell(ws, r, 2, label, font=F_BOLD)
@@ -565,65 +596,65 @@ def build_assessment(wb):
         n = data_cell(ws, r, 6, unit, fill=FILL_NOTE)
         n.font = F_SMALL
 
-    res_row(20, "Energy per request",
+    res_row(21, "Energy per request",
             f"={eng('e_req_low')}", f"={eng('e_req')}", f"={eng('e_req_high')}",
             "Wh / request (full-stack: IT × PUE)", NF_WH)
-    res_row(21, "Energy per month",
+    res_row(22, "Energy per month",
             f"={eng('e_month_low')}", f"={eng('e_month')}", f"={eng('e_month_high')}",
             "kWh / month", NF_KWH)
-    res_row(22, "Carbon — location-based",
+    res_row(23, "Carbon — location-based",
             f"={eng('c_loc_low')}", f"={eng('c_loc')}", f"={eng('c_loc_high')}",
             "kg CO2e / month (physical grid mix)", NF_KG)
-    res_row(23, "Carbon — market-based",
+    res_row(24, "Carbon — market-based",
             f"={eng('c_mkt_low')}", f"={eng('c_mkt')}", f"={eng('c_mkt_high')}",
             "kg CO2e / month — 'not provided' unless input 9 is set (P6)", NF_KG)
-    res_row(24, "Embodied carbon",
+    res_row(25, "Embodied carbon",
             f"={eng('c_emb_low')}", f"={eng('c_emb')}", f"={eng('c_emb_high')}",
             "kg CO2e / month = location-based × adder (§4.6)", NF_KG)
-    res_row(25, "Water (on-site + off-site)",
+    res_row(26, "Water (on-site + off-site)",
             f"={eng('water_low')}", f"={eng('water')}", f"={eng('water_high')}",
             "L / month (two-path model, §4.4)", NF_L)
 
     # Grade / flag / tier
-    data_cell(ws, 27, 2, "EFFICIENCY GRADE — central Wh/request vs task-class "
+    data_cell(ws, 28, 2, "EFFICIENCY GRADE — central Wh/request vs task-class "
                          "bands (§5.2)", font=F_BOLD)
-    ws.merge_cells("C27:D28")
-    g = ws["C27"]
+    ws.merge_cells("C28:D29")
+    g = ws["C28"]
     g.value = f"={eng('grade')}"
     g.font = Font(name="Calibri", size=28, bold=True)
     g.alignment = CENTER
-    for rng in ("C27", "C28", "D27", "D28"):
+    for rng in ("C28", "C29", "D28", "D29"):
         ws[rng].border = BORDER
-    data_cell(ws, 27, 5, "Frugality flag", fill=FILL_NOTE, font=F_SMALL)
-    c = data_cell(ws, 27, 6, f"={eng('flag')}", wrap=False, fill=FILL_CALC,
+    data_cell(ws, 28, 5, "Frugality flag", fill=FILL_NOTE, font=F_SMALL)
+    c = data_cell(ws, 28, 6, f"={eng('flag')}", wrap=False, fill=FILL_CALC,
                   font=Font(name="Calibri", size=14, bold=True))
     c.alignment = CENTER
-    data_cell(ws, 28, 5, "Model data tier", fill=FILL_NOTE, font=F_SMALL)
-    c = data_cell(ws, 28, 6, f"={eng('tier')}", wrap=False, fill=FILL_CALC,
+    data_cell(ws, 29, 5, "Model data tier", fill=FILL_NOTE, font=F_SMALL)
+    c = data_cell(ws, 29, 6, f"={eng('tier')}", wrap=False, fill=FILL_CALC,
                   font=F_BOLD)
     c.alignment = CENTER
 
-    data_cell(ws, 30, 2, "GUIDANCE (§5.4 — grade × flag)", font=F_BOLD)
-    ws.merge_cells("C30:F30")
-    gd = ws["C30"]
+    data_cell(ws, 31, 2, "GUIDANCE (§5.4 — grade × flag)", font=F_BOLD)
+    ws.merge_cells("C31:F31")
+    gd = ws["C31"]
     gd.value = f"={eng('guidance')}"
     gd.font = F_BOLD
     gd.alignment = WRAP
     gd.fill = FILL_CALC
     for col in "CDEF":
-        ws[f"{col}30"].border = BORDER
-    ws.row_dimensions[30].height = 30
+        ws[f"{col}31"].border = BORDER
+    ws.row_dimensions[31].height = 30
 
     # Grade conditional formatting
     for grade, (fill, color) in GRADE_STYLE.items():
         ws.conditional_formatting.add(
-            "C27:D28",
+            "C28:D29",
             CellIsRule(operator="equal", formula=[f'"{grade}"'],
                        fill=PatternFill("solid", fgColor=fill),
                        font=Font(size=28, bold=True, color=color)))
 
     # Equivalents
-    section_banner(ws, 32, "REAL-WORLD EQUIVALENTS — communication aids, not "
+    section_banner(ws, 33, "REAL-WORLD EQUIVALENTS — communication aids, not "
                            "results (sourced factors on Engine sheet)", 5)
     eq_rows = [
         ("eq_led", "≈ Hours of a 10 W LED bulb", "hours / month"),
@@ -632,7 +663,7 @@ def build_assessment(wb):
         ("eq_shower", "≈ 8-minute showers", "showers / month"),
     ]
     for i, (key, label, unit) in enumerate(eq_rows):
-        r = 33 + i
+        r = 34 + i
         data_cell(ws, r, 2, label)
         c = data_cell(ws, r, 3, f"={eng(key)}", wrap=False, fill=FILL_CALC, nf=NF_EQ)
         c.alignment = CENTER
@@ -656,12 +687,17 @@ def build_assessment(wb):
                         formula1=f"='Region Factors'!$A$2:$A${r_end}",
                         allow_blank=True, showDropDown=False), "C10"),
         (DataValidation(type="list", formula1='"Yes,No"', allow_blank=True,
-                        showDropDown=False), "C14:C16"),
+                        showDropDown=False), "C15:C17"),
         (DataValidation(type="decimal", operator="between", formula1="0.1",
                         formula2="0.5", allow_blank=True,
                         errorTitle="Embodied adder",
                         error="Use a value between 0.10 and 0.50 (§4.6)",
                         showErrorMessage=True), "C11"),
+        (DataValidation(type="decimal", operator="between", formula1="0",
+                        formula2="1", allow_blank=True,
+                        errorTitle="Cached input share",
+                        error="Use a share between 0 and 1 (0 = no caching)",
+                        showErrorMessage=True), "C13"),
     ]
     for dv, rng in dvs:
         ws.add_data_validation(dv)
@@ -743,25 +779,61 @@ def data_sheet(wb, name, headers, rows, widths, numeric_cols=(), nfs=None,
 
 
 def build_model_db(wb):
-    headers = ["Model", "Provider", "Capability class", "Reasoning mode",
+    """Model Database sheet. Column order is load-bearing: the Engine's
+    INDEX/MATCH lookups address L (central), M (low), N (high) and O (tier)."""
+    headers = ["Model", "Provider", "Weights", "Licence", "Capability class",
+               "Architecture", "Total params (B)", "Active params (B)",
+               "Context", "Released", "Reasoning mode",
                "Wh per 1k output tokens (central, IT boundary)", "Low", "High",
-               "Tier", "Vintage", "Basis", "Source"]
-    rows = [[m["model"], m["provider"], m["capability_class"], m["reasoning_mode"],
+               "Tier", "Vintage", "Basis", "Source", "Status"]
+    rows = [[m["model"], m["provider"],
+             "Open" if m["openness"] == "open" else "Proprietary",
+             m["license"], m["capability_class"], m["architecture"],
+             m["params_total_b"], m["params_active_b"], m["context_window"],
+             m["released"], m["reasoning_mode"],
              m["wh_per_1k_output_tokens_it"], m["wh_low"], m["wh_high"],
-             m["tier"], m["vintage"], m["basis"], m["source"]] for m in MODELS]
+             m["tier"], m["vintage"], m["basis"], m["source"], m["status"]]
+            for m in MODELS]
     ws = data_sheet(wb, "Model Database", headers, rows,
-                    [26, 12, 13, 12, 16, 9, 9, 7, 10, 60, 45],
-                    numeric_cols={5, 6, 7}, nfs={5: "0.000", 6: "0.000", 7: "0.000"},
-                    tier_col=8)
-    note = ws.cell(row=len(rows) + 3, column=1,
-                   value="IT boundary = accelerator + host + idle capacity "
-                         "(serving-stack multiplier S already included). Energy "
-                         "ONLY is stored per model — carbon and water are computed "
-                         "from the separate Region/Facility tables (P3). Tier key: "
-                         "T1 measured · T2 disclosed · T3 benchmarked · T4 modeled "
-                         "(§4.5). Source of truth: data/models.csv.")
-    note.font = F_SMALL
-    note.alignment = WRAP
+                    [30, 13, 12, 22, 13, 13, 11, 11, 10, 10, 12,
+                     16, 9, 9, 7, 9, 62, 46, 9],
+                    numeric_cols={7, 8, 12, 13, 14},
+                    nfs={7: "0.#", 8: "0.#", 12: "0.0000", 13: "0.0000", 14: "0.0000"},
+                    tier_col=15)
+
+    # Open-weight rows get a tint: they are the rows a user can move to T1 by
+    # metering their own deployment.
+    open_fill = PatternFill("solid", fgColor="EAF3EC")
+    for i, m in enumerate(MODELS):
+        if m["openness"] == "open":
+            ws.cell(row=i + 2, column=3).fill = open_fill
+            ws.cell(row=i + 2, column=3).font = F_BOLD
+
+    notes = [
+        "IT boundary = accelerator + host + idle serving capacity (the serving-stack "
+        "multiplier S is already applied to every row). ENERGY ONLY is stored per "
+        "model: carbon and water come from the separate Region and Facility tables, "
+        "because they vary independently of the model (P3).",
+        "Tier key: T1 measured · T2 provider-disclosed · T3 independently benchmarked "
+        "· T4 modelled from parameter physics (§4.5). The tier sets the minimum width "
+        "of the uncertainty band; rows whose sources disagree carry wider bounds, "
+        "justified in the Basis column.",
+        "Active params drive energy per token; total params drive memory. For "
+        "mixture-of-experts models the two differ by an order of magnitude, which is "
+        "why the Tier-4 physics model uses ACTIVE parameters (§4.5).",
+        "Weights = Open means the checkpoint is downloadable, so the deployment can "
+        "be metered directly and moved to T1. It is not a quality or licence "
+        "judgement — see the Licence column for terms.",
+        "Status = legacy marks superseded rows kept for historical comparison. "
+        "Source of truth: data/models.csv.",
+    ]
+    for k, text in enumerate(notes):
+        note = ws.cell(row=len(rows) + 3 + k, column=1, value=text)
+        note.font = F_SMALL
+        note.alignment = WRAP
+        ws.merge_cells(start_row=len(rows) + 3 + k, start_column=1,
+                       end_row=len(rows) + 3 + k, end_column=19)
+        ws.row_dimensions[len(rows) + 3 + k].height = 26
     return ws
 
 
@@ -866,6 +938,182 @@ def build_mitigation(wb):
                          "data/mitigation.csv.")
     note.font = F_SMALL
     note.alignment = WRAP
+    return ws
+
+
+def build_scenarios(wb):
+    """Four deployment options side by side on identical workloads.
+
+    The Assessment sheet answers "what does this cost?". This sheet answers the
+    question an organization actually has to decide: "which of these ways of
+    doing it costs least?". It carries its own formula chain rather than
+    referencing the Engine sheet, because the Engine holds exactly one scenario.
+    """
+    ws = wb.create_sheet("Scenario Compare")
+    set_widths(ws, [2, 40, 22, 22, 22, 22, 44])
+    ws.sheet_view.showGridLines = False
+    ws.freeze_panes = "C5"
+
+    ws["B1"] = "Scenario Compare — four options, one workload"
+    ws["B1"].font = F_TITLE
+    ws["B2"] = ("Edit the yellow cells. Every column runs the same §4 equations as the "
+                "Assessment sheet. Column C is the baseline; D–F report their "
+                "difference against it.")
+    ws["B2"].font = F_SUB
+
+    m_end, f_end, r_end, g_end = 1 + N_MODELS, 1 + N_FACILITIES, 1 + N_REGIONS, 1 + N_GRADES
+    COLS = ["C", "D", "E", "F"]
+
+    header_row(ws, 4, ["Row", "Baseline", "Option B", "Option C", "Option D", "Notes"],
+               start_col=2)
+
+    def label(r, text, note="", bold=True):
+        data_cell(ws, r, 2, text, font=F_BOLD if bold else F_BODY)
+        if note:
+            n = data_cell(ws, r, 7, note, fill=FILL_NOTE)
+            n.font = F_SMALL
+
+    def inputs(r, values, nf=None):
+        for col, v in zip(COLS, values):
+            c = ws[f"{col}{r}"]
+            c.value = v
+            c.fill = FILL_INPUT
+            c.border = BORDER
+            c.alignment = CENTER
+            if nf:
+                c.number_format = nf
+
+    def formula(r, template, nf=None, fill=None, font=None):
+        for col in COLS:
+            c = ws[f"{col}{r}"]
+            c.value = template.replace("@", col)
+            c.fill = fill or FILL_CALC
+            c.border = BORDER
+            c.alignment = CENTER
+            if nf:
+                c.number_format = nf
+            if font:
+                c.font = font
+
+    # --- inputs ---------------------------------------------------------
+    default_model = MODELS[0]["model"]
+    cheap_open = min((m for m in MODELS if m["openness"] == "open"),
+                     key=lambda m: float(m["wh_per_1k_output_tokens_it"]),
+                     default=MODELS[0])["model"]
+    clean_region = min(REGIONS, key=lambda r: float(r["ci_location_gco2_kwh"]))["region"]
+    best_fac = min(FACILITIES, key=lambda f: float(f["pue"]))["profile"]
+
+    label(5, "1 · Model", "Dropdown — provenance in 'Model Database'")
+    inputs(5, [default_model, cheap_open, default_model, cheap_open])
+    label(6, "2 · Task class", "Sets the grade bands used in row 26")
+    inputs(6, ["Standard"] * 4)
+    label(7, "3 · Tokens in / request")
+    inputs(7, [500] * 4, nf="#,##0")
+    label(8, "4 · Tokens out / request")
+    inputs(8, [300] * 4, nf="#,##0")
+    label(9, "5 · Requests / month")
+    inputs(9, [10000] * 4, nf="#,##0")
+    label(10, "6 · Facility profile")
+    inputs(10, ["Unknown (API default)", "Unknown (API default)", best_fac, best_fac])
+    label(11, "7 · Hosting region")
+    inputs(11, ["Global average", "Global average", clean_region, clean_region])
+    label(12, "8 · Cached input share (0–1)", "Cache hits skip prefill (§4.1)")
+    inputs(12, [0] * 4, nf="0.00")
+    label(13, "9 · Embodied adder", "Default 0.25; range 0.10–0.50 (§4.6)")
+    inputs(13, [0.25] * 4, nf="0.00")
+
+    # --- looked-up factors ----------------------------------------------
+    section_banner(ws, 15, "LOOKED-UP FACTORS (INDEX/MATCH against the data sheets)", 5)
+    label(16, "e_out — Wh / 1k output tokens", "models.csv, IT boundary", bold=False)
+    formula(16, f'=IFERROR(INDEX(\'Model Database\'!$L$2:$L${m_end},'
+                f'MATCH(@$5,\'Model Database\'!$A$2:$A${m_end},0)),"")'.replace("@$5", "@5"),
+            nf="0.0000")
+    label(17, "Data tier", "T1 measured … T4 modelled", bold=False)
+    formula(17, f'=IFERROR(INDEX(\'Model Database\'!$O$2:$O${m_end},'
+                f'MATCH(@5,\'Model Database\'!$A$2:$A${m_end},0)),"")')
+    label(18, "PUE", "facilities.csv", bold=False)
+    formula(18, f'=IFERROR(INDEX(\'Facility Profiles\'!$B$2:$B${f_end},'
+                f'MATCH(@10,\'Facility Profiles\'!$A$2:$A${f_end},0)),"")', nf="0.00")
+    label(19, "WUE (L/kWh IT)", "facilities.csv", bold=False)
+    formula(19, f'=IFERROR(INDEX(\'Facility Profiles\'!$E$2:$E${f_end},'
+                f'MATCH(@10,\'Facility Profiles\'!$A$2:$A${f_end},0)),"")', nf="0.00")
+    label(20, "Grid CI (g CO2e/kWh)", "regions.csv, location-based", bold=False)
+    formula(20, f'=IFERROR(INDEX(\'Region Factors\'!$B$2:$B${r_end},'
+                f'MATCH(@11,\'Region Factors\'!$A$2:$A${r_end},0)),"")', nf="0")
+    label(21, "EWIF (L/kWh)", "regions.csv, off-site water", bold=False)
+    formula(21, f'=IFERROR(INDEX(\'Region Factors\'!$E$2:$E${r_end},'
+                f'MATCH(@11,\'Region Factors\'!$A$2:$A${r_end},0)),"")', nf="0.00")
+
+    # --- results ---------------------------------------------------------
+    section_banner(ws, 23, "RESULTS — central estimates (§4)", 5)
+    label(24, "Energy per request (Wh)", "E_IT × PUE; E_IT = e_out × (T_out + T_in × (1 − c) / 10) / 1000")
+    formula(24, '=IFERROR(@16*(@8+@7*(1-@12)/10)/1000*@18,"")', nf="0.0000",
+            font=F_BOLD)
+    label(25, "Energy per month (kWh)")
+    formula(25, '=IFERROR(@24*@9/1000,"")', nf=NF_KWH)
+    label(26, "Carbon — location-based (kg CO2e/mo)")
+    formula(26, '=IFERROR(@25*@20/1000,"")', nf=NF_KG, font=F_BOLD)
+    label(27, "Embodied carbon (kg CO2e/mo)")
+    formula(27, '=IFERROR(@26*@13,"")', nf=NF_KG)
+    label(28, "Water (L/mo)", "on-site (IT energy × WUE) + off-site (total energy × EWIF)")
+    formula(28, '=IFERROR(@16*(@8+@7*(1-@12)/10)/1000*@9/1000*@19+@25*@21,"")', nf=NF_L)
+
+    label(30, "Efficiency grade", "Central Wh/request vs the task class's bands (§5.2)")
+    grade_tpl = (f'=IF(OR(@24="",@6=""),"",'
+                 f'IF(@24<=INDEX(Grading!$E$2:$E${g_end},MATCH(@6,Grading!$A$2:$A${g_end},0)),"A",'
+                 f'IF(@24<=INDEX(Grading!$F$2:$F${g_end},MATCH(@6,Grading!$A$2:$A${g_end},0)),"B",'
+                 f'IF(@24<=INDEX(Grading!$G$2:$G${g_end},MATCH(@6,Grading!$A$2:$A${g_end},0)),"C",'
+                 f'IF(@24<=INDEX(Grading!$H$2:$H${g_end},MATCH(@6,Grading!$A$2:$A${g_end},0)),"D","E")))))')
+    formula(30, grade_tpl, font=Font(name="Calibri", size=16, bold=True))
+    for grade, (fill, color) in GRADE_STYLE.items():
+        ws.conditional_formatting.add(
+            "C30:F30",
+            CellIsRule(operator="equal", formula=[f'"{grade}"'],
+                       fill=PatternFill("solid", fgColor=fill),
+                       font=Font(size=16, bold=True, color=color)))
+
+    label(31, "Carbon vs baseline", "Negative = lower than column C")
+    for col in COLS:
+        c = ws[f"{col}31"]
+        c.value = ('=IF(OR($C$26="",$C$26=0),"—",IFERROR(@26/$C$26-1,""))'
+                   .replace("@", col) if col != "C" else '"baseline"')
+        if col == "C":
+            c.value = "=\"baseline\""
+        c.fill = FILL_CALC
+        c.border = BORDER
+        c.alignment = CENTER
+        c.number_format = "+0.0%;-0.0%;0%"
+        c.font = F_BOLD
+
+    note = ws.cell(row=33, column=2,
+                   value="Only the differences between columns are meaningful here: the "
+                         "absolute values carry the same tier-driven uncertainty as "
+                         "everywhere else in GAIA (see the Assessment sheet for "
+                         "low/central/high). Comparing a T4 row against a T2 row "
+                         "compares an estimate against a measurement — the tier row "
+                         "above says which is which.")
+    note.font = F_SMALL
+    note.alignment = WRAP
+    ws.merge_cells(start_row=33, start_column=2, end_row=33, end_column=7)
+    ws.row_dimensions[33].height = 42
+
+    dvs = [
+        (DataValidation(type="list", formula1=f"='Model Database'!$A$2:$A${m_end}",
+                        allow_blank=True, showDropDown=False), "C5:F5"),
+        (DataValidation(type="list", formula1=f"=Grading!$A$2:$A${g_end}",
+                        allow_blank=True, showDropDown=False), "C6:F6"),
+        (DataValidation(type="list", formula1=f"='Facility Profiles'!$A$2:$A${f_end}",
+                        allow_blank=True, showDropDown=False), "C10:F10"),
+        (DataValidation(type="list", formula1=f"='Region Factors'!$A$2:$A${r_end}",
+                        allow_blank=True, showDropDown=False), "C11:F11"),
+        (DataValidation(type="decimal", operator="between", formula1="0", formula2="1",
+                        allow_blank=True, errorTitle="Cached input share",
+                        error="Use a share between 0 and 1", showErrorMessage=True),
+         "C12:F12"),
+    ]
+    for dv, rng in dvs:
+        ws.add_data_validation(dv)
+        dv.add(rng)
     return ws
 
 
@@ -974,11 +1222,16 @@ def build_methodology(wb):
         r += 1
 
     sub("Equations (FRAMEWORK.md §4) — exactly as computed on the Engine sheet")
-    body("E_IT_request [Wh]  =  e_out × (T_out + T_in/10) / 1000", mono=True)
+    body("E_IT_request [Wh]  =  e_out × (T_out + T_in × (1 − c) / 10) / 1000", mono=True)
     body("    e_out = model energy per 1000 output tokens at the IT boundary "
          "(accelerator + host + idle; the serving-stack multiplier S ≈ 1.7 is "
          "ALREADY INCLUDED in the Model Database values). Input tokens cost "
          "≈ 1/10 of output tokens (k = 10, §4.1).", mono=True)
+    body("    c     = cached input share. A prompt-cache hit reuses a computed "
+         "prefix, so those input tokens are never prefilled again and carry no "
+         "energy. Output tokens are NEVER cached — generation is autoregressive "
+         "and is recomputed every time. Use your measured hit rate, not a target; "
+         "default 0 (§4.1).", mono=True)
     body("E_request [Wh]     =  E_IT_request × PUE            (facility overhead, §4.1)",
          mono=True)
     body("E_month [kWh]      =  E_request × Q_month / 1000                     (§4.2)",
@@ -1005,8 +1258,9 @@ def build_methodology(wb):
          "boundary", "1.5", "Google Gemini 0.24 Wh/median prompt; Mistral Large 2 LCA"),
         ("T3 Benchmarked", "Independent standardized benchmark (GPU-only, needs S)",
          "2", "AI Energy Score; Jegham et al. API benchmarks"),
-        ("T4 Modeled", "Parameter-count physics model (FLOPs → J via hardware "
-         "efficiency)", "3", "EcoLogits-style estimate for an undisclosed model"),
+        ("T4 Modelled", "Parameter-count physics model on ACTIVE parameters "
+         "(FLOPs → J via hardware efficiency)", "3",
+         "EcoLogits-style estimate for an undisclosed model"),
     ]
     for i, row in enumerate(tier_rows):
         for j, v in enumerate(row):
@@ -1102,69 +1356,41 @@ def build_methodology(wb):
 
 
 def build_comparison(wb):
-    headers = ["Framework", "Type", "What it does", "Relation to GAIA"]
-    rows = [
-        ("SCI — ISO/IEC 21031:2024 (Green Software Foundation)", "Standard (rate)",
-         "SCI = (E×I + M)/R per functional unit",
-         "GAIA's §4 computes exactly E, I, M, R; any GAIA result restates as an SCI "
-         "score (energy → E, location CI → I, embodied → M, functional unit → R)"),
-        ("SCI for AI (GSF, ratified 2025)", "Standard extension",
-         "SCI adapted to AI lifecycle incl. training/inference split",
-         "GAIA Module A is an implementation; GAIA adds water, grading, frugality, "
-         "and the decision layer SCI deliberately leaves out"),
-        ("AI Energy Score (Hugging Face/Salesforce/Cohere/CMU, 2025–)",
-         "Benchmark + rating",
-         "Standardized GPU-energy benchmark on H100, 5-star ratings per task",
-         "GAIA consumes it as T3 data; GAIA's task-conditioned grades follow its "
-         "logic but grade YOUR deployment, not the bare model"),
-        ("EcoLogits (GenAI Impact)", "Software library",
-         "ISO-14044-based per-request estimates for API models",
-         "Peer methodology for GAIA's T4 model; GAIA is spreadsheet-first and adds "
-         "the organizational workflow"),
-        ("CodeCarbon / Green Algorithms", "Measurement tools",
-         "Meter or estimate compute energy/carbon", "GAIA's T1 data source"),
-        ("AFNOR SPEC 2314 — Frugal AI (2024)", "Reference framework",
-         "Lifecycle methodology + 31 best practices + 'question the need'",
-         "GAIA's §5.3 frugality check descends from it; GAIA adds quantitative "
-         "grading and uncertainty tiers"),
-        ("ITU-T L.1410 / ISO 14040/44", "LCA standards",
-         "Boundary and allocation rules for ICT LCA",
-         "Govern GAIA's §2 boundary declarations"),
-        ("GHG Protocol (Scope 2 guidance, ICT sector)", "Accounting standard",
-         "Corporate inventories, dual reporting",
-         "GAIA totals feed Scope 2/3 line items; P6 dual reporting is inherited "
-         "from it"),
-        ("LLMCarbon (ICLR 2024)", "Academic model",
-         "End-to-end (training+inference+embodied) carbon prediction",
-         "Basis for GAIA's optional §4.7 training attribution"),
-        ("EU AI Act (Art. 40/51, Annex XI)", "Regulation",
-         "Energy documentation duties for GPAI providers",
-         "GAIA's disclosure template (§8) is structured so provider-side answers "
-         "slot in when they become available"),
-        ("ISO/IEC TR 20226:2025", "Standard (technical report)",
-         "Overview of environmental sustainability aspects and metrics of AI "
-         "systems across their lifecycle (published July 2025)",
-         "GAIA is an executable companion: it implements the TR's metric "
-         "categories (energy, water, carbon, embodied) in runnable form; "
-         "conformance crosswalk on the roadmap (COMPARISON.md §4)"),
-        ("ITU-T L.1801 (02/2026)", "Standard (ITU-T Recommendation)",
-         "Guidelines for assessing the environmental impact of AI systems",
-         "Same relation: L.1801 gives the assessment guidelines, GAIA the "
-         "no-code instrument that executes them; tracked each revision cycle"),
-    ]
-    ws = data_sheet(wb, "Framework Comparison", headers, list(rows),
-                    [42, 20, 50, 70])
-    note = ws.cell(row=len(rows) + 3, column=1,
+    """Framework crosswalk, generated from data/frameworks.csv."""
+    headers = ["Framework", "Organisation", "Type", "What it does", "Relation to GAIA"]
+    rows = [[f["framework"], f["org"], f["type"], f["what_it_does"],
+             f["relation_to_gaia"]] for f in FRAMEWORKS]
+    ws = data_sheet(wb, "Framework Comparison", headers, rows,
+                    [36, 26, 20, 48, 66])
+    n = len(rows) + 3
+    note = ws.cell(row=n, column=1,
                    value="What none of these provides — and GAIA does — is the "
                          "combination of: (a) uncertainty-tiered estimates usable "
                          "WITHOUT provider cooperation, (b) water alongside carbon, "
                          "(c) task-conditioned grading of deployments, (d) an "
                          "explicit frugality check, and (e) an Excel artifact a "
-                         "non-programmer can run. (FRAMEWORK.md §7)")
+                         "non-programmer can run. (FRAMEWORK.md §7). Source of "
+                         "truth: data/frameworks.csv.")
     note.font = F_SMALL
     note.alignment = WRAP
-    ws.merge_cells(start_row=len(rows) + 3, start_column=1,
-                   end_row=len(rows) + 3, end_column=4)
+    ws.merge_cells(start_row=n, start_column=1, end_row=n, end_column=5)
+    ws.row_dimensions[n].height = 45
+
+    # Standards GAIA implements or maps onto, from data/standards.csv
+    start = n + 2
+    c = ws.cell(row=start, column=1, value="STANDARDS GAIA IMPLEMENTS OR MAPS ONTO")
+    c.font = F_HDR
+    for col in range(1, 6):
+        ws.cell(row=start, column=col).fill = FILL_SUBHEAD
+        ws.cell(row=start, column=col).border = BORDER
+    header_row(ws, start + 1, ["Standard", "Role in GAIA"], start_col=1)
+    ws.merge_cells(start_row=start + 1, start_column=2, end_row=start + 1, end_column=5)
+    for k, st in enumerate(STANDARDS):
+        r = start + 2 + k
+        data_cell(ws, r, 1, st["standard"], font=F_BOLD)
+        data_cell(ws, r, 2, st["role_in_gaia"])
+        ws.merge_cells(start_row=r, start_column=2, end_row=r, end_column=5)
+        ws.row_dimensions[r].height = 28
     return ws
 
 
@@ -1196,6 +1422,27 @@ def build_changelog(wb):
     header_row(ws, 1, ["Version", "Date", "Changes"])
     entries = [
         (VERSION, VERSION_DATE,
+         "GAIA 2.2 — models and interface release. The model database grows from "
+         "26 to %d rows across %d providers, %d of them open-weight, with new "
+         "columns for openness, licence, architecture, total and ACTIVE parameters, "
+         "context window, release date and status. Tier-4 rows are DERIVED from "
+         "active parameters (e_out = 2·N_active/(eta·u·3600)·S) and the derivation "
+         "is recorded in each row's Basis; a test re-derives them and fails on "
+         "drift. Closed models with no parameter disclosure use documented class "
+         "anchors (§4.5) — two rows sharing an anchor means nothing published "
+         "distinguishes them, not that they are equally efficient. NEW: cached "
+         "input tokens enter the energy equation (input 10 on the Assessment "
+         "sheet); a 'Scenario Compare' sheet puts four deployment options side by "
+         "side; the mitigation catalogue grows to 10 levers, two of which reduce "
+         "UNCERTAINTY rather than consumption and say so. Superseded models are "
+         "kept with Status = legacy for year-on-year comparison. The web estimator "
+         "is now generated from the same CSV tables as this workbook, and a "
+         "cross-engine test checks that the reference, the JavaScript and these "
+         "Excel formulas agree. Methodology additions are documented against "
+         "P1–P7; see CHANGELOG.md."
+         % (N_MODELS, len({m["provider"] for m in MODELS}),
+            len([m for m in MODELS if m["openness"] == "open"]))),
+        ("2.1.0", "2026-07-06",
          "GAIA 2.1 — comparability release. New 'SDG & Reporting Map' sheet maps "
          "GAIA outputs onto UN SDG targets (6.4, 7.2/7.3, 8.4, 9.4, 12.2/12.6, "
          "13.2/13.3), GRI 302/303/305, ESRS E1/E3, IFRS S2, CDP, SBTi, EU AI Act "
@@ -1203,7 +1450,7 @@ def build_changelog(wb):
          "extended with ISO/IEC TR 20226:2025 and ITU-T L.1801 (02/2026). Full "
          "capability matrix and gap-analysis roadmap: COMPARISON.md. Methodology "
          "unchanged (minor version per §9)."),
-        ("2.0.0", "2026-07-06",
+        ("2.0.0", "2026-06",
          "GAIA 2.0 — full science-based rebuild. The v1 composite Environmental "
          "Score (dimensionally incoherent), Benefit Score (subjective weights) and "
          "'Prohibited' decision matrix are REMOVED; replaced by task-conditioned "
@@ -1250,6 +1497,7 @@ def main():
     build_facilities(wb)
     build_grading(wb)
     build_mitigation(wb)
+    build_scenarios(wb)
     build_usage_log(wb)
     build_methodology(wb)
     build_comparison(wb)
@@ -1258,7 +1506,8 @@ def main():
 
     expected = ["Start Here", "Assessment", "Engine", "Model Database",
                 "Region Factors", "Facility Profiles", "Grading", "Mitigation",
-                "Usage Log", "Methodology & Sources", "Framework Comparison",
+                "Scenario Compare", "Usage Log", "Methodology & Sources",
+                "Framework Comparison",
                 "SDG & Reporting Map", "Changelog"]
     assert wb.sheetnames == expected, wb.sheetnames
 

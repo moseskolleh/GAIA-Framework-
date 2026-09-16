@@ -1,0 +1,11 @@
+standard,role_in_gaia
+"ISO/IEC 21031:2024 — Software Carbon Intensity (SCI)","the carbon-rate-per-functional-unit specification; every GAIA result restates as an SCI score (E, I, M, R map one-to-one)."
+"SCI for AI (Green Software Foundation)","the AI extension of SCI; GAIA's Assess module is an implementation of it."
+"ISO 14040 / 14044","life-cycle assessment principles governing GAIA's system boundary and cut-off declarations."
+"ISO/IEC TR 20226:2025","environmental sustainability aspects of AI systems; GAIA implements its metric categories in runnable form."
+"ITU-T L.1410","ICT-sector LCA boundary and allocation rules that GAIA's scope declarations follow."
+"ITU-T L.1801","guidelines for assessing the environmental impact of AI systems; GAIA is the no-code instrument that executes them."
+"AFNOR SPEC 2314 — Frugal AI","source of the necessity / right-sizing / token-discipline frugality check (""question the need"")."
+"GHG Protocol — Scope 2 Guidance","dual location- and market-based carbon reporting, never blended; GAIA totals feed Scope 2/3 inventory line items."
+"EU AI Act — Art. 53 and Annex XI","energy-documentation duties for general-purpose AI providers; GAIA's disclosure template is structured so provider answers slot in."
+"EU Energy Efficiency Directive — data-centre reporting","facility-level PUE and WUE reporting that makes GAIA's facility profiles verifiable for EU-hosted workloads."

@@ -1,0 +1,52 @@
+name: Build and verify
+
+# The Excel workbook and index.html are build artifacts of data/*.csv. This
+# workflow proves that the committed artifacts match the committed data, and
+# that the three implementations of the §4 equations still agree.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: pip install openpyxl formulas
+
+      - name: Check JavaScript syntax
+        run: node --check web/gaia.js
+
+      - name: Rebuild the site and the workbook
+        run: |
+          python3 build_site.py
+          python3 build_workbook.py
+
+      - name: Fail if the committed artifacts are stale
+        run: |
+          if ! git diff --quiet -- index.html; then
+            echo "::error::index.html does not match web/ + data/. Run python3 build_site.py and commit the result."
+            git diff --stat -- index.html
+            exit 1
+          fi
+          echo "index.html is up to date."
+          # The workbook is a binary zip: compare the sheet contents, not the bytes.
+          if ! git diff --quiet -- GAIA_Assessment_Tool.xlsx; then
+            echo "::warning::GAIA_Assessment_Tool.xlsx differs after rebuild (openpyxl version drift is expected; data drift is not)."
+          fi
+
+      - name: Cross-check the reference, JavaScript and Excel engines
+        run: python3 tests/test_engine.py --excel

@@ -1,4 +1,4 @@
-# GAIA Framework 2.0
+# GAIA Framework
 
 **Green AI Assessment — a science-based framework for measuring, judging, and reducing the environmental footprint of AI use.**
 
@@ -9,6 +9,7 @@ It is written for sustainability and ESG teams, engineering and platform leads, 
 - **Specification:** [FRAMEWORK.md](FRAMEWORK.md) (authoritative)
 - **Rebuild rationale:** [DECISIONS.md](DECISIONS.md) — what was kept, rebuilt, or removed from v1, and why
 - **Comparison & alignment:** [COMPARISON.md](COMPARISON.md) — capability matrix against every framework in the field, alignment with the UN SDGs / GRI / ESRS / IFRS S2 / CDP / SBTi, and the gap-analysis roadmap
+- **Version history:** [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
@@ -19,7 +20,9 @@ It is written for sustainability and ESG teams, engineering and platform leads, 
 | **Excel workbook** | [Download GAIA_Assessment_Tool.xlsx](https://github.com/moseskolleh/GAIA-Framework-/raw/main/GAIA_Assessment_Tool.xlsx) |
 | **Web estimator** | [moseskolleh.github.io/GAIA-Framework-](https://moseskolleh.github.io/GAIA-Framework-/) |
 
-There is always a downloadable Excel version. The workbook and the web estimator implement the same equations from the same data tables; the spreadsheet is generated from code (`build_workbook.py` + `data/*.csv`), so it can never drift from the methodology, and every formula is auditable in the sheet itself.
+There is always a downloadable Excel version. **Both** tools are generated from the same data tables — `build_workbook.py` emits the workbook, `build_site.py` emits the web page — so neither can drift from the methodology or from each other, and every formula is auditable in the sheet itself. `tests/test_engine.py` evaluates the Python reference, the JavaScript engine and the workbook's own Excel formulas on the same cases and fails if any of the three disagrees.
+
+The web estimator covers rather more than a single calculation: a **model explorer** over the full database with filters and a log-scale energy chart with uncertainty whiskers, **scenario comparison**, a **portfolio inventory** with grade distribution and contribution ranking, **per-lever savings** computed against your own configuration, CSV/JSON export, and shareable links that restore every input. It is one self-contained file that makes no external requests — no fonts, no CDN, no analytics.
 
 ---
 
@@ -33,6 +36,33 @@ The framework's name is its method: **G**round → **A**ssess → **I**nterpret 
 4. **Act** — select mitigation levers from the evidence-ranked catalogue, set reduction targets on *intensity*, and report using the SCI-compatible disclosure template.
 
 ---
+
+## The model database
+
+135 rows across 33 providers, 85 of them open-weight, each carrying its energy
+intensity with bounds, its data-quality tier, its vintage, and the source it came
+from. Only energy is stored per model: carbon and water belong to the grid and
+the facility (P3).
+
+Two things the database does that most public model tables do not:
+
+- **Energy is modelled on *active* parameters, not total.** A sparse
+  mixture-of-experts model activating 49B of 1.6T serves at roughly the per-token
+  energy of a 49B dense model. Treating it as a 1.6T model overstates its energy
+  by more than an order of magnitude — the single most common error in public
+  estimates of open-weight model energy.
+- **Openness is recorded as a *measurability* flag.** An open-weight deployment
+  can be metered and moved from T4 (modelled, ×/÷ 3) to T1 (measured, ×/÷ 1.15).
+  A closed API model cannot be metered by its user at any price, so its ceiling is
+  T2 and only the provider can lift it. That asymmetry, not a licence preference,
+  is why the column exists.
+
+Tier-4 rows are derived rather than typed: each records its own derivation as
+`T4-physics(A=<active params>)`, and the test suite re-derives every one of them
+from the framework constants and fails if a stored value has drifted. Closed
+models with no parameter disclosure fall back to documented class anchors — two
+rows sharing an anchor means nothing published distinguishes them, not that the
+models are equally efficient.
 
 ## What makes it scientific
 
@@ -66,34 +96,53 @@ What none of these provides — and GAIA does — is the combination of uncertai
 ## Repository structure
 
 ```
-FRAMEWORK.md                  Authoritative GAIA 2.0 specification
+FRAMEWORK.md                  Authoritative specification
 DECISIONS.md                  Rebuild ledger: kept / rebuilt / removed, with rationale
 COMPARISON.md                 Capability matrix, SDG/GRI/ESRS/IFRS alignment, gap-analysis roadmap
+CHANGELOG.md                  Version history; corrections are recorded, never silent
 data/                         Sourced factor tables — the single source of truth
-  models.csv                  Per-model energy intensity (Wh/1k output tokens), tier, bounds, vintage
+  models.csv                  Per-model energy intensity, bounds, tier, openness, params, vintage
   regions.csv                 Grid carbon intensity and EWIF by region
   facilities.csv              PUE / WUE facility profiles
   grading.csv                 Task classes, default token profiles, grade bands
   mitigation.csv              Evidence-ranked mitigation levers with measured effects
   equivalents.csv             Sourced conversion factors for communication equivalents
-  alignment.csv               SDG / GRI / ESRS / IFRS / CDP / SBTi mapping (workbook sheet source)
+  frameworks.csv              Framework crosswalk (workbook sheet + web page source)
+  standards.csv               Standards GAIA implements or maps onto
+  alignment.csv               SDG / GRI / ESRS / IFRS / CDP / SBTi mapping
+web/                          Web estimator sources
+  template.html               Markup with {{...}} placeholders
+  gaia.css                    Stylesheet (light, dark, print)
+  gaia.js                     Application and engine (the @engine block is the §4 equations)
 build_workbook.py             Generates the Excel tool from the CSV tables
+build_site.py                 Generates index.html from web/ + the CSV tables
+tests/test_engine.py          Cross-checks the reference, JavaScript and Excel engines
 GAIA_Assessment_Tool.xlsx     Generated workbook (build artifact — never hand-edited)
-index.html                    Zero-dependency web estimator (GitHub Pages)
+index.html                    Generated web estimator (build artifact — never hand-edited)
+.github/workflows/build.yml   CI: rebuild, fail on stale artifacts, run the cross-engine test
 legacy/                       GAIA 1.0 artifacts retained for reference
 LICENSE                       MIT
 ```
 
 ---
 
-## Regenerate the workbook
+## Build and test
 
 ```bash
-pip install openpyxl
-python3 build_workbook.py
+pip install openpyxl formulas          # formulas is only needed for the Excel cross-check
+python3 build_site.py                  # data/*.csv + web/  -> index.html
+python3 build_workbook.py              # data/*.csv         -> GAIA_Assessment_Tool.xlsx
+python3 tests/test_engine.py --excel   # reference vs JavaScript vs Excel, plus data validation
 ```
 
-**Data update workflow:** edit the relevant table in `data/*.csv` (with source and vintage), regenerate the workbook, and bump the minor version. The spreadsheet is a build artifact and is never edited by hand.
+**Data update workflow:** edit the relevant table in `data/*.csv` (with source and
+vintage), rebuild both artifacts, run the tests, and bump the minor version.
+Neither the spreadsheet nor the web page is ever edited by hand.
+
+`build_site.py` refuses to publish a page whose data breaks the framework's own
+rules — bounds that do not bracket a central value, a band narrower than its tier
+permits, a PUE below 1.0, an empty source (P1), or grade bands that do not
+increase. A failing build is the framework enforcing itself.
 
 ---
 
@@ -104,7 +153,10 @@ python3 build_workbook.py
 - **Update cadence.** Model database and grid factors are reviewed at least twice yearly.
 - **Corrections.** An error in any published number is fixed in the data table with a changelog entry, never silently.
 
-**Roadmap:** marginal/hourly emissions accounting, water-stress weighting for hosting regions, and expanded guides for moving deployments to T1 (metered) data.
+**Roadmap:** marginal and hourly emissions accounting; water-stress weighting for
+hosting regions; a refreshed grid and facility factor set; and expanded guides for
+moving deployments to T1 (metered) data — the lever with the largest effect on the
+honesty of any assessment.
 
 ---
 
