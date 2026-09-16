@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GAIA Framework — Green AI Assessment</title>
 <meta name="description" content="GAIA is a science-based framework for measuring, judging, and reducing the environmental footprint of AI use — energy, carbon, and water, with uncertainty bounds, data provenance, and a model database covering frontier and open-weight models.">
-<meta name="theme-color" content="#16714a">
+<meta name="theme-color" content="#0e6b48">
 <link rel="canonical" href="https://moseskolleh.github.io/GAIA-Framework-/">
 <meta property="og:title" content="GAIA Framework {{VERSION}} — Green AI Assessment">
 <meta property="og:description" content="Measure, judge, and reduce the environmental footprint of AI use: energy, carbon, and water for {{MODEL_COUNT}} models, with uncertainty bounds and sourced factors.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://moseskolleh.github.io/GAIA-Framework-/">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2316714a'/%3E%3Ctext x='16' y='22' font-family='system-ui,sans-serif' font-size='15' font-weight='700' fill='white' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e6b48'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='18' font-weight='700' fill='white' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
 <style>
 {{CSS}}
 </style>
@@ -54,218 +54,236 @@
 <section class="panel active" id="panel-estimate" role="tabpanel" aria-labelledby="tab-estimate" tabindex="-1">
 
   <div class="hero">
-    <span class="eyebrow">Version {{VERSION}} · Specification · MIT</span>
-    <h1>The environmental cost of AI,<br><span class="accent">visible at the moment of decision.</span></h1>
-    <p class="tagline">A science-based framework for measuring, judging, and reducing the energy, carbon, and water footprint of the AI your organization uses.</p>
+    <p class="kicker"><i aria-hidden="true"></i>Version {{VERSION}} · Specification · MIT</p>
+    <h1>The environmental cost of AI, visible at the moment of decision.</h1>
+    <p class="lede">Measure the energy, carbon and water footprint of the AI your organisation uses — with uncertainty bounds, a source for every number, and a ranked plan to reduce it.</p>
     <div class="cta">
       <a class="btn primary" href="GAIA_Assessment_Tool.xlsx" download>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4.2-4.2M12 15l4.2-4.2M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></svg>
         Download the Excel tool
       </a>
       <a class="btn" href="https://github.com/moseskolleh/GAIA-Framework-/blob/main/FRAMEWORK.md" rel="noopener">Read the specification</a>
-      <button class="btn ghost" type="button" data-tab="models">Browse the model database</button>
     </div>
-    <div class="heroband">
-      <div class="kpi"><b>{{MODEL_COUNT}}</b><span>models</span></div>
-      <div class="kpi"><b>{{OPEN_COUNT}}</b><span>open-weight</span></div>
-      <div class="kpi"><b>{{REGION_COUNT}}</b><span>grid regions</span></div>
-      <div class="kpi"><b>{{SPREAD}}</b><span>energy spread</span></div>
+    <div class="factline">
+      <span class="f"><b>{{MODEL_COUNT}}</b>models</span>
+      <span class="f"><b>{{OPEN_COUNT}}</b>open-weight</span>
+      <span class="f"><b>{{PROVIDER_COUNT}}</b>providers</span>
+      <span class="f"><b>{{REGION_COUNT}}</b>grid regions</span>
+      <span class="f"><b>{{SPREAD}}</b>energy spread</span>
+      <span class="note">Every result is reported low / central / high. No composite scores.</span>
     </div>
-    <p class="fineprint">Every number carries a source, a vintage, and a data-quality tier. Every result is reported low / central / high. No composite scores, ever.</p>
-  </div>
-
-  <div class="panel-head">
-    <h2>Estimator</h2>
-    <p>A browser implementation of the Module A equations, running on the same sourced tables that generate the Excel workbook. Results update as you type.</p>
   </div>
 
   <div class="estimator">
     <!-- INPUTS -->
-    <div class="card inputs-card">
-      <p class="section-title">Inputs</p>
+    <div class="inputs">
       <form id="est-form" autocomplete="off">
-        <div class="field full">
-          <label for="model">Model <span class="hint" id="model-hint"></span></label>
-          <select id="model"></select>
+        <div class="group">
+          <p class="eyebrow">Workload</p>
+          <div class="field">
+            <label for="model">Model</label>
+            <select id="model"></select>
+            <span class="hint" id="model-hint"></span>
+          </div>
+          <div class="field">
+            <label for="taskclass">Task class</label>
+            <select id="taskclass"></select>
+            <span class="hint">Sets the token profile and the grade bands this request is judged against.</span>
+          </div>
+          <div class="field">
+            <label for="queries">Requests per month</label>
+            <input type="number" id="queries" min="0" step="1" value="10000" inputmode="numeric">
+          </div>
         </div>
-        <div class="field full">
-          <label for="taskclass">Task class <span class="hint">sets the default token profile and grade bands</span></label>
-          <select id="taskclass"></select>
+
+        <div class="group">
+          <p class="eyebrow">Where it runs</p>
+          <div class="field">
+            <label for="region">Hosting region</label>
+            <select id="region"></select>
+            <span class="hint">Sets grid carbon intensity and off-site water. Keep the global average if you don't know.</span>
+          </div>
+          <div class="field">
+            <label for="facility">Facility profile</label>
+            <select id="facility"></select>
+          </div>
         </div>
-        <div class="field">
-          <label for="tokens-in">Input tokens / request</label>
-          <input type="number" id="tokens-in" min="0" step="1" inputmode="numeric">
+
+        <div class="group">
+          <p class="eyebrow">Fit-for-purpose check</p>
+          <div class="checks">
+            <label class="check" for="frugal-1">
+              <input type="checkbox" id="frugal-1" checked>
+              <span><b>Necessity</b><span>Generative AI is genuinely needed — not search, a template, rules, or a person.</span></span>
+            </label>
+            <label class="check" for="frugal-2">
+              <input type="checkbox" id="frugal-2" checked>
+              <span><b>Right-sizing</b><span>A smaller model class has been evaluated on this task, with documented results.</span></span>
+            </label>
+            <label class="check" for="frugal-3">
+              <input type="checkbox" id="frugal-3" checked>
+              <span><b>Token discipline</b><span>Prompts, payloads and reasoning budgets are bounded; repeated context is cached.</span></span>
+            </label>
+          </div>
         </div>
-        <div class="field">
-          <label for="tokens-out">Output tokens / request</label>
-          <input type="number" id="tokens-out" min="0" step="1" inputmode="numeric">
-        </div>
-        <div class="field">
-          <label for="queries">Requests per month</label>
-          <input type="number" id="queries" min="0" step="1" value="10000" inputmode="numeric">
-        </div>
-        <div class="field">
-          <label for="market-ci">Market-based CI <span class="hint">g/kWh</span></label>
-          <input type="number" id="market-ci" min="0" step="1" placeholder="blank if unknown" inputmode="numeric">
-        </div>
-        <div class="field full">
-          <label for="facility">Facility profile <span class="hint">sets PUE and on-site WUE</span></label>
-          <select id="facility"></select>
-        </div>
-        <div class="field full">
-          <label for="region">Hosting region <span class="hint">sets grid carbon intensity and off-site water</span></label>
-          <select id="region"></select>
-        </div>
-        <div class="field full">
-          <label for="adder">Embodied-carbon adder: <output id="adder-out" for="adder">25%</output> of location-based operational carbon</label>
-          <input type="range" id="adder" min="10" max="50" step="1" value="25" aria-describedby="adder-note">
-          <span class="hint tiny" id="adder-note">Default 25% (10–50%) when the serving fleet is unknown — anchored to the BLOOM, Google, and Mistral life-cycle assessments.</span>
-        </div>
-        <div class="field full">
-          <label for="cache">Cached-input share: <output id="cache-out" for="cache">0%</output> of input tokens</label>
-          <input type="range" id="cache" min="0" max="100" step="5" value="0" aria-describedby="cache-note">
-          <span class="hint tiny" id="cache-note">Prompt-cache hits skip prefill recomputation. Applied to input tokens only; output tokens are never cached.</span>
-        </div>
-        <fieldset class="fieldset full">
-          <legend>Fit-for-purpose check (frugality)</legend>
-          <label class="check" for="frugal-1">
-            <input type="checkbox" id="frugal-1" checked>
-            <span><b>Necessity</b> — generative AI is genuinely needed (vs. search, a template, rules, or a person).</span>
-          </label>
-          <label class="check" for="frugal-2">
-            <input type="checkbox" id="frugal-2" checked>
-            <span><b>Right-sizing</b> — a smaller model class has been evaluated on this task, with documented results.</span>
-          </label>
-          <label class="check" for="frugal-3">
-            <input type="checkbox" id="frugal-3" checked>
-            <span><b>Token discipline</b> — prompts, payloads, and reasoning budgets are bounded (max-token caps, caching).</span>
-          </label>
-        </fieldset>
-        <div class="btnrow full" style="margin-top:.2rem">
+
+        <details class="fold" id="fold-advanced">
+          <summary>Token profile &amp; assumptions<span class="muted" id="fold-summary"></span></summary>
+          <div class="foldbody">
+            <div class="row2">
+              <div class="field">
+                <label for="tokens-in">Input tokens / request</label>
+                <input type="number" id="tokens-in" min="0" step="1" inputmode="numeric">
+              </div>
+              <div class="field">
+                <label for="tokens-out">Output tokens / request</label>
+                <input type="number" id="tokens-out" min="0" step="1" inputmode="numeric">
+              </div>
+            </div>
+            <div class="field">
+              <label for="cache">Cached input share — <output id="cache-out" for="cache">0%</output></label>
+              <input type="range" id="cache" min="0" max="100" step="5" value="0">
+              <span class="hint">Prompt-cache hits skip prefill recomputation. Applied to input tokens only; output tokens are never cached.</span>
+            </div>
+            <div class="field">
+              <label for="adder">Embodied-carbon adder — <output id="adder-out" for="adder">25%</output> of operational carbon</label>
+              <input type="range" id="adder" min="10" max="50" step="1" value="25">
+              <span class="hint">Default 25% (range 10–50%) when the serving fleet is unknown.</span>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label for="market-ci">Market-based carbon intensity <span class="muted">— optional, g CO₂e/kWh</span></label>
+              <input type="number" id="market-ci" min="0" step="1" placeholder="blank if unknown" inputmode="numeric">
+              <span class="hint">Reported beside, never blended with, the location-based figure.</span>
+            </div>
+          </div>
+        </details>
+
+        <div class="btnrow" style="margin-top:var(--s5)">
           <button class="btn sm" type="button" id="btn-share">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 13.5l5-3M9.5 10.5l5 3M18 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM6 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM18 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
             Copy link
           </button>
-          <button class="btn sm" type="button" id="btn-json">Export JSON</button>
-          <button class="btn sm" type="button" id="btn-csv">Export CSV</button>
-          <button class="btn sm" type="button" id="btn-print">Print report</button>
+          <button class="btn sm" type="button" id="btn-json">JSON</button>
+          <button class="btn sm" type="button" id="btn-csv">CSV</button>
+          <button class="btn sm" type="button" id="btn-print">Print</button>
           <button class="btn sm ghost" type="button" id="btn-reset">Reset</button>
         </div>
       </form>
     </div>
 
     <!-- RESULTS -->
-    <div class="results-col" id="est-results">
-      <div class="card">
+    <div id="est-results">
+      <div class="card result">
         <p class="sr-only" role="status" aria-live="polite" id="sr-status"></p>
+
         <div class="verdict">
           <div class="grade-badge g-B" id="grade-badge" role="img" aria-label="Efficiency grade">B<small id="grade-class">S</small></div>
           <div class="meta">
-            <span class="gradeword"><span id="grade-word">Grade B</span> <span class="chip" id="flag-chip">F0</span></span>
+            <div class="gradeword"><span id="grade-word">Grade B</span> <span class="chip" id="flag-chip">F0</span></div>
             <p class="guidance" id="guidance">Proceed; monitor quarterly</p>
           </div>
         </div>
 
-        <div class="herostat">
+        <div class="headline">
           <div class="k">Energy per request · full stack, incl. facility overhead</div>
           <div class="v"><span id="out-request">—</span></div>
-          <div class="uncert">
-            <div class="uncert-bar"><svg id="uncert-svg" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"></svg></div>
-            <div class="uncert-legend">
-              <span>low <b id="out-request-lo" class="num">—</b></span>
+          <div class="rail">
+            <div class="railtrack" aria-hidden="true">
+              <span class="railmark" id="rail-mark"></span>
+            </div>
+            <div class="railtext">
+              <span>low <b id="out-request-lo">—</b></span>
               <span id="out-request-tier">—</span>
-              <span>high <b id="out-request-hi" class="num">—</b></span>
+              <span>high <b id="out-request-hi">—</b></span>
             </div>
           </div>
         </div>
 
-        <div class="statgrid">
-          <div class="stat">
-            <div class="k">Monthly energy</div>
+        <div class="ledger">
+          <div class="m">
+            <div class="k">Energy / month</div>
             <div class="v" id="out-energy">—</div>
             <div class="r" id="out-energy-range">—</div>
           </div>
-          <div class="stat split">
-            <div class="k">Monthly carbon · location-based</div>
+          <div class="m">
+            <div class="k">Carbon / month</div>
             <div class="v" id="out-carbon">—</div>
             <div class="r" id="out-carbon-range">—</div>
-            <div class="sub">Market-based: <b id="out-carbon-market">not provided</b></div>
           </div>
-          <div class="stat">
-            <div class="k">Monthly water</div>
+          <div class="m">
+            <div class="k">Water / month</div>
             <div class="v" id="out-water">—</div>
             <div class="r" id="out-water-range">—</div>
           </div>
-          <div class="stat">
-            <div class="k">Embodied carbon</div>
-            <div class="v" id="out-embodied">—</div>
-            <div class="r">amortized hardware share</div>
-          </div>
         </div>
 
-        <div class="breakdown">
-          <p class="section-title">Where the energy goes</p>
+        <div class="footline">
+          <span>Embodied carbon <b id="out-embodied">—</b></span>
+          <span>Market-based <b id="out-carbon-market">not provided</b></span>
+        </div>
+
+        <div class="split">
           <div class="stackbar" id="stackbar" role="img" aria-label="Energy split between output tokens, input tokens, and facility overhead"></div>
           <div class="stacklegend" id="stacklegend"></div>
         </div>
 
         <ul class="equiv" id="equiv-list"></ul>
 
-        <div class="provenance">
-          <p class="section-title">Provenance</p>
+        <details class="provenance">
+          <summary>Provenance &amp; uncertainty</summary>
           <dl id="prov-list"></dl>
           <p class="src" id="prov-src"></p>
-          <p class="src">Ranges are energy-driven bounds from the model row's data tier (×1.15–×3). Factor uncertainty (grid CI, PUE, WUE, EWIF) adds beyond them and is not compounded into the band. Equivalents are communication aids, not results.</p>
-        </div>
+          <p class="src">Ranges are energy-driven bounds from the model row's data tier (×1.15–×3). Factor uncertainty — grid intensity, PUE, WUE, off-site water — adds beyond them and is not compounded into the band. Equivalents are communication aids, not results.</p>
+        </details>
       </div>
+
+      <div class="card pad" style="margin-top:var(--s4)">
+        <p class="eyebrow">What would change it</p>
+        <p class="prose" style="margin:calc(var(--s2) * -1) 0 var(--s4)">Each line re-runs the same equations with exactly one input changed. Percentages are the change in monthly location-based carbon. <b>A percentage here is an energy claim, never a quality claim</b> — capability class is a coarse bucket, and the right-sizing question requires you to evaluate the smaller model on your own task before treating any of these as available.</p>
+        <ul class="whatif whatif-wide" id="whatif"></ul>
+      </div>
+
+      <details class="disclose">
+        <summary>How the estimate is computed — Module A equations</summary>
+        <div class="body"><div class="eqbox" id="eqbox"></div></div>
+      </details>
     </div>
   </div>
-
-
-  <div class="card pad" style="margin-top:1.15rem">
-    <p class="section-title">What would change it</p>
-    <p class="small muted" style="margin:-.25rem 0 .8rem;max-width:78ch">Each line re-runs the same equations with exactly one input changed, against the configuration above. Percentages are the change in monthly location-based carbon. This is Module A′ made immediate: the levers are ranked by what they would do to <em>your</em> workload, not in the abstract. <b>A percentage here is an energy claim, never a quality claim</b> — capability class is a coarse bucket, and the right-sizing question (Interpret) requires you to evaluate the smaller model on your own task, with documented results, before treating any of these as available.</p>
-    <ul class="whatif whatif-wide" id="whatif"></ul>
-  </div>
-
-  <details class="disclose" style="margin-top:1.2rem">
-    <summary>How the estimate is computed — Module A equations</summary>
-    <div class="body">
-      <div class="eqbox" id="eqbox"></div>
-    </div>
-  </details>
 </section>
 
 <!-- ================= MODELS ================= -->
 <section class="panel" id="panel-models" role="tabpanel" aria-labelledby="tab-models" tabindex="-1">
   <div class="panel-head">
     <h2>Model database</h2>
-    <p>Energy intensity per 1,000 output tokens at the IT boundary — accelerator, host, and idle serving capacity, with the serving-stack multiplier already applied. Carbon and water are <em>not</em> stored per model: they belong to the region and the facility (principle P3).</p>
+    <p>Energy intensity per 1,000 output tokens at the IT boundary — accelerator, host and idle serving capacity, with the serving-stack multiplier already applied. Carbon and water are <em>not</em> stored per model: they belong to the region and the facility.</p>
   </div>
 
-  <div class="card pad" style="margin-bottom:1rem">
-    <p class="section-title">Where these numbers come from</p>
+  <div class="card pad" style="margin-bottom:var(--s5)">
+    <p class="eyebrow">Where these numbers come from</p>
     <div class="stackbar" id="tierbar" role="img" aria-label="Share of model rows by data-quality tier"></div>
     <div class="stacklegend" id="tierlegend"></div>
-    <p class="small" style="color:var(--text-soft);margin-top:.6rem;max-width:80ch" id="tiernote"></p>
+    <p class="prose" style="margin-top:var(--s4)" id="tiernote"></p>
   </div>
 
-  <div class="card chartcard" style="margin-bottom:1rem">
-    <div class="table-toolbar" style="margin-bottom:.3rem">
-      <p class="section-title" style="margin:0;flex:1">Energy intensity · log scale · bars show low–high bounds</p>
+  <div class="card chartcard" style="margin-bottom:var(--s5)">
+    <div class="toolbar" style="margin-bottom:var(--s3)">
+      <p class="eyebrow plain" style="margin:0;flex:1">Energy intensity · log scale · whiskers show low–high bounds</p>
       <div class="segmented" role="group" aria-label="Chart scope">
         <button type="button" id="chart-scope-all" aria-pressed="true">All</button>
         <button type="button" id="chart-scope-high" aria-pressed="false">Highest 20</button>
         <button type="button" id="chart-scope-low" aria-pressed="false">Lowest 20</button>
       </div>
     </div>
-    <svg class="chart" id="model-chart" role="img" aria-label="Energy intensity by model, logarithmic scale"></svg>
+    <div class="chartscroll"><svg class="chart" id="model-chart" role="img" aria-label="Energy intensity by model, logarithmic scale"></svg></div>
+    <svg class="chart chartaxis" id="model-axis" aria-hidden="true"></svg>
     <div class="legend" id="chart-legend"></div>
   </div>
 
-  <div class="table-toolbar">
-    <div class="grow"><label class="sr-only" for="model-search">Search models</label>
-      <input type="search" id="model-search" placeholder="Search model, provider, licence, architecture…"></div>
+  <div class="toolbar">
+    <div class="grow">
+      <label class="sr-only" for="model-search">Search models</label>
+      <input type="search" id="model-search" placeholder="Search model, provider, licence, architecture…">
+    </div>
     <button class="btn sm" type="button" id="btn-models-csv">Export table (CSV)</button>
   </div>
   <div class="filterbar" id="model-filters"></div>
@@ -293,20 +311,20 @@
   </div>
   <p class="rowcount" id="models-count"></p>
 
-  <div class="cardgrid cols-2" style="margin-top:1.2rem">
+  <div class="grid cols-2" style="margin-top:var(--s5)">
     <div class="card pad">
       <h3>How to read this table</h3>
-      <ul class="small" style="color:var(--text-soft);padding-left:1.1rem;margin:.4rem 0 0">
-        <li><b>Wh / 1k out</b> is energy per thousand <em>output</em> tokens. Input tokens are charged at one tenth of that rate (§4.1).</li>
+      <ul class="prose" style="padding-left:1.15rem;margin-top:var(--s3)">
+        <li><b>Wh / 1k out</b> is energy per thousand <em>output</em> tokens. Input tokens are charged at one tenth of that rate.</li>
         <li><b>Bounds</b> are not error bars in the statistical sense — they are the plausible interval implied by the evidence tier and by disagreement between sources.</li>
         <li><b>Tier</b> is the provenance of the number, not the quality of the model: T1 measured, T2 provider-disclosed, T3 independently benchmarked, T4 modelled from parameter physics.</li>
         <li><b>Active params</b> drives energy for mixture-of-experts models; total parameters drive memory, not energy per token.</li>
-        <li>Rows with the same active-parameter count get the <b>same modelled energy</b>. That is what a physics model implies — and a standing reminder that a T4 row is an estimate, not a measurement. Metering one deployment tells you more than the whole column.</li>
+        <li>Rows with the same active-parameter count get the <b>same modelled energy</b>. That is what a physics model implies — and a standing reminder that a T4 row is an estimate, not a measurement.</li>
       </ul>
     </div>
     <div class="card pad">
       <h3>Why the open-weight rows matter</h3>
-      <p class="small" style="color:var(--text-soft);margin-top:.4rem">Open-weight models can be metered directly: you can move them from T4 (modelled) to T1 (measured) with a power log, which no API model allows. They are also where the efficiency frontier moved fastest — sparse mixture-of-experts architectures serve frontier-adjacent quality at a fraction of the active parameters, and therefore a fraction of the energy per token. The database keeps both, labelled, so the trade-off is visible instead of assumed.</p>
+      <p class="prose" style="margin-top:var(--s3)">Open-weight models can be metered directly: you can move them from T4 (modelled) to T1 (measured) with a power log, which no API model allows. They are also where the efficiency frontier moved fastest — sparse mixture-of-experts architectures serve frontier-adjacent quality at a fraction of the active parameters, and therefore a fraction of the energy per token. The database keeps both, labelled, so the trade-off is visible instead of assumed.</p>
     </div>
   </div>
 </section>
@@ -317,16 +335,16 @@
     <h2>Compare scenarios</h2>
     <p>Put deployment options side by side on identical workloads. The first scenario is the baseline; the others report their difference against it. This is the decision GAIA exists to inform: not “is AI bad”, but “which of these ways of doing it costs least”.</p>
   </div>
-  <div class="table-toolbar">
+  <div class="toolbar">
     <button class="btn sm primary" type="button" id="btn-add-scenario">+ Add scenario</button>
     <button class="btn sm" type="button" id="btn-scenario-from-estimator">Copy from estimator</button>
     <button class="btn sm" type="button" id="btn-compare-csv">Export CSV</button>
     <span class="small muted" id="compare-shared"></span>
   </div>
-  <div id="compare-caveat" style="margin-bottom:.85rem"></div>
+  <div id="compare-caveat" style="margin-bottom:var(--s4)"></div>
   <div class="compare-grid" id="compare-grid"></div>
-  <div class="card chartcard" style="margin-top:1rem">
-    <p class="section-title">Monthly carbon by scenario</p>
+  <div class="card chartcard" style="margin-top:var(--s5)">
+    <p class="eyebrow">Monthly carbon by scenario</p>
     <svg class="chart" id="compare-chart" role="img" aria-label="Monthly carbon by scenario"></svg>
   </div>
 </section>
@@ -334,18 +352,17 @@
 <!-- ================= PORTFOLIO ================= -->
 <section class="panel" id="panel-portfolio" role="tabpanel" aria-labelledby="tab-portfolio" tabindex="-1">
   <div class="panel-head">
-    <h2>Portfolio — Module G inventory</h2>
-    <p>Most organizations do not have one AI use case; they have twenty. Enter them here to get the aggregate footprint, the distribution of grades, and the ranked list of what to fix first. Saved in this browser only — nothing is uploaded.</p>
+    <h2>Portfolio</h2>
+    <p>Most organisations do not have one AI use case; they have twenty. Enter them here for the aggregate footprint, the distribution of grades, and a ranked list of what to fix first. Stored in this browser only — nothing is uploaded.</p>
   </div>
 
-  <div class="portfolio-summary" id="portfolio-summary"></div>
+  <div class="psummary" id="portfolio-summary"></div>
 
-  <div class="table-toolbar">
+  <div class="toolbar">
     <button class="btn sm primary" type="button" id="btn-add-usecase">+ Add use case</button>
     <button class="btn sm" type="button" id="btn-portfolio-csv">Export CSV</button>
     <button class="btn sm" type="button" id="btn-portfolio-json">Export JSON</button>
     <button class="btn sm ghost" type="button" id="btn-portfolio-clear">Clear all</button>
-    <span class="small muted">Stored locally in your browser.</span>
   </div>
 
   <div class="tablewrap">
@@ -354,9 +371,9 @@
         <tr>
           <th style="min-width:150px">Use case</th>
           <th style="min-width:180px">Model</th>
-          <th style="min-width:130px">Task class</th>
+          <th style="min-width:132px">Task class</th>
           <th style="min-width:150px">Region</th>
-          <th class="num" style="min-width:90px">Req / mo</th>
+          <th class="num" style="min-width:92px">Req / mo</th>
           <th class="num" style="min-width:80px">Tok in</th>
           <th class="num" style="min-width:80px">Tok out</th>
           <th class="num">kWh</th>
@@ -370,12 +387,12 @@
     </table>
   </div>
   <div class="empty" id="portfolio-empty" hidden>
-    <p style="margin-bottom:.8rem">No use cases yet. A GAIA inventory is a list of the distinct ways your organization calls a model — each with its own model, volume and token profile.</p>
+    <p>No use cases yet. A GAIA inventory is a list of the distinct ways your organisation calls a model — each with its own model, volume and token profile.</p>
     <button class="btn sm" type="button" id="btn-portfolio-sample">Load a worked example</button>
   </div>
 
-  <div class="card chartcard" style="margin-top:1rem">
-    <p class="section-title">Carbon contribution by use case</p>
+  <div class="card chartcard" style="margin-top:var(--s5)">
+    <p class="eyebrow">Carbon contribution by use case</p>
     <svg class="chart" id="portfolio-chart" role="img" aria-label="Monthly carbon by use case"></svg>
   </div>
 </section>
@@ -383,13 +400,13 @@
 <!-- ================= ACT ================= -->
 <section class="panel" id="panel-act" role="tabpanel" aria-labelledby="tab-act" tabindex="-1">
   <div class="panel-head">
-    <h2>Act — evidence-ranked mitigation</h2>
+    <h2>Act</h2>
     <p>Every lever ships with a measured effect size and a citation. “Up to” marketing numbers are banned. Levers a user cannot pull appear as disclosure asks for vendor management, not as actions.</p>
   </div>
 
-  <div class="card pad" style="margin-bottom:1rem">
-    <p class="section-title">Applied to your current estimate</p>
-    <p class="small muted" style="margin:-.3rem 0 .7rem;max-width:80ch">Modelled savings for the configuration currently in the estimator. Levers without a computable effect for your configuration are shown without a number rather than with a guess. These are energy figures only: swapping models across a capability class says nothing about whether the smaller model does your job, which is precisely what the frugality check exists to make you answer.</p>
+  <div class="card pad" style="margin-bottom:var(--s5)">
+    <p class="eyebrow">Applied to your current estimate</p>
+    <p class="prose" style="margin:calc(var(--s2) * -1) 0 var(--s4)">Modelled savings for the configuration currently in the estimator. Levers without a computable effect are shown without a number rather than with a guess. These are energy figures only: swapping models across a capability class says nothing about whether the smaller model does your job, which is precisely what the frugality check exists to make you answer.</p>
     <ul class="whatif" id="act-applied"></ul>
   </div>
 
@@ -400,14 +417,14 @@
     </table>
   </div>
 
-  <div class="cardgrid cols-2" style="margin-top:1.2rem">
+  <div class="grid cols-2" style="margin-top:var(--s5)">
     <div class="card pad">
       <h3>Set targets on intensity, not totals</h3>
-      <p class="small" style="color:var(--text-soft);margin-top:.4rem">A target on absolute emissions punishes growth and rewards doing less of a useful thing. A target on <em>intensity</em> — Wh per request, g CO₂e per 1M tokens, L per user-month — rewards the engineering that actually reduces footprint, and it is the quantity the SCI specification defines. Report totals alongside for budget and disclosure, but grade and target the rate (P4).</p>
+      <p class="prose" style="margin-top:var(--s3)">A target on absolute emissions punishes growth and rewards doing less of a useful thing. A target on <em>intensity</em> — Wh per request, g CO₂e per 1M tokens, L per user-month — rewards the engineering that actually reduces footprint, and it is the quantity the SCI specification defines. Report totals alongside for budget and disclosure, but grade and target the rate.</p>
     </div>
     <div class="card pad">
       <h3>The disclosure ask</h3>
-      <p class="small" style="color:var(--text-soft);margin-top:.4rem">Most of the uncertainty in any GAIA assessment is not a limitation of the method — it is provider opacity. The single most effective long-term lever is procurement: ask vendors for per-request energy at a stated boundary, hosting region, facility PUE and WUE, and market-based emission factors. Two providers now publish audited or full-stack measured figures; the rest can be asked to.</p>
+      <p class="prose" style="margin-top:var(--s3)">Most of the uncertainty in any GAIA assessment is not a limitation of the method — it is provider opacity. The single most effective long-term lever is procurement: ask vendors for per-request energy at a stated boundary, hosting region, facility PUE and WUE, and market-based emission factors. Two providers now publish audited or full-stack measured figures; the rest can be asked to.</p>
     </div>
   </div>
 </section>
@@ -416,41 +433,41 @@
 <section class="panel" id="panel-method" role="tabpanel" aria-labelledby="tab-method" tabindex="-1">
   <div class="panel-head">
     <h2>Method</h2>
-    <p>GAIA does not replace measurement standards — it builds on them and adds the organizational decision layer that connects them into a workflow anyone can run.</p>
+    <p>GAIA does not replace measurement standards — it builds on them and adds the organisational decision layer that connects them into a workflow anyone can run.</p>
   </div>
 
-  <p class="section-title">The four modules</p>
-  <div class="cardgrid cols-4">
-    <div class="card pad"><div class="gradepill g-A" style="width:2rem;height:2rem;border-radius:var(--r-sm);font-size:1rem;margin-bottom:.45rem">G</div><h3>Ground</h3><p class="small" style="color:var(--text-soft)">Inventory AI use: models, deployment path, hosting region, volume, token profile. Declare functional units and the system boundary.</p></div>
-    <div class="card pad"><div class="gradepill g-B" style="width:2rem;height:2rem;border-radius:var(--r-sm);font-size:1rem;margin-bottom:.45rem">A</div><h3>Assess</h3><p class="small" style="color:var(--text-soft)">Compute energy, dual-reported carbon, and water per functional unit — always low / central / high, at the best available data tier.</p></div>
-    <div class="card pad"><div class="gradepill g-C" style="width:2rem;height:2rem;border-radius:var(--r-sm);font-size:1rem;margin-bottom:.45rem">I</div><h3>Interpret</h3><p class="small" style="color:var(--text-soft)">Grade A–E within the task class, run the three-question frugality check, and place totals in context with sourced equivalents.</p></div>
-    <div class="card pad"><div class="gradepill g-D" style="width:2rem;height:2rem;border-radius:var(--r-sm);font-size:1rem;margin-bottom:.45rem">A′</div><h3>Act</h3><p class="small" style="color:var(--text-soft)">Pick evidence-ranked levers, set intensity targets, and report with the SCI-compatible disclosure template.</p></div>
+  <p class="eyebrow">The four modules</p>
+  <div class="grid cols-4">
+    <div class="card pad module"><div class="letter g-A">G</div><h3>Ground</h3><p class="prose" style="margin-top:.4rem">Inventory AI use: models, deployment path, hosting region, volume, token profile. Declare functional units and the system boundary.</p></div>
+    <div class="card pad module"><div class="letter g-B">A</div><h3>Assess</h3><p class="prose" style="margin-top:.4rem">Compute energy, dual-reported carbon and water per functional unit — always low / central / high, at the best available data tier.</p></div>
+    <div class="card pad module"><div class="letter g-C">I</div><h3>Interpret</h3><p class="prose" style="margin-top:.4rem">Grade A–E within the task class, run the three-question frugality check, and place totals in context with sourced equivalents.</p></div>
+    <div class="card pad module"><div class="letter g-D">A′</div><h3>Act</h3><p class="prose" style="margin-top:.4rem">Pick evidence-ranked levers, set intensity targets, and report with the SCI-compatible disclosure template.</p></div>
   </div>
 
-  <p class="section-title" style="margin-top:1.6rem">The provenance ladder</p>
+  <p class="eyebrow" style="margin-top:var(--s6)">The provenance ladder</p>
   <div class="tierlist">
-    <div class="card tiercard t1"><div class="tn"><span>T1 — Measured</span><span class="band">×/÷ 1.15</span></div><p>Direct metering of your own deployment (CodeCarbon, nvidia-smi plus host power). The gold standard, and the reason open-weight models can be assessed more honestly than API ones.</p></div>
+    <div class="card tiercard t1"><div class="tn"><span>T1 — Measured</span><span class="band">×/÷ 1.15</span></div><p>Direct metering of your own deployment. The gold standard, and the reason open-weight models can be assessed more honestly than API ones.</p></div>
     <div class="card tiercard t2"><div class="tn"><span>T2 — Disclosed</span><span class="band">×/÷ 1.5</span></div><p>Provider-published full-stack measurement with a stated boundary — a per-prompt disclosure, or an audited life-cycle assessment.</p></div>
-    <div class="card tiercard t3"><div class="tn"><span>T3 — Benchmarked</span><span class="band">×/÷ 2</span></div><p>Independent standardized benchmarks. GPU-only figures are corrected with the serving-stack multiplier before entering the database.</p></div>
+    <div class="card tiercard t3"><div class="tn"><span>T3 — Benchmarked</span><span class="band">×/÷ 2</span></div><p>Independent standardised benchmarks. GPU-only figures are corrected with the serving-stack multiplier before entering the database.</p></div>
     <div class="card tiercard t4"><div class="tn"><span>T4 — Modelled</span><span class="band">×/÷ 3</span></div><p>Parameter-count physics: active parameters → FLOPs → joules via accelerator efficiency and serving utilisation. Used where nobody has measured.</p></div>
   </div>
 
-  <p class="section-title" style="margin-top:1.6rem">Principles</p>
-  <div class="cardgrid cols-2">
-    <div class="card pad"><h3>P1 · Traceable or absent</h3><p class="small" style="color:var(--text-soft)">Every number carries a source, a vintage, and a tier. A value that cannot be sourced is not published — not even as a placeholder.</p></div>
-    <div class="card pad"><h3>P2 · Uncertainty is part of the answer</h3><p class="small" style="color:var(--text-soft)">Point estimates without bounds are pseudo-precision. Every result is an interval whose width is set by the evidence tier.</p></div>
-    <div class="card pad"><h3>P3 · Separate what varies independently</h3><p class="small" style="color:var(--text-soft)">Model → energy per token. Facility → overhead and on-site water. Grid → carbon and off-site water. Supply chain → embodied. No region's carbon is ever baked into a model row.</p></div>
-    <div class="card pad"><h3>P4 · Rates before totals</h3><p class="small" style="color:var(--text-soft)">Totals scale with usage, so they cannot judge efficiency. GAIA grades intensity per functional unit and reports totals alongside.</p></div>
-    <div class="card pad"><h3>P5 · Fit-for-purpose beats raw efficiency</h3><p class="small" style="color:var(--text-soft)">The greenest query is the one that used the smallest adequate model — or was never sent.</p></div>
-    <div class="card pad"><h3>P6 · Dual carbon reporting</h3><p class="small" style="color:var(--text-soft)">Location-based and market-based carbon answer different questions. Both are reported; they are never blended.</p></div>
-    <div class="card pad"><h3>P7 · Comparable by construction</h3><p class="small" style="color:var(--text-soft)">GAIA's quantities map one-to-one onto SCI variables and GHG Protocol scopes, so an assessment can be restated without rework.</p></div>
-    <div class="card pad"><h3>No composite score</h3><p class="small" style="color:var(--text-soft)">The pair (grade, frugality flag) <em>is</em> the result. Collapsing them into one number is exactly the arbitrariness GAIA exists to remove.</p></div>
+  <p class="eyebrow" style="margin-top:var(--s6)">Principles</p>
+  <div class="grid cols-3">
+    <div class="card pad principle"><h3><span>P1</span> · Traceable or absent</h3><p>Every number carries a source, a vintage and a tier. A value that cannot be sourced is not published — not even as a placeholder.</p></div>
+    <div class="card pad principle"><h3><span>P2</span> · Uncertainty is part of the answer</h3><p>Point estimates without bounds are pseudo-precision. Every result is an interval whose width is set by the evidence tier.</p></div>
+    <div class="card pad principle"><h3><span>P3</span> · Separate what varies independently</h3><p>Model → energy per token. Facility → overhead and on-site water. Grid → carbon and off-site water. Supply chain → embodied.</p></div>
+    <div class="card pad principle"><h3><span>P4</span> · Rates before totals</h3><p>Totals scale with usage, so they cannot judge efficiency. GAIA grades intensity per functional unit and reports totals alongside.</p></div>
+    <div class="card pad principle"><h3><span>P5</span> · Fit-for-purpose beats raw efficiency</h3><p>The greenest query is the one that used the smallest adequate model — or was never sent.</p></div>
+    <div class="card pad principle"><h3><span>P6</span> · Dual carbon reporting</h3><p>Location-based and market-based carbon answer different questions. Both are reported; they are never blended.</p></div>
+    <div class="card pad principle"><h3><span>P7</span> · Comparable by construction</h3><p>GAIA's quantities map one-to-one onto SCI variables and GHG Protocol scopes, so an assessment can be restated without rework.</p></div>
+    <div class="card pad principle"><h3>No composite score</h3><p>The pair (grade, frugality flag) <em>is</em> the result. Collapsing them into one number is exactly the arbitrariness GAIA exists to remove.</p></div>
   </div>
 
-  <p class="section-title" style="margin-top:1.6rem">Equations</p>
+  <p class="eyebrow" style="margin-top:var(--s6)">Equations</p>
   <div class="eqbox" id="eqbox-2"></div>
 
-  <p class="section-title" style="margin-top:1.6rem">Grade bands</p>
+  <p class="eyebrow" style="margin-top:var(--s6)">Grade bands</p>
   <div class="tablewrap">
     <table id="grading-table">
       <thead><tr><th>Grade</th><th class="num">L · Light</th><th class="num">S · Standard</th><th class="num">H · Heavy</th><th class="num">R · Reasoning</th></tr></thead>
@@ -459,7 +476,7 @@
   </div>
   <p class="rowcount">Watt-hours per request, central estimate, full stack. Bands are fixed, logarithmic (≈×3 spacing) and task-conditioned, so a grade means the same thing next year as it does today.</p>
 
-  <p class="section-title" style="margin-top:1.6rem">Where GAIA sits among frameworks</p>
+  <p class="eyebrow" style="margin-top:var(--s6)">Where GAIA sits among frameworks</p>
   <div class="tablewrap">
     <table id="frameworks-table">
       <thead><tr><th>Framework</th><th>Type</th><th>What it does</th><th>Relation to GAIA</th></tr></thead>
@@ -467,17 +484,17 @@
     </table>
   </div>
 
-  <p class="section-title" style="margin-top:1.6rem">Standards GAIA implements or maps onto</p>
+  <p class="eyebrow" style="margin-top:var(--s6)">Standards GAIA implements or maps onto</p>
   <ul class="standards" id="standards-list"></ul>
 
-  <div class="card pad limits" style="margin-top:1.6rem">
+  <div class="card pad limits" style="margin-top:var(--s6)">
     <h3>Known limitations, stated plainly</h3>
     <ul>
       <li><b>Provider opacity.</b> Closed providers do not disclose per-model serving data; most model rows are T3/T4 with wide bounds. That is a property of the industry, not the framework — the tier column makes the opacity itself visible.</li>
-      <li><b>Benchmark ≠ production.</b> Benchmarks measure specific hardware and serving configurations; production fleets differ — batching, quantisation, and speculative decoding shift per-token energy several-fold in either direction.</li>
+      <li><b>Benchmark ≠ production.</b> Benchmarks measure specific hardware and serving configurations; production fleets differ — batching, quantisation and speculative decoding shift per-token energy several-fold in either direction.</li>
       <li><b>Annual-average carbon.</b> Grid intensity averages ignore hourly variation; marginal and hourly emissions accounting remain out of scope.</li>
-      <li><b>Water is the weakest data.</b> Off-site water intensity varies by basin and season, and water-stress context — where a litre is drawn — matters as much as volume. GAIA reports volume and flags stress-region hosting qualitatively.</li>
-      <li><b>Reasoning tokens are partly invisible.</b> Where a provider hides its reasoning tokens, the token count you enter understates the work done. Use the reasoning task class and its default profile rather than the visible output length.</li>
+      <li><b>Water is the weakest data.</b> Off-site water intensity varies by basin and season, and water-stress context — where a litre is drawn — matters as much as volume.</li>
+      <li><b>Reasoning tokens are partly invisible.</b> Where a provider hides its reasoning tokens, the token count you enter understates the work done. Use the reasoning task class rather than the visible output length.</li>
       <li><b>Rebound effects</b> — efficiency leading to more usage — are real and unmodelled. The frugality flag is the partial control.</li>
     </ul>
   </div>
@@ -487,10 +504,10 @@
 <section class="panel" id="panel-data" role="tabpanel" aria-labelledby="tab-data" tabindex="-1">
   <div class="panel-head">
     <h2>Data tables</h2>
-    <p>The factor tables are the single source of truth. This page, the Excel workbook, and the specification are all generated from them, so they cannot drift apart. Every row carries its source and vintage.</p>
+    <p>The factor tables are the single source of truth. This page, the Excel workbook and the specification are all generated from them, so they cannot drift apart. Every row carries its source and vintage.</p>
   </div>
 
-  <p class="section-title">Regions — grid carbon intensity and off-site water</p>
+  <p class="eyebrow">Regions — grid carbon intensity and off-site water</p>
   <div class="tablewrap">
     <table id="regions-table">
       <thead><tr><th>Region</th><th class="num">CI (g CO₂e/kWh)</th><th class="num">CI bounds</th><th class="num">EWIF (L/kWh)</th><th class="num">EWIF bounds</th><th>Vintage</th><th>Source &amp; notes</th></tr></thead>
@@ -498,7 +515,7 @@
     </table>
   </div>
 
-  <p class="section-title" style="margin-top:1.4rem">Facility profiles — overhead and on-site water</p>
+  <p class="eyebrow" style="margin-top:var(--s6)">Facility profiles — overhead and on-site water</p>
   <div class="tablewrap">
     <table id="facilities-table">
       <thead><tr><th>Profile</th><th class="num">PUE</th><th class="num">PUE bounds</th><th class="num">WUE (L/kWh)</th><th class="num">WUE bounds</th><th>Source &amp; notes</th></tr></thead>
@@ -506,7 +523,7 @@
     </table>
   </div>
 
-  <p class="section-title" style="margin-top:1.4rem">Equivalents — communication aids, not results</p>
+  <p class="eyebrow" style="margin-top:var(--s6)">Equivalents — communication aids, not results</p>
   <div class="tablewrap">
     <table id="equivalents-table">
       <thead><tr><th>Quantity</th><th>Per</th><th>Equivalent</th><th class="num">Factor</th><th>Source</th></tr></thead>
@@ -514,17 +531,17 @@
     </table>
   </div>
 
-  <p class="section-title" style="margin-top:1.4rem">Reporting alignment — SDGs, GRI, ESRS, IFRS, CDP, SBTi</p>
+  <p class="eyebrow" style="margin-top:var(--s6)">Reporting alignment — SDGs, GRI, ESRS, IFRS, CDP, SBTi</p>
   <div class="tablewrap">
     <table id="alignment-table">
       <thead><tr><th>Framework</th><th>Element</th><th>Requirement</th><th>GAIA output that satisfies it</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
-  <p class="rowcount">An SDG or reporting claim must trace to an actually produced GAIA output (P1). Goal-badging without numbers is non-conforming.</p>
+  <p class="rowcount">An SDG or reporting claim must trace to an actually produced GAIA output. Goal-badging without numbers is non-conforming.</p>
 
-  <div class="callout" style="margin-top:1.4rem">
-    <b>Update cadence.</b> Model rows and grid factors are reviewed at least twice yearly. A factor refresh bumps the minor version; a methodology change bumps the major version and requires a documented rationale against P1–P7. Errors are corrected in the data table with a changelog entry, never silently.
+  <div class="callout" style="margin-top:var(--s5)">
+    <b>Update cadence.</b> Model rows and grid factors are reviewed at least twice yearly. A factor refresh bumps the minor version; a methodology change bumps the major version and requires a documented rationale. Errors are corrected in the data table with a changelog entry, never silently.
   </div>
 </section>
 
@@ -534,6 +551,10 @@
 <footer class="site">
   <div class="wrap">
     <div class="cols">
+      <div>
+        <h4>GAIA</h4>
+        <p class="blurb">A science-based framework for measuring, judging and reducing the environmental footprint of AI use. Version {{VERSION}} · {{VERSION_DATE}} · MIT licence.</p>
+      </div>
       <div>
         <h4>The framework</h4>
         <ul>
@@ -548,8 +569,8 @@
         <ul>
           <li><a href="GAIA_Assessment_Tool.xlsx" download>Excel workbook</a></li>
           <li><a href="https://github.com/moseskolleh/GAIA-Framework-/tree/main/data">Data tables (CSV)</a></li>
-          <li><a href="https://github.com/moseskolleh/GAIA-Framework-/blob/main/build_workbook.py">Workbook generator</a></li>
           <li><a href="https://github.com/moseskolleh/GAIA-Framework-/blob/main/build_site.py">Site generator</a></li>
+          <li><a href="https://github.com/moseskolleh/GAIA-Framework-/blob/main/build_workbook.py">Workbook generator</a></li>
         </ul>
       </div>
       <div>
@@ -563,8 +584,8 @@
       </div>
     </div>
     <div class="base">
-      <span><b>GAIA Framework</b> · version {{VERSION}} · {{VERSION_DATE}} · MIT licence</span>
       <span>This page is a build artifact of <code>build_site.py</code> and <code>data/*.csv</code>.</span>
+      <span>No fonts, no CDN, no analytics — nothing is requested at runtime.</span>
     </div>
   </div>
 </footer>

@@ -343,6 +343,25 @@ def data_checks():
         check("grading[%s]: bands increase" % g["name"], g["a"] < g["b"] < g["c"] < g["d"])
         check("grading[%s]: token defaults positive" % g["name"], g["tin"] >= 0 and g["tout"] > 0)
 
+    # Every CSS custom property the script names must exist in the stylesheet.
+    # A missing one does not throw — it renders as no colour at all, which is
+    # how a chart silently turns grey.
+    with open(os.path.join(ROOT, "web", "gaia.js"), encoding="utf-8") as fh:
+        js_src = fh.read()
+    with open(os.path.join(ROOT, "web", "gaia.css"), encoding="utf-8") as fh:
+        css_src = fh.read()
+    declared = set(re.findall(r"(--[a-z0-9-]+)\s*:", css_src))
+    # names built by concatenation, e.g. "var(--t-" + tier + ")"
+    used = set(re.findall(r"var\((--[a-z0-9-]+)\)", js_src))
+    for prefix, values in ((r'"var\(--t-" \+', ["--t-1", "--t-2", "--t-3", "--t-4"]),
+                           (r'"var\(--g-" \+', ["--g-a", "--g-b", "--g-c", "--g-d", "--g-e"]),
+                           (r'"background:var\(--g-" \+', ["--g-a", "--g-b", "--g-c", "--g-d", "--g-e"])):
+        if re.search(prefix, js_src):
+            used.update(values)
+    for name in sorted(used):
+        check("gaia.js: CSS variable %s is defined in gaia.css" % name, name in declared,
+              "the script paints with it, the stylesheet never declares it")
+
     # The generated page must carry exactly the CSV data.
     page = os.path.join(ROOT, "index.html")
     if os.path.exists(page):

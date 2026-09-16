@@ -208,13 +208,13 @@ const est = {
     providers.forEach(p => {
       const og = el("optgroup", { label: p });
       current.filter(m => m.provider === p).forEach(m => {
-        og.appendChild(el("option", { value: m.model, text: m.model + "  ·  " + m.tier + (m.openness === "open" ? " · open" : "") }));
+        og.appendChild(el("option", { value: m.model, text: m.model + (m.openness === "open" ? "  ·  open weights" : "") }));
       });
       sel.appendChild(og);
     });
     if (legacy.length) {
       const og = el("optgroup", { label: "Superseded / historical" });
-      legacy.forEach(m => og.appendChild(el("option", { value: m.model, text: m.model + "  ·  " + m.tier })));
+      legacy.forEach(m => og.appendChild(el("option", { value: m.model, text: m.model })));
       sel.appendChild(og);
     }
 
@@ -223,12 +223,12 @@ const est = {
 
     const fac = $("facility");
     FACILITIES.forEach(f => fac.appendChild(el("option", {
-      value: f.profile, text: f.profile + " — PUE " + f.pue.toFixed(2) + ", WUE " + f.wue.toFixed(2) + " L/kWh"
+      value: f.profile, text: f.profile + " · PUE " + f.pue.toFixed(2)
     })));
 
     const reg = $("region");
     REGIONS.forEach(r => reg.appendChild(el("option", {
-      value: r.region, text: r.region + " — " + sig(r.ci) + " g CO₂e/kWh (" + r.vintage + ")"
+      value: r.region, text: r.region + " · " + sig(r.ci) + " g CO₂e/kWh"
     })));
 
     // Defaults
@@ -331,7 +331,18 @@ const est = {
     $("mini-energy").textContent = sig(x.eReq) + " Wh/req";
     $("mini-carbon").textContent = fmtKg(x.carbon);
 
-    $("model-hint").textContent = x.m.provider + " · " + openLabel(x.m) + " · " + paramLabel(x.m) + " active";
+    $("model-hint").textContent = x.m.provider + " · " + openLabel(x.m) + " · " + paramLabel(x.m) + " active"
+      + " · " + x.m.tier + " " + TIER_NAMES[x.m.tier];
+
+    // A collapsed section must still announce what is inside it, or it reads as missing.
+    const fold = $("fold-summary");
+    if (fold) {
+      const bits = [cfg.tokensIn + " in / " + cfg.tokensOut + " out"];
+      if (cfg.cacheShare > 0) bits.push(sig(cfg.cacheShare * 100, 2) + "% cached");
+      bits.push(sig(cfg.adder * 100, 2) + "% embodied");
+      if (cfg.marketCI !== null) bits.push("market " + sig(cfg.marketCI) + " g/kWh");
+      fold.textContent = "— " + bits.join(" · ");
+    }
 
     $("sr-status").textContent =
       "Grade " + x.grade + ", frugality " + flag + ". " + sig(x.eReq) + " watt-hours per request, " +
@@ -341,24 +352,16 @@ const est = {
     est.writeHash();
   },
 
+  /* The central estimate's position inside its own band, on a log axis —
+     the band is multiplicative, so a linear placement would mislead. */
   drawUncertainty(x) {
-    const svg = $("uncert-svg");
-    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    const mark = $("rail-mark");
+    if (!mark) return;
     const lo = x.eReq * x.kLo, hi = x.eReq * x.kHi;
-    if (!(hi > 0) || !isFinite(hi)) return;
-    // Log-scaled position of the central estimate inside its own band
-    const t = (Math.log(x.eReq) - Math.log(lo)) / (Math.log(hi) - Math.log(lo) || 1);
-    const x0 = 2, x1 = 98, w = x1 - x0;
-    const cx = x0 + clamp(t, 0, 1) * w;
-    svg.appendChild(svgEl("rect", { x: x0, y: 12, width: w, height: 6, rx: 3, fill: "var(--inset-2)" }));
-    svg.appendChild(svgEl("rect", { x: x0, y: 12, width: w, height: 6, rx: 3, fill: "var(--accent)", opacity: .28 }));
-    [x0, x1].forEach(px => svg.appendChild(svgEl("line", {
-      x1: px, x2: px, y1: 8, y2: 22, stroke: "var(--border-strong)", "stroke-width": .6
-    })));
-    svg.appendChild(svgEl("line", {
-      x1: cx, x2: cx, y1: 5, y2: 25, stroke: "var(--accent-strong)", "stroke-width": 1.2
-    }));
-    svg.appendChild(svgEl("circle", { cx: cx, cy: 15, r: 3.4, fill: "var(--accent)", stroke: "var(--card)", "stroke-width": 1 }));
+    if (!(hi > 0) || !isFinite(hi) || lo <= 0) { mark.style.left = "50%"; return; }
+    const span = Math.log(hi) - Math.log(lo);
+    const t = span > 0 ? (Math.log(x.eReq) - Math.log(lo)) / span : 0.5;
+    mark.style.left = (clamp(t, 0, 1) * 100).toFixed(2) + "%";
   },
 
   drawBreakdown(x) {
@@ -366,9 +369,9 @@ const est = {
     bar.textContent = ""; leg.textContent = "";
     const total = x.eReq || 1;
     const parts = [
-      { k: "Output tokens", v: x.parts.itOut, c: "var(--hue-1)" },
-      { k: "Input tokens", v: x.parts.itIn, c: "var(--hue-6)" },
-      { k: "Facility overhead (PUE)", v: x.parts.overhead, c: "var(--hue-3)" },
+      { k: "Output tokens", v: x.parts.itOut, c: "var(--h1)" },
+      { k: "Input tokens", v: x.parts.itIn, c: "var(--h6)" },
+      { k: "Facility overhead (PUE)", v: x.parts.overhead, c: "var(--h3)" },
     ];
     parts.forEach(p => {
       const share = clamp(p.v / total, 0, 1);
@@ -652,8 +655,8 @@ const models = {
     MODELS.forEach(m => { if (providers.indexOf(m.provider) < 0) providers.push(m.provider); });
 
     const group = (label, items, onClick, isOn) => {
-      const wrap = el("span", { style: "display:inline-flex;gap:.3rem;flex-wrap:wrap;align-items:center;margin-right:.6rem" });
-      wrap.appendChild(el("span", { class: "tiny muted", style: "margin-right:.1rem", text: label }));
+      const wrap = el("span", { class: "fgroup" });
+      wrap.appendChild(el("span", { class: "flabel", text: label }));
       items.forEach(it => {
         const b = el("button", { type: "button", text: it.label, "aria-pressed": isOn(it.value) ? "true" : "false" });
         b.addEventListener("click", () => { onClick(it.value); models.render(); });
@@ -683,7 +686,7 @@ const models = {
       v => { const s = models.filters.providers; s.has(v) ? s.delete(v) : s.add(v); },
       v => models.filters.providers.has(v));
 
-    const extra = el("span", { style: "display:inline-flex;gap:.3rem;align-items:center" });
+    const extra = el("span", { class: "fgroup" });
     const legacyBtn = el("button", { type: "button", text: "Include superseded", "aria-pressed": "false" });
     legacyBtn.addEventListener("click", () => {
       models.filters.legacy = !models.filters.legacy;
@@ -875,10 +878,10 @@ const models = {
    CHARTS (hand-rolled SVG — no dependencies)
    ========================================================================= */
 const charts = {
-  tierColor(t) { return "var(--tier-" + t.slice(1) + ")"; },
+  tierColor(t) { return "var(--t-" + t.slice(1) + ")"; },
 
   modelChart(rows) {
-    const svg = $("model-chart");
+    const svg = $("model-chart"), axis = $("model-axis");
     const all = rows.filter(m => m.e_out > 0);
     let data = all, dropped = 0;
     if (models.chartScope === "high") {
@@ -888,74 +891,87 @@ const charts = {
       data = all.slice().sort((a, b) => a.e_out - b.e_out).slice(0, 20);
       dropped = all.length - data.length;
     }
-    charts._dropped = dropped;
-    charts._shown = data.length;
-    charts._total = all.length;
     data = data.slice().sort((a, b) => a.e_out - b.e_out);
 
-    const W = Math.max(520, svg.clientWidth || svg.parentNode.clientWidth || 800);
-    const rowH = 19, padT = 24, padB = 34, padL = Math.min(210, Math.max(120, W * 0.24)), padR = 58;
+    const W = Math.max(520, svg.parentNode.clientWidth || 800);
+    const rowH = 21, padT = 10, padB = 8;
+    const padL = Math.min(230, Math.max(128, W * 0.25)), padR = 62;
     const H = padT + padB + data.length * rowH;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     svg.setAttribute("height", H);
     svg.textContent = "";
+    axis.textContent = "";
+
     if (!data.length) {
-      svg.appendChild(svgEl("text", { x: W / 2, y: 40, "text-anchor": "middle", class: "label" })).textContent = "No models match these filters";
+      svg.setAttribute("height", 60);
+      svg.setAttribute("viewBox", "0 0 " + W + " 60");
+      const t = svgEl("text", { x: W / 2, y: 34, "text-anchor": "middle", class: "label" });
+      t.textContent = "No models match these filters";
+      svg.appendChild(t);
+      $("chart-legend").textContent = "";
       return;
     }
 
     const lows = data.map(m => Math.max(m.lo, 1e-5)), highs = data.map(m => m.hi);
-    const minV = Math.min.apply(null, lows), maxV = Math.max.apply(null, highs);
-    const lo = Math.pow(10, Math.floor(Math.log10(minV)));
-    const hi = Math.pow(10, Math.ceil(Math.log10(maxV)));
-    const x = v => padL + (Math.log10(Math.max(v, lo)) - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo)) * (W - padL - padR);
+    const lo = Math.pow(10, Math.floor(Math.log10(Math.min.apply(null, lows))));
+    const hi = Math.pow(10, Math.ceil(Math.log10(Math.max.apply(null, highs))));
+    const span = Math.log10(hi) - Math.log10(lo) || 1;
+    const x = v => padL + (Math.log10(Math.max(v, lo)) - Math.log10(lo)) / span * (W - padL - padR);
 
-    // gridlines at each decade
     for (let d = Math.log10(lo); d <= Math.log10(hi) + 1e-9; d++) {
-      const v = Math.pow(10, d), px = x(v);
-      svg.appendChild(svgEl("line", { x1: px, x2: px, y1: padT - 8, y2: H - padB + 4, class: "gridline" }));
-      const t = svgEl("text", { x: px, y: H - padB + 17, "text-anchor": "middle", class: "axis-label" });
-      t.textContent = v >= 1 ? sig(v) : String(v);
-      svg.appendChild(t);
+      const px = x(Math.pow(10, d));
+      svg.appendChild(svgEl("line", { x1: px, x2: px, y1: 0, y2: H, class: "gridline" }));
     }
-    const ax = svgEl("text", { x: padL + (W - padL - padR) / 2, y: H - padB + 30, "text-anchor": "middle", class: "axis-label" });
-    ax.textContent = "Wh per 1,000 output tokens (log scale)";
-    svg.appendChild(ax);
 
     data.forEach((m, i) => {
       const y = padT + i * rowH + rowH / 2;
       const xl = x(m.lo), xh = x(m.hi), xc = x(m.e_out);
       svg.appendChild(svgEl("line", { x1: xl, x2: xh, y1: y, y2: y, class: "whisker" }));
       [xl, xh].forEach(px => svg.appendChild(svgEl("line", { x1: px, x2: px, y1: y - 3.5, y2: y + 3.5, class: "whisker" })));
-      const c = svgEl("circle", { cx: xc, cy: y, r: 4.2, fill: charts.tierColor(m.tier), class: "bar" });
+      if (m.openness === "open") {
+        svg.appendChild(svgEl("circle", { cx: xc, cy: y, r: 7, fill: "none", stroke: charts.tierColor(m.tier), "stroke-width": 1.2, opacity: .4 }));
+      }
+      const c = svgEl("circle", { cx: xc, cy: y, r: 4.3, fill: charts.tierColor(m.tier), class: "bar" });
       const title = svgEl("title");
-      title.textContent = m.model + " — " + sig(m.e_out) + " Wh/1k output tokens (" + sig(m.lo) + "–" + sig(m.hi) + "), " + m.tier;
+      title.textContent = m.model + " — " + sig(m.e_out) + " Wh/1k output tokens ("
+        + sig(m.lo) + "–" + sig(m.hi) + "), " + m.tier + " " + TIER_NAMES[m.tier];
       c.appendChild(title);
       svg.appendChild(c);
-      if (m.openness === "open") {
-        svg.appendChild(svgEl("circle", { cx: xc, cy: y, r: 7, fill: "none", stroke: charts.tierColor(m.tier), "stroke-width": 1, opacity: .45 }));
-      }
-      const lab = svgEl("text", { x: padL - 8, y: y + 3.6, "text-anchor": "end", class: "label" });
-      lab.textContent = m.model.length > 30 ? m.model.slice(0, 29) + "…" : m.model;
+      const lab = svgEl("text", { x: padL - 9, y: y + 4, "text-anchor": "end", class: "label" });
+      lab.textContent = m.model.length > 31 ? m.model.slice(0, 30) + "…" : m.model;
       svg.appendChild(lab);
-      const val = svgEl("text", { x: W - padR + 6, y: y + 3.6, class: "value" });
+      const val = svgEl("text", { x: W - padR + 8, y: y + 4, class: "value" });
       val.textContent = sig(m.e_out);
       svg.appendChild(val);
     });
+
+    // Axis in its own element so it stays visible while the plot scrolls
+    const aH = 30;
+    axis.setAttribute("viewBox", "0 0 " + W + " " + aH);
+    axis.setAttribute("height", aH);
+    for (let d = Math.log10(lo); d <= Math.log10(hi) + 1e-9; d++) {
+      const v = Math.pow(10, d), px = x(v);
+      axis.appendChild(svgEl("line", { x1: px, x2: px, y1: 0, y2: 5, class: "whisker" }));
+      const t = svgEl("text", { x: px, y: 16, "text-anchor": "middle", class: "axis-label" });
+      t.textContent = v >= 1 ? sig(v) : String(Number(v.toPrecision(2)));
+      axis.appendChild(t);
+    }
+    const ax = svgEl("text", { x: padL + (W - padL - padR) / 2, y: 28, "text-anchor": "middle", class: "axis-label" });
+    ax.textContent = "Wh per 1,000 output tokens (log scale)";
+    axis.appendChild(ax);
 
     const leg = $("chart-legend");
     leg.textContent = "";
     ["T1", "T2", "T3", "T4"].forEach(t => leg.appendChild(el("span", {
       html: '<i style="background:' + charts.tierColor(t) + '"></i>' + t + " · " + TIER_NAMES[t]
     })));
-    leg.appendChild(el("span", { html: '<i style="background:transparent;border:1px solid var(--text-faint);border-radius:50%"></i>ring = open weights' }));
-    leg.appendChild(el("span", { class: "muted", text: "whiskers = low–high bounds" }));
+    leg.appendChild(el("span", { html: '<i style="background:transparent;border:1px solid var(--ink-3);border-radius:50%"></i>ring = open weights' }));
+    leg.appendChild(el("span", { text: "whiskers = low–high bounds" }));
     leg.appendChild(el("span", {
-      class: charts._dropped ? "" : "muted",
-      style: charts._dropped ? "color:var(--warn);font-weight:650" : "",
-      text: charts._dropped
-        ? "showing " + charts._shown + " of " + charts._total + " matching rows — " + charts._dropped + " not plotted"
-        : "showing all " + charts._shown + " matching rows",
+      style: dropped ? "color:var(--warn);font-weight:650" : "",
+      text: dropped
+        ? "showing " + data.length + " of " + all.length + " matching rows — " + dropped + " not plotted"
+        : "showing all " + data.length + " matching rows · scroll the plot",
     }));
   },
 
@@ -980,7 +996,7 @@ const charts = {
       const y = padT + i * rowH;
       svg.appendChild(svgEl("rect", {
         x: padL, y: y + 6, width: Math.max(1, x(it.value)), height: rowH - 14, rx: 3,
-        fill: it.color || "var(--hue-1)", class: "bar",
+        fill: it.color || "var(--h1)", class: "bar",
       }));
       const lab = svgEl("text", { x: padL - 8, y: y + rowH / 2 + 3.5, "text-anchor": "end", class: "label" });
       lab.textContent = it.label.length > 34 ? it.label.slice(0, 33) + "…" : it.label;
@@ -1133,7 +1149,7 @@ const compare = {
         const d = (x.carbon - baseline.carbon) / baseline.carbon;
         out.appendChild(el("div", {
           class: "vs",
-          style: "color:" + (d < 0 ? "var(--ok)" : d > 0 ? "var(--danger)" : "var(--text-faint)"),
+          style: "color:" + (d < 0 ? "var(--good)" : d > 0 ? "var(--bad)" : "var(--ink-3)"),
           text: (Math.abs(d) < 0.0005 ? "same as baseline" : pct(d) + " vs baseline")
             + (d < 0 ? "  (saves " + fmtKg(baseline.carbon - x.carbon) + "/mo)" : ""),
         }));
@@ -1146,7 +1162,7 @@ const compare = {
       label: it.name || "Scenario " + (i + 1),
       value: results[i].carbon,
       text: fmtKg(results[i].carbon),
-      color: i === 0 ? "var(--hue-2)" : "var(--hue-1)",
+      color: i === 0 ? "var(--h2)" : "var(--h1)",
     })), { empty: "Add a scenario to compare" });
 
     $("compare-shared").textContent = compare.items.length + " scenarios · same equations, one input changed at a time";
@@ -1350,7 +1366,7 @@ const portfolio = {
     ["A", "B", "C", "D", "E"].forEach(g => {
       const seg = el("span", { title: gradeCount[g] + " × grade " + g });
       const n = portfolio.rows.length || 1;
-      seg.appendChild(el("i", { style: "background:var(--grade-" + g.toLowerCase() + ");transform:scaleX(" + (gradeCount[g] / n) + ")" }));
+      seg.appendChild(el("i", { style: "background:var(--g-" + g.toLowerCase() + ");transform:scaleX(" + (gradeCount[g] / n) + ")" }));
       bar.appendChild(seg);
     });
     dist.appendChild(el("div", { class: "v", style: "font-size:1rem", text: ["A", "B", "C", "D", "E"].map(g => g + ":" + gradeCount[g]).join("  ") }));
@@ -1360,7 +1376,7 @@ const portfolio = {
     // Chart: ranked contribution
     const items = portfolio.rows.map((r, i) => ({
       label: r.name, value: results[i].carbon, text: fmtKg(results[i].carbon),
-      color: "var(--grade-" + results[i].grade.toLowerCase() + ")",
+      color: "var(--g-" + results[i].grade.toLowerCase() + ")",
     })).sort((a, b) => b.value - a.value);
     charts.bars("portfolio-chart", items, { empty: "Add use cases to see where the footprint concentrates" });
   },
@@ -1702,7 +1718,7 @@ const ui = {
       document.body.classList.toggle("has-minibar", show);
     };
     new IntersectionObserver(es => { formVis = es[0].isIntersecting; update(); }).observe($("est-form"));
-    new IntersectionObserver(es => { heroVis = es[0].isIntersecting; update(); }).observe(qs(".herostat"));
+    new IntersectionObserver(es => { heroVis = es[0].isIntersecting; update(); }).observe(qs(".headline"));
     window.addEventListener("hashchange", update);
   },
 
