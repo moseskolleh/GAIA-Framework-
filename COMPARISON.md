@@ -12,7 +12,7 @@ This document does three things: (1) compares GAIA capability-by-capability agai
 
 ✔ = provided · ◐ = partial · — = not in scope
 
-| Capability | **GAIA 2.1** | SCI / SCI-for-AI (ISO/IEC 21031) | AI Energy Score | EcoLogits | CodeCarbon / Green Algorithms | AFNOR SPEC 2314 | ISO/IEC TR 20226:2025 | ITU-T L.1801 (2026) | GHG Protocol | LLMCarbon |
+| Capability | **GAIA 2.2** | SCI / SCI-for-AI (ISO/IEC 21031) | AI Energy Score | EcoLogits | CodeCarbon / Green Algorithms | AFNOR SPEC 2314 | ISO/IEC TR 20226:2025 | ITU-T L.1801 (2026) | GHG Protocol | LLMCarbon |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Quantifies **energy** per unit of AI work | ✔ | ✔ (as E) | ✔ (GPU-only bench) | ✔ | ✔ (measured) | ◐ (method refs) | ◐ (metrics overview) | ◐ (guidelines) | — | ✔ (modeled) |
 | Quantifies **carbon** | ✔ dual (location + market) | ✔ (location-based only, by design) | — | ✔ | ✔ | ◐ | ◐ | ◐ | ✔ dual | ✔ |
@@ -33,6 +33,10 @@ This document does three things: (1) compares GAIA capability-by-capability agai
 | **Multi-criteria** beyond E/C/W (materials, ADPe) | — (roadmap §4) | — | — | ✔ (ADPe, primary energy) | — | ✔ (LCA multi-criteria) | ✔ (named) | ✔ (named) | — | — |
 | **Hourly / marginal** grid carbon | — (roadmap §4) | ◐ (granular I allowed) | — | — | ◐ (plugins) | — | — | — | ◐ (market instruments debate) | — |
 | **Training-phase** footprint | ◐ (optional amortized adder) | ✔ (SCI-for-AI splits) | — | ◐ | ✔ (measure it) | ✔ | ✔ | ✔ | ◐ | ✔ (its core) |
+| **Open-weight model coverage** (rows an organization can self-host and meter) | ✔ (85 of 135 rows, active-parameter physics) | — | ✔ (its benchmark scope) | ✔ | ✔ (any local model) | — | — | — | — | ◐ |
+| **Sparse / MoE-aware** energy modelling (active ≠ total parameters) | ✔ (derived per row, machine-checked) | — | ◐ (implicit in measurement) | ✔ | ✔ (measured, so implicit) | — | — | — | — | ◐ |
+| **Scenario comparison** (options side by side on one workload) | ✔ (web + workbook sheet) | — | ◐ (leaderboard ranking) | — | — | — | — | — | — | — |
+| **Portfolio / multi-use-case** aggregation | ✔ (inventory with grade distribution) | — | — | — | — | ◐ | — | ◐ | ✔ (inventory) | — |
 
 **Reading of the matrix.** GAIA's defensible, unique combination remains: *uncertainty-tiered estimates usable without provider cooperation + water alongside dual carbon + task-conditioned grading + frugality + a no-code artifact*. No other single instrument offers that set. The matrix equally shows GAIA is **not** a standard (ISO/ITU are), **not** an assurance scheme (GHG Protocol's ecosystem is), **not** multi-criteria yet (EcoLogits and AFNOR are), and **not** sub-annual in carbon accounting. Those four cells define the roadmap (§4).
 
@@ -94,16 +98,29 @@ The matrix's honest reading, converted into a versioned roadmap. Each item names
 
 | # | Gap (who does it better) | Adoption path | Target version |
 |---|---|---|---|
-| 1 | **Formal standardization** — ISO/IEC TR 20226:2025 and ITU-T L.1801 (02/2026) carry institutional authority GAIA cannot claim | Publish a conformance crosswalk showing GAIA implements TR 20226's metric categories and L.1801's assessment guidelines in runnable form; track both documents' revisions each cycle. GAIA's role: the *executable companion*, not a competing standard | 2.2 (crosswalk); ongoing |
+| 1 | **Formal standardization** — ISO/IEC TR 20226:2025 and ITU-T L.1801 (02/2026) carry institutional authority GAIA cannot claim | Publish a conformance crosswalk showing GAIA implements TR 20226's metric categories and L.1801's assessment guidelines in runnable form; track both documents' revisions each cycle. GAIA's role: the *executable companion*, not a competing standard | 2.3 (crosswalk); ongoing |
 | 2 | **Hourly / marginal grid carbon** — electricityMaps / WattTime signals; SCI permits granular I | Optional hourly-CI import in the workbook (region column already isolates CI); marginal-emissions guidance for the batch-scheduling lever | 3.0 |
-| 3 | **Water-stress context** — ISO 14046 / AWARE characterization factors weight litres by basin scarcity | Add optional AWARE multiplier column to `data/regions.csv`; report "stress-weighted m³-eq" beside raw litres | 2.2 |
+| 3 | **Water-stress context** — ISO 14046 / AWARE characterization factors weight litres by basin scarcity | Add optional AWARE multiplier column to `data/regions.csv`; report "stress-weighted m³-eq" beside raw litres | 2.3 |
 | 4 | **Multi-criteria breadth** — EcoLogits and Mistral's LCA report abiotic resource depletion (ADPe, kg Sb-eq); AFNOR and TR 20226 name materials/waste | Fourth metric column (materials pressure) sourced from EcoLogits factors and Boavizta, with its own tier labels; keeps P1 (no unsourced numbers) | 3.0 |
-| 5 | **Assurance** — GHG Protocol has an audit ecosystem; AFNOR defines self-declaration rules | Define GAIA conformance levels: *Self-declared* (checklist in the workbook) → *Peer-reviewed* → *Assured* (third-party verifies tier labels and boundary statement); publish the checklist | 2.2 (checklist), 3.0 (levels) |
-| 6 | **Target-setting pathways** — SBTi provides validated trajectories | Guidance note aligning Module A′ intensity targets with SBTi ICT trajectories, without pretending grades are targets | 2.2 |
+| 5 | **Assurance** — GHG Protocol has an audit ecosystem; AFNOR defines self-declaration rules | Define GAIA conformance levels: *Self-declared* (checklist in the workbook) → *Peer-reviewed* → *Assured* (third-party verifies tier labels and boundary statement); publish the checklist | 2.3 (checklist), 3.0 (levels) |
+| 6 | **Target-setting pathways** — SBTi provides validated trajectories | Guidance note aligning Module A′ intensity targets with SBTi ICT trajectories, without pretending grades are targets | 2.3 |
 | 7 | **Training-phase depth** — LLMCarbon models training end-to-end; SCI-for-AI splits lifecycle phases | Upgrade §4.7 from a single amortization formula to an LLMCarbon-parameterized estimator for organizations that fine-tune or train | 3.0 |
-| 8 | **Rebound effects** — no framework handles this well; academic literature only | Add usage-trend line to the Usage Log with a rebound annotation (efficiency gain vs. volume growth), making rebound *visible* even if unmodeled | 2.2 |
+| 8 | **Rebound effects** — no framework handles this well; academic literature only | Add usage-trend line to the Usage Log with a rebound annotation (efficiency gain vs. volume growth), making rebound *visible* even if unmodeled | 2.3 |
 
-Items 1, 3, 5, 6, 8 are additive (minor versions); items 2, 4, 7 change methodology (major version), per the governance rules in FRAMEWORK.md §9.
+| 9 | **Independent per-inference measurement** — AI Energy Score and ML.ENERGY measure what GAIA can only model; 124 of GAIA's 135 rows are T4 and only 3 carry a provider disclosure | Consume each new benchmark release as T3 data, with the serving-stack correction applied at import; prioritise the open-weight rows, which are the ones a benchmark can actually cover | every release |
+| 10 | **Factor currency** — Ember, Uptime and operator sustainability reports all publish annually; GAIA's grid factors are 2024 data and its facility factors 2025 | Treat the grid and facility refresh as a standing release gate rather than an opportunistic update, and record the attempt in the changelog when it fails | 2.3 |
+| 11 | **Hardware-generation drift in the Tier-4 anchor** — the physics constant is pinned to H100-class BF16 while fleets move to newer silicon at FP8/FP4 | Re-anchor `η_hw` and `u` against sourced accelerator efficiency figures and published serving utilisation, and version the constants explicitly so old assessments remain reproducible | 3.0 |
+
+Items 1, 3, 5, 6, 8, 10 are additive (minor versions); items 2, 4, 7, 11 change methodology (major version), per the governance rules in FRAMEWORK.md §9.
+
+**What 2.2 actually closed:** none of items 1–8 — 2.2 was a database-and-interface
+release, not a methodology one. What it did change is the shape of the gaps: the
+database is now 135 rows across 33 providers with 85 open-weight entries, which
+makes item 9 (independent measurement) both more tractable and more urgent, since
+adding rows without adding measurements raises the share of the table that is
+modelled rather than observed. Items 1, 3, 5, 6 and 8 move to 2.3 unclaimed, and
+two new gaps (10 and 11) are recorded because this release ran into them and
+declined to paper over them.
 
 ---
 
@@ -112,6 +129,10 @@ Items 1, 3, 5, 6, 8 are additive (minor versions); items 2, 4, 7 change methodol
 Standards (ISO/IEC 21031 & TR 20226, ITU-T L.1410 & L.1801) define *what should be measured*; benchmarks and tools (AI Energy Score, EcoLogits, CodeCarbon) measure *fragments of it*; reporting frameworks (SDG, GRI, ESRS, IFRS, CDP) define *where the answers must land*. **GAIA is the executable middle: the open, no-code instrument that takes an organization from the standards' definitions to the reporting frameworks' line-items — with uncertainty and provenance intact.**
 
 ---
+
+### Sources added in v2.2
+
+Provider model cards, API documentation and release notes for all 135 rows of `data/models.csv` — each row's `source` column names the artifact and its `vintage` column dates it.
 
 ### Sources added in v2.1
 

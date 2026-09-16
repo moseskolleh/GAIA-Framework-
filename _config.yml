@@ -1,7 +1,7 @@
 # GitHub Pages Configuration for GAIA Framework 2.0
 # (Inert while .nojekyll is present; kept accurate for tooling that reads it.)
 
-title: "GAIA Framework 2.0"
+title: "GAIA Framework"
 description: "Green AI Assessment - a science-based framework for measuring, judging, and reducing the environmental footprint of AI use"
 author: "GAIA Framework"
 baseurl: "" # Leave empty for root deployment
@@ -16,10 +16,14 @@ markdown: kramdown
 # Exclude files from processing
 exclude:
   - README.md
+  - CHANGELOG.md
   - LICENSE
   - .gitignore
   - build_workbook.py
+  - build_site.py
   - data/
+  - web/
+  - tests/
   - legacy/
 
 # Include specific files

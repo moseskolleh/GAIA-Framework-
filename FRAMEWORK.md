@@ -2,7 +2,7 @@
 
 ## Green AI Assessment — a science-based framework for measuring, judging, and reducing the environmental footprint of AI use
 
-**Version:** 2.1.0 · **Status:** Specification · **Date:** July 2026 · **License:** MIT
+**Version:** 2.2.0 · **Status:** Specification · **Date:** September 2026 · **License:** MIT
 
 ---
 
@@ -100,10 +100,12 @@ PUE   = power usage effectiveness of the facility
 `E_IT` is obtained by tier (§4.5). **The GAIA model database stores per-token energies already normalized to the IT boundary** — the serving-stack multiplier S (below) is applied during normalization, not by the user. When computed from tokens:
 
 ```
-E_IT = (T_out × e_out) + (T_in × e_in)                          [Wh]
+E_IT = (T_out × e_out) + (T_in × (1 − c) × e_in)                [Wh]
 ```
 
-where `e_out` is the model's IT-boundary energy per output token and `e_in ≈ e_out / k` with k ≈ 10 (input processing is batched/parallel; empirically 5–20× cheaper per token than generation).
+where `e_out` is the model's IT-boundary energy per output token, `e_in ≈ e_out / k` with k ≈ 10 (input processing is batched and parallel; empirically 5–20× cheaper per token than generation), and `c ∈ [0,1)` is the **cached input share**.
+
+**Cached input (`c`).** A prompt-cache hit reuses a previously computed key/value prefix, so those input tokens are not processed again: their prefill energy is not spent. GAIA therefore discounts cached input tokens from `E_IT` rather than crediting a flat percentage to the request. Two boundary conditions keep this honest: (i) output tokens are never cached — generation is autoregressive and must be recomputed every time, so `c` applies to `T_in` only; (ii) `c` is your *measured* cache hit rate from provider usage metrics, not a target. The residual costs of caching (KV-cache memory occupancy, storage) are inside the serving-stack multiplier, not modelled separately. Default `c = 0`, which is the conservative assumption.
 
 **Serving-stack multiplier S (normalization step).** Google's production measurement of the full Gemini serving stack found the accelerator to be only ~58% of per-prompt energy (host 25%, idle capacity 10%, with facility overhead applied separately) — implying S ≈ 1.7 on GPU-only figures. Sources measured GPU-only (AI Energy Score) are multiplied by S when entered into the database; provider-disclosed full-stack figures (Google, Mistral) are not (their facility overhead is instead backed out). Default S = 1.7 (range 1.4–2.0). *(Source: Elsworth et al., "Measuring the environmental impact of delivering AI at Google" [arXiv:2508.15734], Aug 2025.)*
 
@@ -161,6 +163,22 @@ e_out ≈ (2 × N_active) / (η_hw × u × 3600)                      [Wh/token]
 
 `N_active` = active parameters per token (MoE models use active, not total); `η_hw` = accelerator FLOPs/J at serving precision (H100-class ≈ 1.4×10¹² dense BF16 FLOPs/J); `u` = model FLOPs utilization in serving, default 0.3 (range 0.1–0.5). This is the estimation logic used by Epoch AI's ChatGPT analysis and the EcoLogits library.
 
+Because the estimator takes **active** parameters, a sparse mixture-of-experts model with 30B active of 700B total is modelled at roughly the energy of a 30B dense model, not a 700B one. Total parameters govern memory footprint and therefore how many accelerators must be held resident; they do not govern joules per token. Conflating the two is the most common error in public estimates of open-weight model energy, and it can be wrong by more than an order of magnitude.
+
+**Class anchors (for closed models with no parameter disclosure).** The Tier-4 physics model needs an active-parameter count. Closed-weight providers publish none, so those rows fall back to a fixed anchor per capability class. The anchors are calibrated against the only two full-stack disclosures in the field — a fleet median of 0.24 Wh per text prompt and a self-reported 0.34 Wh per average query — with the frontier tier placed above a fleet median, because a fleet median is dominated by small models and short answers:
+
+| Capability class | `e_out` anchor (Wh / 1k output tokens) | Band |
+|---|---|---|
+| Frontier (flagship) | 1.20 | ÷3 … ×3 |
+| Frontier (efficiency-optimised fleet with a published median) | 0.80 | ÷3 … ×3 |
+| Mid | 0.30 | ÷3 … ×3 |
+| Small | 0.12 | ÷3 … ×3 |
+| Tiny | 0.05 | ÷3 … ×3 |
+
+An anchor is a placeholder for a measurement that does not exist. It is deliberately coarse, it carries the widest band in the framework, and it is the reason lever 9 (prefer providers that disclose) exists. Two rows sharing an anchor are not a claim that the two models are equally efficient — only that nothing published distinguishes them.
+
+**What the model database records (`data/models.csv`).** Each row carries, besides the energy triple: the provider, the capability class, the reasoning mode, the **openness of the weights** (open / closed) and licence, the architecture (dense / MoE), total and active parameters, context window, release date, the data-quality tier, the vintage, the basis, and the source. A row also carries a `status` of `current` or `legacy`; legacy rows are superseded models retained so that a year-on-year comparison remains possible, and they are excluded from default views.
+
 ### 4.6 Embodied emissions
 
 Manufacturing emissions of serving hardware, amortized over service life:
@@ -180,6 +198,17 @@ C_training_share = C_training_total × (your_tokens / est_total_lifetime_tokens)
 ```
 
 Mistral's audited LCA (the first for an LLM: 20.4 kt CO2e and 281,000 m³ water for Large 2 training + 18 months of use, Jan 2025) shows training-inclusive attribution adds material but not dominant amounts per marginal request for widely used models.
+
+---
+
+### 4.8 Open weights and the path to T1
+
+Openness is recorded because it changes what evidence is *obtainable*, not because it changes the physics:
+
+- An open-weight model can be metered. Anyone serving it can log accelerator and host power and move the row from T4 (modelled, ×/÷ 3) to T1 (measured, ×/÷ 1.15) — a fourfold narrowing of the interval, achievable in an afternoon.
+- A closed API model cannot be metered by its user at any price. The ceiling for an API row is T2, and only if the provider chooses to publish a full-stack figure with a stated boundary.
+
+GAIA therefore treats the openness column as a **measurability** flag, and the disclosure ask (§6, lever 7) as the only route by which closed rows improve. It is not a quality or licence judgement: "open weights" here means the checkpoint is downloadable and servable, which is what makes metering possible. Licence terms are recorded separately and vary widely.
 
 ---
 
@@ -242,16 +271,22 @@ Each lever ships with the measured effect size and source; "up to" marketing num
 
 | # | Lever | Measured effect on energy/carbon | Evidence |
 |---|---|---|---|
-| 1 | **Right-size the model** (route to smallest adequate) | 10–70× between frontier-reasoning and small efficient models on identical prompts | Jegham et al. 2025 (o3 vs GPT-4.1 nano >70×); AI Energy Score spreads |
-| 2 | **Cap reasoning/thinking budgets** | Reasoning modes average ≈ 30× standard generation; budgets recover most of it for bounded tasks | AI Energy Score v2 (Dec 2025) |
-| 3 | **Choose low-carbon hosting regions** | Grid CI spans ~20× (≈ 30–40 g CO2e/kWh in hydro/nuclear-heavy grids vs 600–750 in coal-heavy) | Ember Global Electricity Review (2024 data) |
-| 4 | **Bound output length; prompt/token discipline** | Energy ≈ linear in output tokens; halving median output ≈ halves per-request energy | Physics of autoregressive decoding; Luccioni et al. 2024 |
-| 5 | **Cache repeated context / responses** | Eliminates recomputation of repeated prefixes; effect = your cache hit rate | Provider prompt-caching documentation |
-| 6 | **Batching / off-peak scheduling** | Improves utilization `u`; effect measured in single-digit to low-double-digit % | Serving-systems literature; grid CI diurnal variation |
-| 7 | **Prefer providers with disclosed footprints** | Enables T2 data (halves uncertainty); creates market pressure for transparency | This framework, P1 |
-| 8 | **Newer hardware generations** | ~24% lower embodied carbon per FLOP (B200 vs H100); higher FLOPs/J | NVIDIA disclosures |
+| 1 | **Right-size the model (route each task to the smallest adequate model)** | 10-70x energy difference between frontier-reasoning and small efficient models on identical prompts | Jegham et al. arXiv:2505.09598 (o3 vs GPT-4.1 nano >70x); AI Energy Score leaderboard spreads |
+| 2 | **Cap reasoning/thinking budgets on bounded tasks** | Reasoning modes average ~30x the energy of standard generation; explicit budgets recover most of it | AI Energy Score v2 (2025); Jegham et al. arXiv:2505.09598 (o3: 21.4 Wh/medium, >33 Wh/long prompt) |
+| 3 | **Choose low-carbon hosting regions** | Grid carbon intensity spans ~20x across the regions in this table (30-40 gCO2e/kWh hydro/nuclear grids vs 600-750 coal-heavy) | Ember Global Electricity Review (2024 data); data/regions.csv |
+| 4 | **Bound output length; prompt and token discipline** | Per-request energy is approximately linear in output tokens; halving median output roughly halves energy | Physics of autoregressive decoding; Luccioni et al. FAccT 2024 |
+| 5 | **Cache repeated context and responses** | Removes prefill recomputation for cached input tokens; the saving equals your measured hit rate applied to the input share of the request (§4.1) | Provider prompt-caching documentation; modelled explicitly in GAIA's cached-input term |
+| 6 | **Prefer sparse (mixture-of-experts) serving at equal capability** | Per-token energy scales with ACTIVE, not total, parameters: current frontier open-weight models activate 13-104B of 0.3-2.8T, serving at a fraction of a dense model of the same total size | FRAMEWORK.md 4.5 Tier-4 model; published active-parameter counts in data/models.csv |
+| 7 | **Batch requests / schedule flexible jobs off-peak** | Improves serving utilisation; single-digit to low-double-digit % energy; larger carbon effect via diurnal grid variation | Serving-systems literature; grid CI diurnal data |
+| 8 | **Meter an open-weight deployment (move the row from T4 to T1)** | Does not reduce energy: it reduces UNCERTAINTY, from a modelled x/divide-3 band to a measured x/divide-1.15 band — roughly a fourfold narrowing, achievable in an afternoon | GAIA principles P1/P2 and 4.8; CodeCarbon / nvidia-smi plus host power |
+| 9 | **Prefer providers that disclose measured footprints** | Converts Tier-4 guesses into Tier-2 data (halves the interval) and creates market pressure for transparency; only two providers currently publish full-stack or audited figures | Google arXiv:2508.15734; Mistral AI environmental report (2025); GAIA principle P1 |
+| 10 | **Adopt newer accelerator generations** | ~24% lower embodied carbon per FLOP (B200 vs H100) and higher FLOPs/J in serving; a disclosure ask for vendor management, not a user action | NVIDIA HGX embodied-carbon disclosures |
 
-Provider-side levers a *user* cannot pull (PUE improvement, clean-power procurement, WUE engineering) appear in the report as *disclosure asks* for vendor management, not as user actions. One-off measurement cost of switching a workload to T1 metering is itself a recommended lever: it converts guesswork into data.
+Provider-side levers a *user* cannot pull (PUE improvement, clean-power procurement, WUE engineering) appear in the report as *disclosure asks* for vendor management, not as user actions.
+
+Two entries deserve emphasis because they are routinely confused with energy savings. **Lever 8 (meter an open-weight deployment) reduces uncertainty, not consumption** — it converts a ×/÷3 modelled band into a ×/÷1.15 measured one, which is a change in what you know, not in what you burn. **Lever 9 (prefer disclosing providers) likewise saves nothing directly**; it is the only mechanism by which a closed API row can ever rise above T4, and it is a procurement action rather than an engineering one. Both belong in the catalogue because a framework whose dominant uncertainty is provider opacity must name the levers that act on the opacity itself.
+
+One further caution applies to every model-substitution lever: an energy saving is not a quality claim. GAIA's capability classes are coarse buckets, and the right-sizing question of §5.3 exists precisely to force a documented evaluation of the smaller model on the actual task before a substitution is counted as available.
 
 ---
 
@@ -301,7 +336,9 @@ Restating as SCI: report `(E×I + M)/R` using location-based I. Feeding a GHG in
 ## 9. Governance of the framework itself
 
 - **Versioning:** semantic. Factor-table refreshes (grid CI vintages, new models) bump the minor version; methodology changes bump the major version and require a documented rationale against P1–P7.
-- **Reproducibility:** the Excel tool is *generated* from `build_workbook.py` + the CSV data tables in `data/` — the spreadsheet is a build artifact, never hand-edited. Anyone can audit the formulas in the script or the sheet.
+- **Reproducibility:** both published tools are *generated* from the CSV data tables in `data/`. `build_workbook.py` emits the Excel workbook; `build_site.py` emits `index.html` from the sources in `web/`. Neither artifact is ever hand-edited, so the spreadsheet, the web estimator and the tables cannot drift apart. Anyone can audit the formulas in the script, in the sheet, or in the page.
+- **Three implementations, one set of equations.** The §4 equations exist as a Python reference, as JavaScript in the web estimator, and as Excel formulas in the workbook. `tests/test_engine.py` evaluates all three on the same cases — including the workbook's own formula chain, lookups and grade ladder — and fails the build if any of them disagrees. A user who got a different answer from the spreadsheet than from the page would have been handed two different frameworks; this test is what prevents that.
+- **Data validation gates the build.** `build_site.py` refuses to publish if any row breaks the framework's own rules: bounds that do not bracket a central value, a band narrower than its tier permits, a physically impossible PUE, a missing source (P1), or grade bands that do not increase.
 - **Update cadence:** model database and grid factors reviewed at least twice yearly (the field moves fast: between 2024 and 2026, per-prompt disclosed energy fell ~33× at one provider while reasoning modes raised per-request energy ~30× at the task level — both directions matter).
 - **Corrections:** an error found in any published number is fixed in the data table with a changelog entry, never silently.
 
@@ -312,6 +349,10 @@ Restating as SCI: report `(E×I + M)/R` using location-based I. Feeding a GHG in
 - Annual-average grid CI ignores hourly variation; marginal-emissions accounting is out of scope for v2.0 (candidate for v3).
 - Water data is the weakest link globally: EWIF varies by basin and season, and *water stress context* (WHERE a litre is drawn) matters as much as volume. GAIA reports volume and flags stress-region hosting qualitatively.
 - Rebound effects (efficiency → more usage) are real and unmodeled; the frugality flag is the partial control.
+- **The Tier-4 hardware anchor is conservative and dated.** The physics model is pinned to an H100-class accelerator at dense BF16 precision and a serving utilisation of 0.3. Production fleets increasingly run newer accelerator generations at FP8 or FP4 with continuous batching and speculative decoding, all of which raise tokens per joule. Every T4 row therefore probably sits *above* the true figure for a modern fleet, and real values are more likely to fall in the lower half of the band than the upper. The constant is not adjusted upward without a sourced replacement, because guessing a better constant would trade a documented conservatism for an undocumented one (P1).
+- **Class anchors do not distinguish models.** Closed rows sharing a capability class share an energy value. That is a statement about the absence of disclosure, not a finding that the models are equally efficient. Any comparison between two closed rows of the same class is comparing two placeholders.
+- **Coverage currency varies by provider.** The database is refreshed by research passes that do not always reach every vendor. The `vintage` column, not the presence of a row, records how current each figure is; rows carried forward without re-verification say so in their `basis`. A provider whose newest model is missing is a gap in the refresh, not evidence that nothing newer exists.
+- **Reasoning tokens are only partly visible.** Where a provider hides its reasoning trace, the output-token count a user can observe understates the work performed, and several current frontier models cannot disable reasoning at all. The Reasoning task class and its token profile are the intended compensation; a metered token count from provider usage data is better.
 
 ## 11. Foundational sources
 
@@ -322,6 +363,7 @@ Lifecycle & embodied: Luccioni, Viguier & Ligozat, *BLOOM LCA*, arXiv:2211.02001
 Standards: ISO/IEC 21031:2024 (SCI) · GSF *SCI for AI* (2025) · ISO 14040/14044 · ITU-T L.1410 · AFNOR SPEC 2314 (2024) · GHG Protocol Scope 2 Guidance · EU AI Act Art. 40/51/95, Annex XI.
 Accounting methodology: *Accounting for AI Inference in Corporate GHG Inventories: A Four-Tier Methodology for Scope 3 Category 1 Reporting*, arXiv:2606.10660 (2026).
 Context data: Ember *Global Electricity Review* (2025, 2024 data) · IEA *Electricity 2025* / *Energy & AI* (2025) · Uptime Institute *Global Data Center Survey* (2025) · operator sustainability reports (Google, Microsoft, Meta, AWS).
+Model metadata: provider model cards, API documentation and release notes for every row in `data/models.csv` — the `source` column names the artifact and the `vintage` column dates it. Parameter counts, architectures, licences and context windows are read from those cards; where a provider publishes none (as all of the closed frontier labs currently do for parameters), the field is left empty rather than estimated.
 
 ---
 

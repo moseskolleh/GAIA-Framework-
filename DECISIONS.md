@@ -14,7 +14,7 @@ Audit of every GAIA 1.0 component: **KEPT**, **REBUILT**, or **REMOVED**, with t
 | **A letter-grade output** | Grades communicate. Kept as A–E, but redefined (see Rebuilt). |
 | **Mitigation-strategies module** | Right idea. Every effect size is now a measured number with a citation, or it is not listed. |
 | **Excel-first accessibility** | Core product decision, per the founder: there must always be a downloadable Excel version anyone can try. Now guaranteed by generating the workbook from code (`build_workbook.py`), so the spreadsheet can never drift from the methodology. |
-| **Single-file web app, no dependencies** | Good engineering call in v1. The page is rebuilt for 2.0 but keeps the zero-dependency architecture. |
+| **Single-file web app, no dependencies** | Good engineering call in v1. The page is rebuilt for 2.0 but keeps the zero-dependency architecture — and from 2.2 it is *generated* from `web/` plus the data tables, so the single file survives without the hand-syncing that made it drift. |
 
 ## Rebuilt
 
@@ -43,6 +43,25 @@ Audit of every GAIA 1.0 component: **KEPT**, **REBUILT**, or **REMOVED**, with t
 | `UI elements/` (v1 design mockups) | Moved to `legacy/ui-elements-v1/` — historical record of the v1 interface |
 | Weekly Monitor sheet (fabricated demo data) | A monitoring log with invented numbers teaches users to trust invented numbers. v2 ships a clean usage-log template instead |
 | "Support" contacts (`gaia-support@gov.example`, `learn.gov/gaia`) | Placeholder fiction |
+
+---
+
+## 2.2 decisions (September 2026)
+
+Additions and reversals since the 2.0 rebuild, in the same ledger form.
+
+| Decision | Rationale |
+|---|---|
+| **The web page becomes a build artifact** | In 2.0 the page carried a hand-maintained copy of the data tables. That is a drift waiting to happen, and it contradicted the reason the workbook is generated. `build_site.py` now emits `index.html` from `web/` plus `data/*.csv`. The page is still one self-contained file with no external requests — that property was worth keeping, the hand-copied data was not. |
+| **Model energy is modelled on active, not total, parameters — and the derivation is in the row** | Sparse mixture-of-experts serving is now the norm at the frontier, and the gap between total and active parameters reaches 30×. A per-row `T4-physics(A=…)` marker lets the test suite re-derive every modelled value from the framework constants, so 100+ rows stay auditable instead of asserted. |
+| **Openness recorded as a measurability flag, not a preference** | An open-weight deployment can be metered to T1; a closed API row is capped at T2 and only the provider can lift it. Recording that asymmetry is a statement about evidence, and it is deliberately *not* a licence or quality judgement — licence terms are a separate column and vary widely. |
+| **Class anchors documented rather than quietly reused** | Closed models with no parameter disclosure share a fixed anchor per capability class. 2.0 did this implicitly. Stating the anchors in the specification makes the limitation legible: two rows sharing an anchor means nothing published distinguishes them, not that the models are equally efficient. |
+| **Cached input tokens enter the equation** | Prompt caching was lever 5 with no quantified effect. Since a cache hit genuinely skips prefill, discounting cached input tokens is more correct than crediting a flat percentage — and it makes the lever computable instead of rhetorical. Output tokens are never cached; that boundary is what stops the term becoming a fudge factor. |
+| **Two levers that reduce uncertainty, not consumption, are labelled as such** | Metering an open-weight deployment and preferring disclosing providers save no energy. They belong in the catalogue because provider opacity is the dominant uncertainty in any GAIA assessment, but presenting them beside energy-saving levers without the distinction would be the kind of category error the framework exists to avoid. |
+| **Superseded models kept as `status = legacy` rather than deleted** | The measured T3 anchors that the grade bands rest on belong to models that are now retired. Deleting them would erase the empirical basis of the bands and make year-on-year comparison impossible. They are retained, labelled, and hidden from default views. |
+| **Rows that could not be re-verified say so in their own `basis`** | Two providers' lineups could not be confirmed in the September 2026 research pass. The choice was to drop them or to carry them forward with the limitation written into the row. Dropping them would hide a gap; carrying them forward silently would misrepresent currency. Writing it into the row is the only option consistent with P1. |
+| **The Tier-4 hardware constant was NOT updated** | Serving fleets have moved toward newer accelerators and FP8/FP4 precision, which would justify a higher FLOPs/J figure. No sourced replacement constant could be obtained in this pass, so the H100-class anchor stands and the limitation is documented: modelled rows probably sit above the truth, and real values likely fall in the lower half of the band. Replacing a documented conservatism with an undocumented guess would violate P1. |
+| **Grid and facility factors were NOT refreshed** | A refresh was attempted and could not be sourced within this pass. The `vintage` columns continue to say 2024 (grid) and 2025 (facility). A stale number that says it is stale is honest; a fresh-looking number without a source is not. |
 
 ## The one-sentence summary
 

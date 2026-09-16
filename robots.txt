@@ -1,4 +1,4 @@
-# robots.txt for GAIA Framework 2.0
+# robots.txt for the GAIA Framework
 
 User-agent: *
 Allow: /
