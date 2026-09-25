@@ -9,6 +9,7 @@ It is written for sustainability and ESG teams, engineering and platform leads, 
 - **Specification:** [FRAMEWORK.md](FRAMEWORK.md) (authoritative)
 - **Rebuild rationale:** [DECISIONS.md](DECISIONS.md) — what was kept, rebuilt, or removed from v1, and why
 - **Comparison & alignment:** [COMPARISON.md](COMPARISON.md) — capability matrix against every framework in the field, alignment with the UN SDGs / GRI / ESRS / IFRS S2 / CDP / SBTi, and the gap-analysis roadmap
+- **Build plan:** [ROADMAP.md](ROADMAP.md) — the step-by-step implementation plan from 2.3 to 4.0: features, improvements and efficiencies, each with a done-when test
 - **Version history:** [CHANGELOG.md](CHANGELOG.md)
 
 ---
@@ -99,6 +100,7 @@ What none of these provides — and GAIA does — is the combination of uncertai
 FRAMEWORK.md                  Authoritative specification
 DECISIONS.md                  Rebuild ledger: kept / rebuilt / removed, with rationale
 COMPARISON.md                 Capability matrix, SDG/GRI/ESRS/IFRS alignment, gap-analysis roadmap
+ROADMAP.md                    Implementation plan 2.3 → 4.0: phased steps, each with a done-when test
 CHANGELOG.md                  Version history; corrections are recorded, never silent
 data/                         Sourced factor tables — the single source of truth
   models.csv                  Per-model energy intensity, bounds, tier, openness, params, vintage
@@ -156,7 +158,7 @@ increase. A failing build is the framework enforcing itself.
 **Roadmap:** marginal and hourly emissions accounting; water-stress weighting for
 hosting regions; a refreshed grid and facility factor set; and expanded guides for
 moving deployments to T1 (metered) data — the lever with the largest effect on the
-honesty of any assessment.
+honesty of any assessment. The full, ordered plan is in [ROADMAP.md](ROADMAP.md).
 
 ---
 
