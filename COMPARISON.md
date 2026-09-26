@@ -94,7 +94,7 @@ Where a GAIA quantity lands in the reports organizations already file. This is t
 
 ## 4. Gap analysis — where others are stronger, and what GAIA adopts next
 
-The matrix's honest reading, converted into a versioned roadmap. Each item names the framework that does it better today and the adoption path.
+The matrix's honest reading, converted into a versioned roadmap. Each item names the framework that does it better today and the adoption path. [ROADMAP.md](ROADMAP.md) turns these items into ordered implementation steps and maps each gap to the step that closes it.
 
 | # | Gap (who does it better) | Adoption path | Target version |
 |---|---|---|---|
